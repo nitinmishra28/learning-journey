@@ -1,0 +1,67 @@
+# Python: Expressions vs Statements
+
+## Expression
+An expression is a piece of code that produces (returns) a value.
+
+Examples:
+x = 10
+y = 20
+
+x + y          # 30
+5 * 2          # 10
+len("Python")  # 6
+x > y          # False
+
+Key Points:
+- Produces a value.
+- Can be assigned to a variable.
+- Can be used inside another expression.
+
+Example:
+result = (10 + 5) * 2
+
+
+## Statement
+A statement is an instruction that performs an action.
+
+Examples:
+x = 10
+
+if x > 5:
+    print("Greater")
+
+for i in range(3):
+    print(i)
+
+def greet():
+    print("Hello")
+
+Key Points:
+- Performs an action.
+- Does not necessarily return a value.
+- Controls the flow of a program.
+
+
+## Difference Between Expression and Statement
+
+| Expression | Statement |
+|------------|-----------|
+| Produces a value | Performs an action |
+| Can be used inside another expression | Usually cannot be used inside an expression |
+| Example: `5 + 3` | Example: `if`, `for`, `while`, `def` |
+| Evaluates to a result | Executes a task |
+
+
+## Examples
+
+Expression:
+age = 20
+is_adult = age >= 18
+
+Statement:
+if age >= 18:
+    print("Adult")
+
+In the above example:
+- `age >= 18` is an **expression** because it evaluates to `True`.
+- `if age >= 18:` is a **statement** because it controls the program flow.
