@@ -1,0 +1,24 @@
+# Python Variable Naming Rules
+
+1. Use snake_case for variable names.
+   Example: first_name, total_marks
+
+2. Variable names should start with a lowercase letter or an underscore (_).
+   Valid: age, _count
+   Invalid: 2name
+
+3. Variable names can contain:
+   - Letters (a-z, A-Z)
+   - Numbers (0-9)
+   - Underscores (_)
+
+4. Variable names are case-sensitive.
+   Example:
+   age != Age != AGE
+
+5. Do not use Python keywords as variable names.
+   Invalid: if, for, class, True, None
+
+6. Choose meaningful and descriptive variable names.
+   Good: student_name, total_price
+   Bad: x, a, temp (unless appropriate)
