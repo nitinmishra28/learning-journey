@@ -1,0 +1,29 @@
+Q1. Longest Substring Without Repeating Characters
+Topic: Sliding Window
+Difficulty: Medium
+LeetCode: #3
+Status: ✅ Solved
+
+Q2. Letter Combinations of a Phone Number
+Topic: Backtracking
+Difficulty: Medium
+LeetCode: #17
+Status: ❌ Not Solved
+
+Q3. Pascal's Triangle
+Topic: Arrays
+Difficulty: Easy
+LeetCode: #118
+Status: ❌ Not Solved
+
+Q4. Invert Binary Tree
+Topic: Trees
+Difficulty: Easy
+LeetCode: #226
+Status: ❌ Not Solved (Tree not learned yet)
+
+Q5. Search Insert Position
+Topic: Binary Search
+Difficulty: Easy
+LeetCode: #35
+Status: ✅ Solved

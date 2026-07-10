@@ -1,0 +1,24 @@
+Q1. Count Strictly Increasing Subsequences of Length 3
+
+Problem Statement
+
+Given an integer array of length n, compute how many strictly increasing subsequences of length 3 can be formed and return the answer modulo 10⁹ + 7.
+
+Topics
+
+Dynamic Programming
+Fenwick Tree (Binary Indexed Tree)
+Coordinate Compression
+Advanced Arrays
+
+Status: ❌ Not Solved
+
+Q2. REST API Question
+
+Topic
+
+REST API
+JSON Parsing
+HTTP Requests
+
+Status: ❌ Not Solved
