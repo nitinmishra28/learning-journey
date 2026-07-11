@@ -1804,16 +1804,582 @@ text.count("a")
 
 ---
 
+
+
+# 📋 Python Lists
+
+Lists are one of the most commonly used data structures in Python. A list is an ordered, mutable collection that can store multiple items of different data types.
+
+## Creating a List
+
+```python
+numbers = [10, 20, 30, 40]
+```
+
+A list can contain different data types.
+
+```python
+data = [10, "Python", 3.14, True]
+```
+
+---
+
+# Characteristics of Lists
+
+- Ordered
+- Mutable (Can be modified)
+- Allows duplicate values
+- Can store different data types
+- Indexed
+
+---
+
+# Accessing Elements
+
+```python
+arr = [10, 20, 30, 40]
+
+print(arr[0])
+print(arr[2])
+print(arr[-1])
+```
+
+Output
+
+```
+10
+30
+40
+```
+
+---
+
+# Modifying Elements
+
+```python
+arr = [10, 20, 30]
+
+arr[1] = 100
+
+print(arr)
+```
+
+Output
+
+```
+[10, 100, 30]
+```
+
+---
+
+# Adding Elements
+
+## append()
+
+Adds an element at the end.
+
+```python
+arr = [1,2,3]
+
+arr.append(4)
+
+print(arr)
+```
+
+Output
+
+```
+[1,2,3,4]
+```
+
+---
+
+## insert()
+
+Adds an element at a specific index.
+
+```python
+arr.insert(1,100)
+```
+
+Output
+
+```
+[1,100,2,3]
+```
+
+---
+
+## extend()
+
+Adds another list.
+
+```python
+arr = [1,2]
+
+arr.extend([3,4])
+
+print(arr)
+```
+
+Output
+
+```
+[1,2,3,4]
+```
+
+---
+
+# Removing Elements
+
+## pop()
+
+Removes an element by index.
+
+```python
+arr.pop()
+
+arr.pop(1)
+```
+
+---
+
+## remove()
+
+Removes the first occurrence.
+
+```python
+arr.remove(20)
+```
+
+---
+
+## clear()
+
+Removes every element.
+
+```python
+arr.clear()
+```
+
+---
+
+# Useful List Functions
+
+```python
+len(arr)
+
+max(arr)
+
+min(arr)
+
+sum(arr)
+```
+
+---
+
+# Common List Methods
+
+```python
+append()
+
+extend()
+
+insert()
+
+pop()
+
+remove()
+
+clear()
+
+count()
+
+index()
+
+reverse()
+
+sort()
+
+copy()
+```
+
+---
+
+# 🔪 List Slicing
+
+List slicing creates a **new list**.
+
+Syntax
+
+```python
+list[start:end:step]
+```
+
+Example
+
+```python
+arr = [10,20,30,40,50]
+
+print(arr[1:4])
+```
+
+Output
+
+```
+[20,30,40]
+```
+
+---
+
+## First Three Elements
+
+```python
+print(arr[:3])
+```
+
+Output
+
+```
+[10,20,30]
+```
+
+---
+
+## From Index 2
+
+```python
+print(arr[2:])
+```
+
+Output
+
+```
+[30,40,50]
+```
+
+---
+
+## Entire List
+
+```python
+print(arr[:])
+```
+
+This creates a **new copy** of the list.
+
+---
+
+## Reverse List
+
+```python
+print(arr[::-1])
+```
+
+Output
+
+```
+[50,40,30,20,10]
+```
+
+---
+
+# 📌 Copying Lists (Important)
+
+Many beginners make this mistake.
+
+❌ Wrong
+
+```python
+arr = [1,2,3]
+
+arr1 = arr
+```
+
+Both variables now point to the **same list**.
+
+```python
+arr1.append(4)
+
+print(arr)
+```
+
+Output
+
+```
+[1,2,3,4]
+```
+
+Because both variables reference the same object.
+
+---
+
+## Correct Way (Using Slicing)
+
+```python
+arr = [1,2,3]
+
+arr1 = arr[:]
+```
+
+Now both are different lists.
+
+```python
+arr1.append(4)
+
+print(arr)
+```
+
+Output
+
+```
+[1,2,3]
+```
+
+---
+
+## Another Correct Way
+
+```python
+arr1 = arr.copy()
+```
+
+This also creates a new copy.
+
+---
+
+# 📌 sort() vs sorted()
+
+This is one of the most commonly asked interview questions.
+
+## sort()
+
+- Modifies the original list.
+- Returns **None**.
+
+Example
+
+```python
+arr = [5,2,4,1]
+
+print(arr.sort())
+```
+
+Output
+
+```
+None
+```
+
+Why?
+
+Because `sort()` changes the original list and does not return a new one.
+
+```python
+arr = [5,2,4,1]
+
+arr.sort()
+
+print(arr)
+```
+
+Output
+
+```
+[1,2,4,5]
+```
+
+---
+
+## sorted()
+
+Returns a **new sorted list**.
+
+The original list remains unchanged.
+
+```python
+arr = [5,2,4,1]
+
+new_arr = sorted(arr)
+
+print(new_arr)
+```
+
+Output
+
+```
+[1,2,4,5]
+```
+
+Original list
+
+```python
+print(arr)
+```
+
+Output
+
+```
+[5,2,4,1]
+```
+
+---
+
+# sort() vs sorted()
+
+| sort() | sorted() |
+|---------|-----------|
+| Method | Built-in Function |
+| Changes original list | Returns a new list |
+| Returns None | Returns sorted list |
+| Faster | Slightly slower |
+| Works only on lists | Works on any iterable |
+
+---
+
+# 🧮 Multidimensional Lists (Matrix)
+
+A multidimensional list is simply a list containing other lists.
+
+Example
+
+```python
+matrix = [
+    [1,2,3],
+    [4,5,6],
+    [7,8,9]
+]
+```
+
+---
+
+# Accessing Elements
+
+```python
+print(matrix[0])
+```
+
+Output
+
+```
+[1,2,3]
+```
+
+---
+
+```python
+print(matrix[1][2])
+```
+
+Output
+
+```
+6
+```
+
+---
+
+```python
+print(matrix[2][0])
+```
+
+Output
+
+```
+7
+```
+
+---
+
+# Iterating Through a Matrix
+
+```python
+for row in matrix:
+    print(row)
+```
+
+Output
+
+```
+[1,2,3]
+[4,5,6]
+[7,8,9]
+```
+
+---
+
+## Access Every Element
+
+```python
+for row in matrix:
+    for value in row:
+        print(value, end=" ")
+```
+
+Output
+
+```
+1 2 3 4 5 6 7 8 9
+```
+
+---
+
+# When Are Matrices Used?
+
+- Image Processing
+- Game Boards
+- Dynamic Programming
+- Graph Algorithms
+- Sudoku Solver
+- Scientific Computing
+
+---
+
+# 💡 Best Practices
+
+- Use `append()` instead of manually increasing list size.
+- Use slicing (`[:]`) or `copy()` to create a new list.
+- Use `sorted()` if you need the original list unchanged.
+- Use `sort()` when you want to sort the original list.
+- Avoid using `arr1 = arr` unless you intentionally want both variables to refer to the same list.
+
+---
+
+# 📝 Interview Tips
+
+✅ Lists are mutable.
+
+✅ Slicing creates a new list.
+
+✅ `arr1 = arr` creates a reference, not a copy.
+
+✅ `arr[:]` and `arr.copy()` create shallow copies.
+
+✅ `sort()` modifies the original list and returns `None`.
+
+✅ `sorted()` returns a new sorted list.
+
+✅ A matrix is a list of lists.
+
+---
+
+# 📚 Quick Revision
+
+- Lists are mutable.
+- Lists are ordered and indexed.
+- Use `append()`, `insert()`, and `extend()` to add elements.
+- Use `pop()`, `remove()`, and `clear()` to remove elements.
+- Slicing creates a new list.
+- Use `arr[:]` or `copy()` to create copies.
+- `sort()` modifies the original list.
+- `sorted()` returns a new list.
+- A matrix is a list of lists.
+
 # 🚀 What's Next?
 
 Continue learning the following topics:
 
-- Data Types
-- Operators
-- Conditional Statements (`if`, `elif`, `else`)
-- Loops (`for`, `while`)
 - Functions
-- Lists
 - Tuples
 - Sets
 - Dictionaries
