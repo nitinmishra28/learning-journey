@@ -1,236 +1,660 @@
 # 02. Guidelines for Prompting
 
-> **Course:** ChatGPT Prompt Engineering for Developers (Andrew Ng & Isa
-> Fulford)
+> **Course:** ChatGPT Prompt Engineering for Developers
+>
+> **Instructor:** Andrew Ng & Isa Fulford (OpenAI)
 
-## Overview
+---
 
-This chapter introduces the two core principles of Prompt Engineering:
+# 📌 Learning Objectives
 
-1.  Write clear and specific instructions.
-2.  Give the model time to think.
+After completing this chapter, you should be able to:
 
-These principles help Large Language Models produce reliable and
-structured responses.
+- Write effective prompts.
+- Understand the two Prompt Engineering principles.
+- Create structured prompts.
+- Reduce hallucinations.
+- Improve LLM responses.
+- Apply Prompt Engineering in Backend AI applications.
 
-------------------------------------------------------------------------
+---
 
-# 1. Setup
+# Why Prompt Engineering?
 
-## Install
+Large Language Models are powerful, but they only know what you tell them.
 
-``` bash
-pip install openai python-dotenv
+A poorly written prompt usually produces a poor response.
+
+A well-written prompt produces:
+
+- Better accuracy
+- Better reasoning
+- Less hallucination
+- Consistent outputs
+- Structured responses
+
+Think of Prompt Engineering as writing clear requirements for another developer.
+
+---
+
+# Two Core Principles
+
+Andrew Ng introduces two principles:
+
+## Principle 1
+
+> Write Clear and Specific Instructions
+
+## Principle 2
+
+> Give the Model Time to Think
+
+Everything else in Prompt Engineering builds on these two ideas.
+
+---
+
+# Principle 1: Write Clear and Specific Instructions
+
+LLMs are not mind readers.
+
+Never assume the model understands what you want.
+
+Instead,
+
+tell it exactly
+
+- what to do
+- what not to do
+- output format
+- constraints
+
+---
+
+# Tactic 1 — Use Delimiters
+
+## What are Delimiters?
+
+Delimiters separate the **instruction** from the **input**.
+
+Without delimiters, the model may confuse the instruction with the text.
+
+Common delimiters:
+
+- Triple Backticks
+
+```
 ```
 
-## Load API Key
+- Triple Quotes
 
-``` python
-import openai
-import os
-from dotenv import load_dotenv, find_dotenv
-
-_ = load_dotenv(find_dotenv())
-openai.api_key = os.getenv("OPENAI_API_KEY")
+```
+"""
 ```
 
-## Helper Function (Course Version)
+- XML Tags
 
-``` python
-def get_completion(prompt, model="gpt-3.5-turbo"):
-    messages = [{"role":"user","content":prompt}]
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=messages,
-        temperature=0
-    )
-    return response.choices[0].message["content"]
+```xml
+<article>
+...
+</article>
 ```
 
-## Modern SDK
+- HTML Tags
 
-``` python
-from openai import OpenAI
-
-client = OpenAI()
+```html
+<text>
+...
+</text>
 ```
 
-------------------------------------------------------------------------
+---
 
-# Principle 1 -- Write Clear and Specific Instructions
+## Example
 
-Clear prompts reduce ambiguity and improve accuracy.
-
-## Tactic 1 -- Use Delimiters
-
-### Course Code
-
-``` python
-text = "Prompt engineering improves AI responses."
+```python
+text = """
+Artificial Intelligence is transforming healthcare,
+finance, and education.
+"""
 
 prompt = f"""
-Summarize the text delimited by triple backticks.
+Summarize the following text
+delimited by triple backticks.
 
 ```{text}```
 """
-
-response = get_completion(prompt)
-print(response)
 ```
 
-### Why?
+---
 
-Delimiters clearly separate instructions from user input.
+## Why does this work?
 
-------------------------------------------------------------------------
+The model clearly understands
 
-## Tactic 2 -- Ask for Structured Output
+```text
+Instruction
 
-``` python
-prompt = '''
+↓
+
+Input Text
+
+↓
+
+Task
+```
+
+instead of mixing everything together.
+
+---
+
+## Backend Example
+
+Imagine a Resume Analyzer.
+
+```text
+User uploads Resume
+
+↓
+
+Backend extracts text
+
+↓
+
+Prompt
+
+Summarize this resume
+
+```Resume Text```
+
+↓
+
+GPT
+
+↓
+
+Summary
+```
+
+This is how delimiters are used in production.
+
+---
+
+# Best Practice
+
+Always separate
+
+- Instructions
+- Context
+- User Data
+- Examples
+
+using delimiters.
+
+---
+
+# Tactic 2 — Ask for Structured Output
+
+Instead of asking
+
+```
+Tell me about this person.
+```
+
+Ask
+
+```
+Return JSON containing
+
+name
+
+skills
+
+experience
+
+education
+```
+
+---
+
+## Example
+
+```python
+prompt = """
 Generate three books.
 
-Return JSON with:
+Return JSON.
+
+Fields:
 
 book_id
-title
-author
-genre
-'''
 
-response = get_completion(prompt)
-print(response)
+title
+
+author
+
+genre
+"""
 ```
 
-Expected output:
+Expected Response
 
-``` json
+```json
 [
   {
     "book_id":1,
-    "title":"...",
-    "author":"...",
-    "genre":"..."
+    "title":"AI Basics",
+    "author":"Andrew",
+    "genre":"Education"
   }
 ]
 ```
 
-------------------------------------------------------------------------
+---
 
-## Tactic 3 -- Check Conditions
+## Why?
 
-``` python
-prompt = '''
+Structured output is easier to use.
+
+Backend can directly convert JSON into
+
+- Database records
+- API responses
+- UI components
+
+without additional parsing.
+
+---
+
+## Production Example
+
+FastAPI
+
+↓
+
+GPT
+
+↓
+
+JSON
+
+↓
+
+React UI
+
+No manual formatting required.
+
+---
+
+# Tactic 3 — Check Whether Conditions Are Satisfied
+
+Instead of assuming something exists,
+
+ask the model to verify.
+
+Example
+
+```text
 If the text contains instructions,
-rewrite them as numbered steps.
 
-Otherwise output:
-No steps provided.
-'''
+rewrite them.
+
+Otherwise reply
+
+"No instructions found."
 ```
 
-------------------------------------------------------------------------
+---
 
-## Tactic 4 -- Few-Shot Prompting
+## Why?
 
-``` python
-prompt = '''
-<child>: Teach me patience.
+Reduces hallucinations.
 
-<grandparent>: Great rivers begin as small streams.
+Improves reliability.
 
-<child>: Teach me resilience.
-'''
+---
+
+# Example
+
+Input
+
+```
+Today is a beautiful day.
 ```
 
-------------------------------------------------------------------------
+Output
 
-# Principle 2 -- Give the Model Time to Think
+```
+No instructions found.
+```
 
-## Tactic 1 -- Specify Steps
+---
 
-``` python
-prompt = '''
-1. Summarize.
-2. Translate.
-3. Extract names.
+# Tactic 4 — Few-Shot Prompting
+
+Few-shot means
+
+show examples before asking the real question.
+
+---
+
+Example
+
+```
+Child:
+
+Teach me patience.
+
+Grandparent:
+
+Great rivers begin from small streams.
+
+Child:
+
+Teach me resilience.
+```
+
+The model learns
+
+- tone
+- format
+- writing style
+
+from previous examples.
+
+---
+
+## When should you use Few-Shot?
+
+- Email generation
+- SQL generation
+- Code generation
+- Customer Support
+- Classification
+
+---
+
+# Principle 2
+
+## Give the Model Time to Think
+
+Instead of asking
+
+```
+Solve this.
+```
+
+Ask
+
+```
+Step 1
+
+Understand problem.
+
+Step 2
+
+Solve.
+
+Step 3
+
+Explain.
+
+Step 4
+
+Return answer.
+```
+
+Breaking tasks into steps improves reasoning.
+
+---
+
+# Tactic 1 — Specify the Steps
+
+Example
+
+```python
+prompt = """
+Perform the following tasks.
+
+1. Summarize the article.
+
+2. Translate into French.
+
+3. Extract people's names.
+
 4. Return JSON.
-'''
+"""
 ```
 
-------------------------------------------------------------------------
+The model performs each task sequentially.
 
-## Tactic 2 -- Solve Before Judging
+---
 
-Bad prompt:
+## Production Example
 
-``` text
+Customer uploads PDF
+
+↓
+
+Summarize
+
+↓
+
+Extract Skills
+
+↓
+
+Generate Questions
+
+↓
+
+Return JSON
+
+---
+
+# Tactic 2 — Let the Model Solve Before Judging
+
+Instead of asking
+
+```
 Is the student's answer correct?
 ```
 
-Better prompt:
+Ask
 
-``` text
-1. Solve the problem.
-2. Compare with the student's answer.
-3. Decide if it is correct.
+```
+First solve the problem.
+
+Then compare.
+
+Then decide.
 ```
 
-------------------------------------------------------------------------
+---
 
-# Hallucinations
+## Why?
 
-Example:
+Models often agree with incorrect answers.
 
-``` python
-prompt = "Tell me about AeroGlide UltraSlim Smart Toothbrush by Boie"
+Independent reasoning improves accuracy.
+
+---
+
+# Model Limitation — Hallucinations
+
+LLMs sometimes generate information that sounds correct but is actually false.
+
+Example
+
+```
+Tell me about
+
+AeroGlide UltraSlim Smart Toothbrush
 ```
 
-The model may invent details because the product does not exist.
+The product doesn't exist,
 
-------------------------------------------------------------------------
+but the model might invent features.
+
+---
+
+## Reduce Hallucinations
+
+- Give context.
+- Use RAG.
+- Ask for evidence.
+- Verify outputs.
+- Keep prompts specific.
+
+---
 
 # Temperature
 
-  Temperature   Behavior
-  ------------- -------------------
-  0.0           Deterministic
-  0.3           Mostly consistent
-  0.7           Balanced
-  1.0           Creative
+Temperature controls randomness.
 
-------------------------------------------------------------------------
+| Temperature | Output |
+|-------------|---------|
+| 0 | Predictable |
+| 0.2 | Stable |
+| 0.5 | Balanced |
+| 1 | Creative |
+
+Use
+
+```
+temperature=0
+```
+
+for
+
+- SQL generation
+- Backend APIs
+- JSON
+- Production systems
+
+Use
+
+```
+temperature=1
+```
+
+for
+
+- Stories
+- Blogs
+- Marketing
+
+---
+
+# Backend AI Example
+
+```text
+Frontend
+
+↓
+
+FastAPI
+
+↓
+
+Prompt Template
+
+↓
+
+OpenAI API
+
+↓
+
+LLM
+
+↓
+
+JSON
+
+↓
+
+Frontend
+```
+
+Prompt Engineering happens inside the backend before calling the LLM.
+
+---
 
 # Best Practices
 
--   Use delimiters.
--   Request structured output.
--   Break complex tasks into steps.
--   Use few-shot prompting.
--   Verify factual answers.
+✅ Be specific.
 
-------------------------------------------------------------------------
+✅ Use delimiters.
+
+✅ Ask for JSON.
+
+✅ Break tasks into steps.
+
+✅ Provide examples.
+
+✅ Verify AI output.
+
+---
+
+# Common Mistakes
+
+❌ Vague prompts
+
+❌ No output format
+
+❌ Mixing instructions and input
+
+❌ Asking multiple unrelated questions
+
+❌ Blindly trusting AI
+
+---
 
 # Interview Questions
 
--   What are the two Prompt Engineering principles?
--   Why use delimiters?
--   What is few-shot prompting?
--   Why ask for JSON output?
--   What are hallucinations?
+### Why are delimiters important?
 
-------------------------------------------------------------------------
+They separate instructions from user data, reducing ambiguity.
 
-# Revision Summary
+---
 
--   Clear prompts outperform vague prompts.
--   Delimiters reduce ambiguity.
--   Structured output improves automation.
--   Multi-step prompting improves reasoning.
--   Verify important information.
+### Why ask for JSON?
 
-------------------------------------------------------------------------
+Because structured output is easier for backend applications to parse and process.
+
+---
+
+### What is Few-Shot Prompting?
+
+Providing examples so the model learns the expected response pattern.
+
+---
+
+### Why ask the model to think step-by-step?
+
+Breaking tasks into steps improves reasoning accuracy and reduces mistakes.
+
+---
+
+### What is a hallucination?
+
+A hallucination is when an LLM confidently generates incorrect or fabricated information.
+
+---
+
+# Key Takeaways
+
+- Clear prompts produce better responses.
+- Delimiters reduce ambiguity.
+- Structured outputs simplify backend integration.
+- Few-shot prompting teaches patterns.
+- Multi-step reasoning improves accuracy.
+- Hallucinations should always be verified.
+- Prompt Engineering is one of the most important skills for AI application development.
+
+---
 
 # Next Chapter
 
-**03_Iterative_Prompt_Development.md**
+➡️ **03_Iterative_Prompt_Development.md**
+
+Learn how to iteratively improve prompts until they produce production-quality responses.

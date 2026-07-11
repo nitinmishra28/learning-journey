@@ -1,194 +1,271 @@
 # 01. Introduction
 
-## 📖 Overview
+> **Course:** ChatGPT Prompt Engineering for Developers  
+> **Instructor:** Andrew Ng & Isa Fulford (OpenAI)
 
-This chapter introduces the fundamentals of **Large Language Models
-(LLMs)** and explains the difference between **Base LLMs** and
-**Instruction-Tuned LLMs**.
+---
 
-Understanding this distinction is essential because modern AI
-applications like **ChatGPT, Claude, Gemini, and GitHub Copilot** are
-built on **instruction-tuned models**, not raw base models.
+# 📌 Learning Objectives
 
-------------------------------------------------------------------------
+After completing this chapter, you should be able to:
 
-# What is Prompt Engineering?
+- Understand what a Large Language Model (LLM) is.
+- Differentiate between Base LLMs and Instruction-Tuned LLMs.
+- Understand why Prompt Engineering exists.
+- Know how ChatGPT generates responses.
+- Understand where Prompt Engineering fits into a Backend AI application.
 
-**Prompt Engineering** is the process of designing clear, effective, and
-structured instructions (called *prompts*) that help Large Language
-Models (LLMs) generate accurate, useful, and reliable responses.
-
-Instead of changing or retraining the AI model, Prompt Engineering
-focuses on improving **how we communicate with the model**.
-
-> **Definition:** Prompt Engineering is the art and science of writing
-> prompts that guide an LLM toward the desired output.
-
-------------------------------------------------------------------------
+---
 
 # What is a Large Language Model (LLM)?
 
-A **Large Language Model (LLM)** is an AI model trained on massive
-amounts of text data to understand, generate, and manipulate human
-language.
+A **Large Language Model (LLM)** is an AI model trained on massive amounts of text to understand and generate human language.
 
-LLMs learn statistical patterns in language and predict the next most
-likely word (or token) based on the context provided.
+Instead of memorizing answers, it learns **patterns** in language and predicts the most likely next token.
 
-## LLMs can perform tasks
+LLMs can perform tasks such as:
 
--   Answer questions
--   Write code
--   Summarize documents
--   Translate languages
--   Generate content
--   Debug code
--   Analyze data
--   Build chatbots
+- Answering questions
+- Writing code
+- Summarizing documents
+- Translating languages
+- Generating SQL queries
+- Explaining code
+- Writing emails
+- Building chatbots
 
-------------------------------------------------------------------------
+---
 
 # Popular LLMs
 
--   GPT-4
--   GPT-4o
--   Claude
--   Gemini
--   Llama
--   Mistral
+| Company | Model |
+|----------|-------|
+| OpenAI | GPT-4o, GPT-4.1 |
+| Anthropic | Claude |
+| Google | Gemini |
+| Meta | Llama |
+| Mistral AI | Mistral |
 
-------------------------------------------------------------------------
+---
 
 # Types of LLMs
 
-There are two primary categories:
+There are two main types of LLMs:
 
-1.  Base LLM
-2.  Instruction-Tuned LLM
+1. Base LLM
+2. Instruction-Tuned LLM
 
-------------------------------------------------------------------------
+These are the first concepts introduced in this course.
+
+---
 
 # Base LLM
 
-A **Base LLM** predicts the **next token** based on previous text.
+A **Base LLM** is trained to predict the next token based on previous text.
 
-It is trained for **text continuation**, not instruction following.
+Its goal is **text continuation**, not following instructions.
 
-## Training Objective
-
-    Predict the next token.
-
-Example:
+## Example
 
 Input
 
-    The capital of France is
+```text
+The capital of France is
+```
 
 Output
 
-    Paris
+```text
+Paris
+```
 
-Another example:
+Another example
 
-    Once upon a time there was a king who
+Input
 
-↓
+```text
+Once upon a time there was a king who
+```
 
-    lived in a beautiful castle...
+Output
+
+```text
+lived in a beautiful castle...
+```
+
+The model simply continues the sentence.
+
+---
 
 ## Characteristics
 
--   Predicts the next token
--   Learns language patterns
--   Trained on massive datasets
--   Excellent at autocomplete
--   Does not naturally follow instructions
+- Predicts the next token
+- Learns language patterns
+- Excellent at text completion
+- Does not naturally follow instructions
+- Not optimized for conversations
+
+---
 
 ## Limitation
 
-Prompt
+Suppose we ask
 
-    Translate "Hello" into French.
+```text
+Translate this sentence into French.
 
-A Base LLM may continue the text instead of answering directly.
+Hello
+```
 
-------------------------------------------------------------------------
+A Base LLM might continue the text instead of translating it because it has not been trained to follow instructions.
+
+---
 
 # Instruction-Tuned LLM
 
-An **Instruction-Tuned LLM** starts as a Base LLM and is further trained
-to understand and follow human instructions.
+An **Instruction-Tuned LLM** starts as a Base LLM and is further trained to follow human instructions.
 
-These are the models used by ChatGPT and other AI assistants.
+These models are designed for conversations and practical AI applications.
 
-## Training Pipeline
+Examples include:
 
-``` text
+- ChatGPT
+- Claude
+- Gemini
+- GitHub Copilot
+
+---
+
+## How is an Instruction-Tuned Model Created?
+
+```text
 Large Text Dataset
         │
         ▼
-   Pre-Training
+Pre-Training
         │
         ▼
-     Base LLM
+Base LLM
         │
 Instruction Fine-Tuning
         │
         ▼
-        RLHF
+Human Feedback (RLHF)
         │
         ▼
 Instruction-Tuned LLM
 ```
 
-## Characteristics
+---
 
--   Understands instructions
--   Better reasoning
--   Better conversations
--   Safer responses
--   Optimized for real-world tasks
+# What is RLHF?
 
-------------------------------------------------------------------------
+**RLHF** stands for **Reinforcement Learning from Human Feedback**.
 
-# Reinforcement Learning from Human Feedback (RLHF)
+During this stage:
 
-RLHF is a training process where humans evaluate AI responses.
+1. Humans review multiple AI responses.
+2. Humans rank the best response.
+3. The model learns which answers people prefer.
 
-The model learns which responses people prefer and improves over time.
+This improves:
 
-Benefits:
+- Accuracy
+- Safety
+- Helpfulness
+- Conversation quality
 
--   More helpful
--   More accurate
--   Safer
--   Better aligned with user expectations
-
-------------------------------------------------------------------------
+---
 
 # Base LLM vs Instruction-Tuned LLM
 
-  Feature                Base LLM             Instruction-Tuned LLM
-  ---------------------- -------------------- -----------------------
-  Purpose                Predict next token   Follow instructions
-  Chatbot                ❌                   ✅
-  Translation            Limited              Excellent
-  Code Generation        Limited              Excellent
-  Summarization          Limited              Excellent
-  Real-world Assistant   ❌                   ✅
+| Feature | Base LLM | Instruction-Tuned LLM |
+|----------|----------|-----------------------|
+| Purpose | Predict next token | Follow instructions |
+| Chatbot | ❌ | ✅ |
+| Translation | Limited | Excellent |
+| Summarization | Limited | Excellent |
+| Code Generation | Limited | Excellent |
+| Customer Support | ❌ | ✅ |
 
-------------------------------------------------------------------------
+---
 
-# Deep Dive: How an LLM Works
+# What is a Token?
 
-``` text
+LLMs do not read text word-by-word.
+
+They process **tokens**.
+
+Example:
+
+```text
+Hello ChatGPT
+```
+
+may become
+
+```text
+["Hello", " Chat", "GPT"]
+```
+
+The exact split depends on the tokenizer used by the model.
+
+---
+
+# Why Tokens Matter
+
+Tokens affect:
+
+- API cost
+- Maximum context length
+- Response length
+- Performance
+
+When using APIs, you pay based on the number of tokens processed.
+
+---
+
+# What is Prompt Engineering?
+
+Prompt Engineering is the practice of writing prompts that help an LLM generate the desired response.
+
+A good prompt provides:
+
+- Clear instructions
+- Context
+- Constraints
+- Expected output format
+
+Example:
+
+❌ Poor Prompt
+
+```text
+Write Python.
+```
+
+✅ Better Prompt
+
+```text
+Write a Python function that checks whether a string is a palindrome.
+
+Explain the logic.
+
+Return only Python code.
+```
+
+---
+
+# How ChatGPT Works (Simplified)
+
+```text
 User Prompt
       │
       ▼
-Tokenization
+Tokenizer
       │
       ▼
-Transformer Model
+LLM (GPT)
       │
       ▼
 Next Token Prediction
@@ -197,215 +274,141 @@ Next Token Prediction
 Generated Response
 ```
 
-------------------------------------------------------------------------
+The model predicts one token at a time until the response is complete.
 
-# What is a Token?
+---
 
-A **token** is the smallest unit of text processed by an LLM.
+# Where Prompt Engineering Fits in a Backend
 
-Examples:
+As a Backend + AI Engineer, Prompt Engineering is not an isolated skill. It is part of your backend workflow.
 
-    Hello world
+```text
+React / Frontend
+        │
+        ▼
+FastAPI Backend
+        │
+        ▼
+Prompt Template
+        │
+        ▼
+OpenAI API
+        │
+        ▼
+LLM Response
+        │
+        ▼
+JSON Response
+        │
+        ▼
+Frontend
+```
 
-may become
+In production systems:
 
-    ["Hello", " world"]
+- Users never interact directly with the LLM.
+- The backend prepares the prompt.
+- The backend validates the response.
+- The backend sends clean JSON to the frontend.
 
-Tokens determine:
+---
 
--   Cost
--   Context window
--   Input size
--   Output size
+# Real-World Example
 
-------------------------------------------------------------------------
+Suppose you're building a Resume Analyzer.
 
-# Tokenization
+User uploads a resume.
 
-Tokenization converts human-readable text into tokens before the model
-processes it.
+```text
+PDF Upload
+      │
+      ▼
+Extract Text
+      │
+      ▼
+Build Prompt
+      │
+      ▼
+OpenAI API
+      │
+      ▼
+Receive Analysis
+      │
+      ▼
+Return JSON
+```
 
-Example
+Prompt Engineering happens in the **Build Prompt** step.
 
-    Artificial Intelligence is changing the world.
-
-↓
-
-    ["Artificial", " Intelligence", " is", " changing", " the", " world", "."]
-
-------------------------------------------------------------------------
-
-# Pre-Training
-
-Pre-training teaches the model general language understanding using
-massive datasets such as:
-
--   Books
--   Articles
--   Websites
--   Documentation
--   Code
-
-Goal:
-
-> Predict the next token.
-
-------------------------------------------------------------------------
-
-# Fine-Tuning
-
-Fine-tuning teaches the model specific behavior.
-
-Examples:
-
--   Following instructions
--   Writing code
--   Customer support
--   Medical assistants
--   Legal assistants
-
-Instruction tuning is a type of fine-tuning.
-
-------------------------------------------------------------------------
-
-# Inference
-
-**Inference** is the process of generating responses after training.
-
-Training happens once.
-
-Inference happens every time a user sends a prompt.
-
-------------------------------------------------------------------------
-
-# Context Window
-
-A **Context Window** is the maximum number of tokens an LLM can process
-at one time.
-
-It includes:
-
--   User prompt
--   Conversation history
--   Model response
-
-------------------------------------------------------------------------
-
-# Why Prompt Engineering Matters
-
-Better prompts produce better results.
-
-Poor Prompt
-
-    Write Python.
-
-Better Prompt
-
-    Write a Python function to check whether a string is a palindrome.
-    Explain every step.
-    Include time complexity.
-
-------------------------------------------------------------------------
-
-# Industry Applications
-
-Instruction-Tuned LLMs are used in:
-
--   ChatGPT
--   GitHub Copilot
--   AI Chatbots
--   Customer Support
--   Enterprise AI
--   Document Summarization
--   Coding Assistants
-
-------------------------------------------------------------------------
-
-# Limitations of LLMs
-
-## Hallucinations
-
-Models can confidently generate incorrect information.
-
-## Knowledge Cutoff
-
-Some models may not know recent events without external tools.
-
-## No True Understanding
-
-LLMs recognize statistical language patterns rather than human-like
-understanding.
-
-## Prompt Sensitive
-
-Poor prompts often produce poor outputs.
-
-------------------------------------------------------------------------
+---
 
 # Best Practices
 
--   Be clear and specific.
--   Provide context.
--   Define the desired output format.
--   Break complex tasks into smaller prompts.
--   Iterate and refine prompts.
+- Write clear prompts.
+- Be specific.
+- Provide context.
+- Define the expected output format.
+- Avoid ambiguous instructions.
 
-------------------------------------------------------------------------
+---
 
 # Common Mistakes
 
--   Asking vague questions
--   Missing context
--   Expecting perfect factual accuracy
--   Ignoring token limits
+- Asking vague questions.
+- Assuming the model knows your intent.
+- Forgetting to specify the output format.
+- Trusting AI responses without verification.
 
-------------------------------------------------------------------------
+---
 
 # Interview Questions
 
-### What is an LLM?
+### What is a Base LLM?
 
-A Large Language Model is an AI model trained on massive text datasets
-to generate and understand language by predicting tokens.
+A Base LLM predicts the next token based on previous text. It is trained for text completion rather than instruction following.
 
-### What is the difference between a Base LLM and an Instruction-Tuned LLM?
+---
 
-A Base LLM predicts the next token, whereas an Instruction-Tuned LLM is
-optimized to follow human instructions using fine-tuning and RLHF.
+### What is an Instruction-Tuned LLM?
+
+An Instruction-Tuned LLM is a Base LLM that has been further trained using instruction datasets and RLHF so it can follow human instructions.
+
+---
 
 ### What is RLHF?
 
-Reinforcement Learning from Human Feedback is a process where humans
-rank model outputs so the model learns preferred behavior.
+RLHF (Reinforcement Learning from Human Feedback) is a training process where humans rank model outputs, allowing the model to learn preferred responses.
 
-### What is the difference between Pre-Training and Fine-Tuning?
+---
 
-Pre-training teaches general language understanding.
+### Why is Prompt Engineering important?
 
-Fine-tuning teaches task-specific behavior.
+Prompt Engineering helps developers communicate effectively with LLMs, improving response quality without retraining the model.
 
-### What is Inference?
+---
 
-Inference is the process of generating predictions using a trained
-model.
+### Why are Instruction-Tuned Models better for chat applications?
 
-------------------------------------------------------------------------
+Because they are optimized to understand and follow user instructions rather than simply predicting the next token.
 
-# Revision Summary
+---
 
--   ✅ LLMs predict tokens.
--   ✅ Base LLMs perform text continuation.
--   ✅ Instruction-Tuned LLMs follow instructions.
--   ✅ RLHF aligns models with human preferences.
--   ✅ Prompt Engineering improves output quality.
--   ✅ Tokens determine cost and context length.
+# Key Takeaways
 
-------------------------------------------------------------------------
+- LLMs generate text by predicting tokens.
+- Base LLMs are trained for text continuation.
+- Instruction-Tuned LLMs follow human instructions.
+- RLHF aligns models with human preferences.
+- Prompt Engineering is the skill of communicating effectively with LLMs.
+- In production, Prompt Engineering is implemented in the backend before sending requests to the LLM.
 
-# What's Next?
+---
 
-In the next chapter, we will learn the two core principles of Prompt
-Engineering:
+# Next Chapter
 
--   Write clear and specific instructions.
--   Give the model time to think.
+➡️ **02_Guidelines.md**
+
+You'll learn the two fundamental principles of Prompt Engineering:
+
+- Write clear and specific instructions.
+- Give the model time to think.
