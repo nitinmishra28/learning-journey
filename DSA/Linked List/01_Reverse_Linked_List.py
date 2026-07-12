@@ -3,7 +3,6 @@
 # Given the head of a singly linked list, reverse the list,
 # and return the reversed list.
 
-
 # ------------------------------------------------------------
 # Solution 1 - Iterative Approach
 # Time Complexity: O(n)
