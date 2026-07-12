@@ -47,5 +47,5 @@ class Solution:
 
         return self.recursiveWay(curr, forward)
 
-    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        return self.recursiveWay(None, head)
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode] :
+        return self.recursiveWay(None, head) 
