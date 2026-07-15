@@ -1,391 +1,693 @@
 # 203. Remove Linked List Elements
 
-Given the head of a linked list and an integer `val`, remove all the nodes of the linked list that have `Node.val == val`, and return the new head.
+## Problem
 
-# ------------------------------------------------------------
+Given the `head` of a linked list and an integer `val`, remove all nodes from the linked list where:
 
-# Solution 1 - Iterative Approach using prev and curr
+```text
+Node.val == val
+```
 
-# Time Complexity: O(n)
+Return the new head of the linked list.
 
-# Space Complexity: O(1)
+---
 
-# ------------------------------------------------------------
+## Example
 
-# Definition for singly-linked list.
+```text
+Input:
+head = [1, 2, 6, 3, 4, 5, 6]
+val = 6
 
-# class ListNode:
+Output:
+[1, 2, 3, 4, 5]
+```
 
-# def **init**(self, val=0, next=None):
+### Visualization
 
-# self.val = val
+```text
+Before:
 
-# self.next = next
+1 -> 2 -> 6 -> 3 -> 4 -> 5 -> 6 -> None
 
+After removing 6:
+
+1 -> 2 -> 3 -> 4 -> 5 -> None
+```
+
+---
+
+# Pattern Used
+
+## Linked List Node Deletion
+
+The main pattern used in this problem is:
+
+```text
+Previous Pointer + Current Pointer
+```
+
+We maintain:
+
+```text
+prev -> previous valid node
+curr -> current node being checked
+```
+
+The important idea is:
+
+```text
+If curr needs to be deleted:
+    connect prev directly to curr.next
+
+If curr does not need to be deleted:
+    move prev forward
+```
+
+One special situation occurs when the node being deleted is the `head`.
+
+This can be handled in two ways:
+
+1. Manually update the `head`.
+2. Use a dummy node before the `head`.
+
+---
+
+# Solution 1: Previous + Current Pointer
+
+This approach directly modifies the original linked list without using a dummy node.
+
+```python
 class Solution:
-def removeElements(
-self,
-head: Optional[ListNode],
-val: int
-) -> Optional[ListNode]:
+    def removeElements(
+        self,
+        head: Optional[ListNode],
+        val: int
+    ) -> Optional[ListNode]:
 
-```
-    prev = None
-    curr = head
+        prev = None
+        curr = head
 
-    while curr:
-        nxt = curr.next
+        while curr:
+            nxt = curr.next
 
-        if curr.val == val:
+            if curr.val == val:
 
-            # Case 1: Current node is the head node
-            if prev is None:
-                head = nxt
+                # Current node is the head
+                if prev is None:
+                    head = nxt
 
-            # Case 2: Current node is not the head node
+                # Current node is somewhere after the head
+                else:
+                    prev.next = nxt
+
+                # Disconnect the deleted node
+                curr.next = None
+
+                # Move curr forward
+                curr = nxt
+
             else:
-                prev.next = nxt
+                prev = curr
+                curr = curr.next
 
-            # Disconnect the current node
-            curr.next = None
-
-            # Move curr to the next node
-            curr = nxt
-
-        else:
-            # Current node should not be deleted
-            prev = curr
-            curr = curr.next
-
-    return head
+        return head
 ```
 
-# ============================================================
+---
 
-# Solution 1 Explanation
+## How This Approach Works
 
-# ============================================================
+We start with:
 
-"""
-Approach
---------
-
-We use two pointers:
-
-prev -> keeps track of the previous valid node
-curr -> keeps track of the current node
-
-We traverse the linked list and check every node.
-
-If curr.val == val:
-
-```
-We need to delete the current node.
-
-There are two possible cases.
-```
-
-Case 1: curr is the head node
-
-If prev is None, it means curr is currently pointing
-to the head of the linked list.
-
-Example:
-
-7 -> 1 -> 2 -> 3
-
-curr
-↓
-7 -> 1 -> 2 -> 3
-
+```text
 prev = None
-
-Since the head needs to be deleted:
-
-head = curr.next
-
-Now:
-
-head
-↓
-1 -> 2 -> 3
-
-Case 2: curr is not the head node
-
-Example:
-
-1 -> 2 -> 6 -> 3
-
-```
- prev  curr
-   ↓    ↓
+curr = head
 ```
 
-1 -> 2 -> 6 -> 3
+For every node, we first store:
 
-To remove 6:
+```python
+nxt = curr.next
+```
 
-prev.next = curr.next
+This is important because we may disconnect the current node.
 
-Now:
+Then we check:
 
-1 -> 2 -------> 3
+```python
+if curr.val == val:
+```
 
-After removing the node:
-
-curr.next = None
-
-This disconnects the deleted node from the linked list.
-
-Then:
-
-curr = nxt
-
-moves curr forward.
-
-If curr.val != val:
-
-The current node should remain in the linked list.
-
-So we move both pointers:
-
-prev = curr
-curr = curr.next
+If the value matches, the node needs to be removed.
 
 ---
 
-Important Point
-
-When we delete a node, we DO NOT move prev.
-
-Example:
-
-1 -> 7 -> 7 -> 3
-
-Suppose:
-
-prev = 1
-curr = first 7
-
-After deleting the first 7:
-
-1 -> 7 -> 3
-
-prev must still remain at 1 because the next node
-could also need to be deleted.
-
-This allows us to correctly remove consecutive nodes.
-
----
-
-Why do we update head?
+## Case 1: Deleting the Head
 
 Consider:
 
-7 -> 7 -> 7 -> 7
+```text
+7 -> 1 -> 2 -> 3
+```
 
+Suppose:
+
+```text
 val = 7
+```
 
 Initially:
 
+```text
 prev = None
-curr = head
 
-Because curr is the head and needs to be deleted:
-
-head = nxt
-
-This continues until all nodes are removed.
-
-Finally:
-
-head = None
-
----
-
-Complexity
-
-Time Complexity:
-O(n)
-
-Every node is visited once.
-
-Space Complexity:
-O(1)
-
-Only a few pointer variables are used:
-
-prev
 curr
+ ↓
+ 7 -> 1 -> 2 -> 3
+ ↑
+head
+```
+
+Because:
+
+```text
+prev is None
+```
+
+we know that `curr` is currently the head node.
+
+So we update:
+
+```python
+head = nxt
+```
+
+Now:
+
+```text
+head
+ ↓
+1 -> 2 -> 3
+```
+
+---
+
+## Case 2: Deleting a Node in the Middle
+
+Consider:
+
+```text
+1 -> 2 -> 6 -> 3
+```
+
+Pointers:
+
+```text
+     prev  curr
+       ↓    ↓
+1 -> 2 -> 6 -> 3
+```
+
+Since `6` needs to be removed:
+
+```python
+prev.next = nxt
+```
+
+Now:
+
+```text
+1 -> 2 -------> 3
+```
+
+The node containing `6` is skipped.
+
+---
+
+## Why Do We Store `nxt`?
+
+Before changing any links, we store:
+
+```python
+nxt = curr.next
+```
+
+Suppose:
+
+```text
+1 -> 2 -> 6 -> 3
+          ↑
+         curr
+```
+
+We store:
+
+```text
 nxt
+ ↓
+ 3
+```
 
-No extra data structure is required.
+Then we can safely disconnect `curr`:
+
+```python
+curr.next = None
+```
+
+and still move forward using:
+
+```python
+curr = nxt
+```
 
 ---
 
-Pattern
+## Important: Do Not Move `prev` After Deletion
 
-Linked List Deletion using:
+Consider:
 
-prev + curr pointers
-
-Special handling is required when deleting the head node.
-"""
-
-# ============================================================
-
-# Solution 2 - Iterative Approach using a Dummy Node
-
-# Time Complexity: O(n)
-
-# Space Complexity: O(1)
-
-# ============================================================
-
-class Solution:
-def removeElements(
-self,
-head: Optional[ListNode],
-val: int
-) -> Optional[ListNode]:
-
-```
-    dummy = ListNode(-1)
-    dummy.next = head
-
-    prev = dummy
-    curr = head
-
-    while curr:
-
-        if curr.val == val:
-            prev.next = curr.next
-        else:
-            prev = curr
-
-        curr = curr.next
-
-    return dummy.next
+```text
+1 -> 7 -> 7 -> 3
 ```
 
-# ============================================================
+Suppose:
 
-# Solution 2 Explanation
-
-# ============================================================
-
-"""
-Approach
---------
-
-We traverse the linked list once.
-
-For every node:
-
-• If its value equals 'val',
-skip the node.
-
-• Otherwise,
-move the prev pointer forward.
-
-A dummy node is used so that deleting
-the head node becomes easy.
-
----
-
-Example
-
-Input:
-
-1 -> 2 -> 6 -> 3 -> 4 -> 5 -> 6
-
-val = 6
+```text
+val = 7
+```
 
 Initially:
 
-dummy -> 1 -> 2 -> 6 -> 3 -> 4 -> 5 -> 6
+```text
+prev  curr
+ ↓      ↓
+ 1 -> 7 -> 7 -> 3
+```
 
-When curr reaches the first 6:
+After deleting the first `7`:
 
-dummy -> 1 -> 2 -------> 3 -> 4 -> 5 -> 6
+```text
+prev  curr
+ ↓      ↓
+ 1 --> 7 -> 3
+```
 
-6
+`prev` must remain at `1`.
 
-The node is skipped.
+Why?
 
-Continue traversing...
+Because the next node is also `7` and must also be removed.
 
-When curr reaches the last 6:
+If we move `prev` after deleting a node, consecutive matching nodes may not be handled correctly.
 
-dummy -> 1 -> 2 -> 3 -> 4 -> 5
+### Rule
 
-Done.
+```text
+Node deleted
+    ↓
+Do NOT move prev
+
+Node kept
+    ↓
+Move prev to curr
+```
 
 ---
 
-Why do we use a Dummy Node?
+## Dry Run
 
-Suppose the head itself needs to be removed.
+### Input
 
-Example:
+```text
+head = [1, 2, 6, 3]
+val = 6
+```
 
-6 -> 1 -> 2 -> 3
+### Initial State
 
-Without a dummy node,
-changing the head requires special handling.
+```text
+prev = None
+curr = 1
+```
+
+### Step 1
+
+```text
+curr = 1
+1 != 6
+```
+
+Move both pointers:
+
+```text
+prev = 1
+curr = 2
+```
+
+### Step 2
+
+```text
+curr = 2
+2 != 6
+```
+
+Move both pointers:
+
+```text
+prev = 2
+curr = 6
+```
+
+### Step 3
+
+```text
+curr = 6
+6 == 6
+```
+
+Remove the node:
+
+```python
+prev.next = curr.next
+```
+
+Result:
+
+```text
+1 -> 2 -> 3
+```
+
+Keep `prev` at `2` and move `curr` to `3`.
+
+### Step 4
+
+```text
+curr = 3
+3 != 6
+```
+
+Move forward.
+
+Final result:
+
+```text
+1 -> 2 -> 3
+```
+
+---
+
+# Solution 2: Dummy Node Approach
+
+A dummy node can be added before the original head.
+
+This removes the need to handle head deletion separately.
+
+```python
+class Solution:
+    def removeElements(
+        self,
+        head: Optional[ListNode],
+        val: int
+    ) -> Optional[ListNode]:
+
+        dummy = ListNode(-1)
+        dummy.next = head
+
+        prev = dummy
+        curr = head
+
+        while curr:
+
+            if curr.val == val:
+                prev.next = curr.next
+            else:
+                prev = curr
+
+            curr = curr.next
+
+        return dummy.next
+```
+
+---
+
+## Why Use a Dummy Node?
+
+Consider:
+
+```text
+7 -> 1 -> 2 -> 3
+```
+
+Suppose:
+
+```text
+val = 7
+```
+
+Without a dummy node, the head requires special handling:
+
+```python
+head = head.next
+```
 
 With a dummy node:
 
-dummy -> 6 -> 1 -> 2 -> 3
+```text
+dummy -> 7 -> 1 -> 2 -> 3
+```
 
-Removing 6 is simply:
+Pointers:
 
-dummy.next = 1
+```text
+prev    curr
+ ↓       ↓
+dummy -> 7 -> 1 -> 2 -> 3
+```
 
-No extra conditions are needed.
+To remove `7`:
+
+```python
+prev.next = curr.next
+```
+
+Result:
+
+```text
+dummy -> 1 -> 2 -> 3
+```
+
+The same deletion logic now works for:
+
+* The head node
+* Middle nodes
+* The last node
+
+No special condition is required.
 
 ---
 
-Why do we return dummy.next?
+## Why Return `dummy.next`?
 
-The dummy node itself is not part of the answer.
+The dummy node is only a helper node.
 
-dummy
-↓
+For example:
 
-[-1] -> 1 -> 2 -> 3
+```text
+dummy -> 1 -> 2 -> 3
+```
 
-The real linked list starts from:
+The actual linked list starts from:
 
+```text
 dummy.next
+```
 
 Therefore:
 
+```python
 return dummy.next
+```
 
 ---
 
-Complexity
+# Edge Cases
 
-Time Complexity:
+## 1. Empty Linked List
+
+```text
+Input:
+head = []
+val = 1
+
+Output:
+[]
+```
+
+---
+
+## 2. Delete the Head
+
+```text
+Input:
+[7, 1, 2, 3]
+
+val = 7
+
+Output:
+[1, 2, 3]
+```
+
+---
+
+## 3. Delete Multiple Head Nodes
+
+```text
+Input:
+[7, 7, 1, 2]
+
+val = 7
+
+Output:
+[1, 2]
+```
+
+---
+
+## 4. Delete Consecutive Nodes
+
+```text
+Input:
+[1, 7, 7, 7, 2]
+
+val = 7
+
+Output:
+[1, 2]
+```
+
+This case demonstrates why `prev` should not move when a node is deleted.
+
+---
+
+## 5. Delete All Nodes
+
+```text
+Input:
+[7, 7, 7, 7]
+
+val = 7
+
+Output:
+[]
+```
+
+---
+
+## 6. Value Does Not Exist
+
+```text
+Input:
+[1, 2, 3, 4]
+
+val = 7
+
+Output:
+[1, 2, 3, 4]
+```
+
+---
+
+# Complexity Analysis
+
+Both approaches have the same complexity.
+
+### Time Complexity
+
+```text
 O(n)
+```
 
-Space Complexity:
+Every node is visited once.
+
+Since we must check every node to determine whether its value equals `val`, `O(n)` is optimal.
+
+### Space Complexity
+
+```text
 O(1)
+```
+
+Only a constant number of pointers are used.
+
+For Solution 1:
+
+```text
+prev
+curr
+nxt
+```
+
+For Solution 2:
+
+```text
+dummy
+prev
+curr
+```
+
+No additional data structure depending on the input size is used.
 
 ---
 
-Key Takeaways
+# Solution Comparison
 
-✔ Both approaches are optimal with O(n) time and O(1) space.
+| Approach      | Time   | Space  | Head Special Case |
+| ------------- | ------ | ------ | ----------------- |
+| `prev + curr` | `O(n)` | `O(1)` | Required          |
+| Dummy Node    | `O(n)` | `O(1)` | Not Required      |
 
-✔ The prev + curr approach requires special handling when
-deleting the head.
+Both solutions are optimal.
 
-✔ The dummy node approach removes the need for a special
-head-deletion condition.
+The dummy-node approach usually produces cleaner code because it handles every node using the same deletion logic.
 
-✔ When deleting a node, do not move prev.
+---
 
-✔ Dummy nodes are a very common linked list interview pattern.
-"""
+# Key Takeaways
+
+* This problem follows the **Linked List Node Deletion** pattern.
+* Use `prev` and `curr` pointers to remove nodes while traversing.
+* When deleting a node, connect the previous node directly to the next node.
+* Do not move `prev` when the current node is deleted.
+* Consecutive deletions are an important edge case.
+* Deleting the head requires special handling when no dummy node is used.
+* A dummy node removes the head-deletion special case.
+* `dummy.next` represents the actual head of the resulting linked list.
+* Both approaches achieve optimal `O(n)` time and `O(1)` space.
+
+---
+
+## Pattern Recognition
+
+Whenever a linked list problem asks you to:
+
+```text
+Delete nodes based on a condition
+Remove specific values
+Filter nodes from a linked list
+Handle possible head deletion
+```
+
+think about:
+
+```text
+prev + curr
+```
+
+and consider whether using a:
+
+```text
+Dummy Node
+```
+
+can simplify the edge cases.
