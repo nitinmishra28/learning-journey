@@ -1,10 +1,10 @@
----
+content: |
+  ---
+  # 🧠 Python Object Model
 
-# 🧠 Python Object Model
+  One of the most important concepts in Python is:
 
-One of the most important concepts in Python is:
-
-> **Everything in Python is an Object.**
+  > **Everything in Python is an Object.**
 
 Unlike C or C++, where primitive types (like `int`, `char`, `float`) are not objects, Python treats **every value as an object**.
 
