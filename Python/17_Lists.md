@@ -1,8 +1,6 @@
----
+# 🔄 `sort()`
 
-# 🔄 sort()
-
-Sorts the original list in ascending order.
+The `sort()` method sorts the **original list in place**.
 
 ## Syntax
 
@@ -12,265 +10,256 @@ list.sort(key=None, reverse=False)
 
 ## Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| key | Function used for custom sorting |
-| reverse | Sort in descending order if True |
-
----
+| Parameter | Description                                           |
+| --------- | ----------------------------------------------------- |
+| `key`     | Optional function used to determine the sorting value |
+| `reverse` | Set to `True` for descending order                    |
 
 ## Example
 
 ```python
-arr = [5,2,4,1]
+arr = [5, 2, 4, 1]
 
 arr.sort()
 
 print(arr)
 ```
 
-Output
+Output:
 
+```text
+[1, 2, 4, 5]
 ```
-[1,2,4,5]
-```
-
----
 
 ## Return Value
 
-```
+```text
 None
 ```
 
----
-
 ## In-place?
 
-✅ Yes
+✅ **Yes**
 
 The original list is modified.
 
----
+```python
+arr = [3, 1, 2]
+
+result = arr.sort()
+
+print(arr)
+print(result)
+```
+
+Output:
+
+```text
+[1, 2, 3]
+None
+```
+
+This is important:
+
+```python
+arr.sort()
+```
+
+sorts `arr`, but:
+
+```python
+arr = arr.sort()
+```
+
+sets `arr` to `None`.
 
 ## Internal Working
 
-Python uses **Timsort**.
+Python's built-in sorting implementation uses **Timsort**, a stable sorting algorithm designed to perform especially well on real-world and partially ordered data.
 
-Timsort is a hybrid sorting algorithm based on
+Important properties:
 
-- Merge Sort
-- Insertion Sort
-
-Advantages
-
-- Stable
-- Fast on partially sorted data
-- Worst Case
-
-```
-O(n log n)
-```
-
----
+* Stable sorting
+* Efficient on partially sorted data
+* Worst-case time complexity of `O(n log n)`
 
 ## Complexity
 
-| Case | Complexity |
-|-------|------------|
-| Best | O(n) |
-| Average | O(n log n) |
-| Worst | O(n log n) |
+| Case    | Time Complexity |
+| ------- | --------------- |
+| Best    | `O(n)`          |
+| Average | `O(n log n)`    |
+| Worst   | `O(n log n)`    |
 
-Space
-
-```
-O(n)
-```
-
----
+The temporary memory required by the sorting implementation depends on the input and implementation details, with worst-case auxiliary space commonly described as `O(n)`.
 
 ## Stable Sort ⭐
 
-Timsort is stable.
+Python's sorting is **stable**.
 
-Equal elements keep their original order.
-
-Example
+This means that when two elements have the same sorting key, their original relative order is preserved.
 
 ```python
 students = [
-
-("Alice",90),
-
-("Bob",90),
-
-("Charlie",80)
-
+    ("Alice", 90),
+    ("Bob", 90),
+    ("Charlie", 80)
 ]
 
-students.sort(key=lambda x:x[1])
+students.sort(key=lambda x: x[1])
 
 print(students)
 ```
 
-Output
+Output:
 
-```
+```text
 [
-('Charlie',80),
-('Alice',90),
-('Bob',90)
+    ('Charlie', 80),
+    ('Alice', 90),
+    ('Bob', 90)
 ]
 ```
 
-Alice remains before Bob.
-
----
+Both Alice and Bob have `90`, and Alice originally appeared before Bob, so that order is preserved.
 
 ## Descending Order
 
+Use `reverse=True`.
+
 ```python
+arr = [5, 2, 4, 1]
+
 arr.sort(reverse=True)
+
+print(arr)
 ```
 
-Output
+Output:
 
+```text
+[5, 4, 2, 1]
 ```
-[5,4,2,1]
-```
 
----
+## Sorting Using `key`
 
-## Sorting by Key
-
-Length
+You can control what value Python uses for comparison.
 
 ```python
-words = ["apple","hi","banana"]
+words = ["apple", "hi", "banana"]
 
 words.sort(key=len)
 
 print(words)
 ```
 
-Output
+Output:
 
+```text
+['hi', 'apple', 'banana']
 ```
-['hi','apple','banana']
-```
 
----
+Here, the strings are sorted according to their lengths.
 
-# sorted()
+# 🔃 `sorted()`
 
-Returns a **new sorted list**.
+The `sorted()` function returns a **new sorted list**.
 
-Original list remains unchanged.
-
----
+The original iterable remains unchanged.
 
 ## Syntax
 
 ```python
-sorted(iterable,key=None,reverse=False)
+sorted(iterable, key=None, reverse=False)
 ```
 
----
-
-Example
+## Example
 
 ```python
-arr = [5,2,4,1]
+arr = [5, 2, 4, 1]
 
 new_arr = sorted(arr)
 
 print(arr)
-
 print(new_arr)
 ```
 
-Output
+Output:
 
+```text
+[5, 2, 4, 1]
+[1, 2, 4, 5]
 ```
-[5,2,4,1]
-
-[1,2,4,5]
-```
-
----
 
 ## Return Value
 
-```
+Returns a:
+
+```text
 New List
 ```
 
----
-
 ## In-place?
 
-❌ No
+❌ **No**
 
----
+The original data is not modified.
 
 ## Complexity
 
-```
+For sorting `n` elements:
+
+```text
 O(n log n)
 ```
 
----
+in the average and worst cases.
 
-# sort() vs sorted()
+# `sort()` vs `sorted()`
 
-| sort() | sorted() |
-|----------|-----------|
-| List Method | Built-in Function |
-| In-place | Returns New List |
-| Returns None | Returns Sorted List |
-| Works only on Lists | Works on Any Iterable |
-| Memory Efficient | Uses Extra Memory |
+| `sort()`                                       | `sorted()`                            |
+| ---------------------------------------------- | ------------------------------------- |
+| List method                                    | Built-in function                     |
+| Modifies the original list                     | Does not modify the original iterable |
+| Returns `None`                                 | Returns a new list                    |
+| Works only with lists                          | Works with any iterable               |
+| Usually avoids creating a separate result list | Creates a new result list             |
 
----
+## Common Mistake
 
-# Common Mistake
+❌ Wrong:
 
 ```python
-arr = [5,2,1]
+arr = [5, 2, 1]
 
 arr = arr.sort()
+
+print(arr)
 ```
 
-Output
+Output:
 
-```
+```text
 None
 ```
 
-Because
+Why?
 
-```
-sort()
+Because `sort()` modifies the existing list and returns `None`.
 
-↓
-
-Returns None
-```
-
-Correct
+✅ Correct:
 
 ```python
+arr = [5, 2, 1]
+
 arr.sort()
+
+print(arr)
 ```
 
----
+# 📋 `copy()`
 
-# copy()
-
-Creates a **shallow copy**.
-
----
+The `copy()` method creates a **shallow copy** of a list.
 
 ## Syntax
 
@@ -278,436 +267,515 @@ Creates a **shallow copy**.
 list.copy()
 ```
 
----
-
-Example
+## Example
 
 ```python
-arr = [1,2,3]
+arr = [1, 2, 3]
 
 copy_arr = arr.copy()
 
 print(copy_arr)
 ```
 
-Output
+Output:
 
+```text
+[1, 2, 3]
 ```
-[1,2,3]
-```
-
----
 
 ## Return Value
 
-```
-New List
-```
-
----
+Returns a new list.
 
 ## In-place?
 
-❌ No
+❌ **No**
 
----
+The original list is not modified.
 
 ## Complexity
 
-```
+```text
 O(n)
 ```
 
----
+Python must copy the references of all `n` elements into the new outer list.
 
-# Slicing Copy
+# Three Common Ways to Make a Shallow Copy
+
+Using `copy()`:
+
+```python
+copy_arr = arr.copy()
+```
+
+Using slicing:
 
 ```python
 copy_arr = arr[:]
 ```
 
-Also creates a shallow copy.
-
----
-
-# list()
+Using `list()`:
 
 ```python
 copy_arr = list(arr)
 ```
 
-Another shallow copy.
+All three create a **new outer list**, but nested mutable objects are still shared.
 
----
+# 🔥 Assignment Is Not Copying
 
-# Three Ways to Copy
+This is extremely important for DSA.
 
 ```python
-arr.copy()
+arr = [1, 2, 3]
 
-arr[:]
-
-list(arr)
+arr1 = arr
 ```
 
-All create **shallow copies**.
+This does **not** create a new list.
 
----
+Memory representation:
 
-# Shallow Copy ⭐⭐⭐
+```text
+arr ─────┐
+         ├──> [1, 2, 3]
+arr1 ────┘
+```
 
-One of the most important Python interview questions.
+Both variables reference the same list.
 
-Example
+```python
+arr1.append(4)
+
+print(arr)
+print(arr1)
+```
+
+Output:
+
+```text
+[1, 2, 3, 4]
+[1, 2, 3, 4]
+```
+
+Therefore, when you need a shallow copy, prefer:
+
+```python
+arr1 = arr[:]
+```
+
+or:
+
+```python
+arr1 = arr.copy()
+```
+
+# ⭐ Shallow Copy
+
+Consider a nested list:
 
 ```python
 arr = [
-
-[1,2],
-
-[3,4]
-
+    [1, 2],
+    [3, 4]
 ]
 
 copy_arr = arr.copy()
+```
 
+The outer lists are different objects:
+
+```python
+print(arr is copy_arr)
+```
+
+Output:
+
+```text
+False
+```
+
+But the inner lists are still shared:
+
+```python
+print(arr[0] is copy_arr[0])
+```
+
+Output:
+
+```text
+True
+```
+
+Now modify a nested element:
+
+```python
 copy_arr[0][0] = 100
 
 print(arr)
+print(copy_arr)
 ```
 
-Output
+Output:
 
-```
-[[100,2],
-
-[3,4]]
+```text
+[[100, 2], [3, 4]]
+[[100, 2], [3, 4]]
 ```
 
 Why?
 
-Only the outer list is copied.
+Because only the **outer list** was copied.
 
-Inner lists are shared.
+Conceptually:
 
-Memory
+```text
+arr ───────────────> Outer List A
+                         │
+                         ├──> Inner List 1
+                         └──> Inner List 2
 
-```
-Original
-
-↓
-
-Outer List
-
-↓
-
-Inner List
-
-Copy
-
-↓
-
-New Outer List
-
-↓
-
-Same Inner List
+copy_arr ──────────> Outer List B
+                         │
+                         ├──> Same Inner List 1
+                         └──> Same Inner List 2
 ```
 
----
+# 🔥 Deep Copy
 
-# Deep Copy
-
-Creates copies of every nested object.
+A deep copy recursively copies nested objects.
 
 ```python
 import copy
 
-deep = copy.deepcopy(arr)
+arr = [
+    [1, 2],
+    [3, 4]
+]
+
+deep_copy = copy.deepcopy(arr)
 ```
 
-Now
+Now:
 
 ```python
-deep[0][0] = 100
+deep_copy[0][0] = 100
+
+print(arr)
+print(deep_copy)
 ```
 
-Original remains unchanged.
+Output:
 
----
-
-# Aliasing
-
-```python
-a = [1,2]
-
-b = a
+```text
+[[1, 2], [3, 4]]
+[[100, 2], [3, 4]]
 ```
 
-Memory
+The original nested list remains unchanged.
 
-```
-a
+# Aliasing vs Shallow Copy vs Deep Copy
 
-↓
+| Operation              | Outer Object | Nested Mutable Objects |
+| ---------------------- | ------------ | ---------------------- |
+| `b = a`                | Same         | Same                   |
+| `b = a.copy()`         | Different    | Shared                 |
+| `b = a[:]`             | Different    | Shared                 |
+| `b = copy.deepcopy(a)` | Different    | Recursively copied     |
 
-List
+# ✂️ List Slicing
 
-↑
-
-b
-```
-
-Only one list exists.
-
-Modify
-
-```python
-b.append(3)
-```
-
-Output
-
-```
-[1,2,3]
-```
-
-Both variables see the change.
-
----
-
-# Aliasing vs Copy
-
-| Aliasing | Copy |
-|----------|------|
-| Same Object | Different Object |
-| Same Memory | Different Memory |
-| Changes Reflect | Independent |
-
----
-
-# List Slicing
-
-Syntax
+Syntax:
 
 ```python
 list[start:end:step]
 ```
 
----
-
-Example
+Example:
 
 ```python
-arr = [10,20,30,40,50]
+arr = [10, 20, 30, 40, 50]
 
 print(arr[1:4])
 ```
 
-Output
+Output:
 
+```text
+[20, 30, 40]
 ```
-[20,30,40]
-```
 
----
+The `end` index is excluded.
 
-Beginning
+## From the Beginning
 
 ```python
 arr[:3]
 ```
 
----
+Result:
 
-End
+```text
+[10, 20, 30]
+```
+
+## Until the End
 
 ```python
 arr[2:]
 ```
 
----
+Result:
 
-Entire List
+```text
+[30, 40, 50]
+```
+
+## Copy the Entire List
 
 ```python
-arr[:]
+copy_arr = arr[:]
 ```
 
----
+This creates a **shallow copy**.
 
-Reverse
+## Reverse Using Slicing
 
 ```python
-arr[::-1]
+reversed_arr = arr[::-1]
 ```
 
----
+This creates a **new reversed list**.
 
-## Complexity
+It does not modify `arr`.
 
-```
-O(k)
-```
+## Slicing Complexity
 
-Where
+If the slice contains `k` elements:
 
-```
-k
-
-↓
-
-Elements Copied
+```text
+Time:  O(k)
+Space: O(k)
 ```
 
----
+A new list is created containing references to those `k` elements.
 
-# + vs +=
+# 🔥 `+` vs `+=` with Lists
 
-Example
+This difference is very important when aliasing is involved.
+
+## Using `+=`
 
 ```python
-a = [1,2]
+a = [1, 2]
 
 b = a
 
 a += [3]
+
+print(a)
+print(b)
 ```
 
-Output
+Output:
 
-```
-b
-
-↓
-
-[1,2,3]
+```text
+[1, 2, 3]
+[1, 2, 3]
 ```
 
-Same object modified.
+For a list, `+=` normally modifies the existing list in place.
 
----
+Both `a` and `b` still reference the same object.
 
-Now
+## Using `+`
 
 ```python
-a = [1,2]
+a = [1, 2]
 
 b = a
 
 a = a + [3]
+
+print(a)
+print(b)
 ```
 
-Memory
+Output:
 
-```
-New List
-```
-
-Output
-
-```
-a
-
-↓
-
-[1,2,3]
-
-b
-
-↓
-
-[1,2]
+```text
+[1, 2, 3]
+[1, 2]
 ```
 
-Huge interview question.
-
----
-
-# del Keyword
-
-Delete Index
+Here:
 
 ```python
-del arr[2]
+a + [3]
 ```
 
----
+creates a **new list**, and `a` is rebound to it.
 
-Delete Slice
+`b` still references the old list.
 
-```python
-del arr[2:5]
+Conceptually:
+
+```text
+Before:
+
+a ───┐
+     ├──> [1, 2]
+b ───┘
+
+
+After a = a + [3]:
+
+a ───────> [1, 2, 3]
+
+b ───────> [1, 2]
 ```
 
----
+# 🗑️ `del` Keyword
 
-Delete Entire Variable
+`del` can remove elements, slices, or variable bindings.
+
+## Delete an Element
 
 ```python
+arr = [10, 20, 30]
+
+del arr[1]
+
+print(arr)
+```
+
+Output:
+
+```text
+[10, 30]
+```
+
+## Delete a Slice
+
+```python
+arr = [1, 2, 3, 4, 5]
+
+del arr[1:4]
+
+print(arr)
+```
+
+Output:
+
+```text
+[1, 5]
+```
+
+## Delete the Variable Name
+
+```python
+arr = [1, 2, 3]
+
 del arr
 ```
 
-After this
+Now:
 
 ```python
 print(arr)
 ```
 
-Output
+Raises:
 
-```
+```text
 NameError
 ```
 
----
+Important:
 
-# Nested Lists
+`del arr` removes the name `arr`.
+
+It does not necessarily destroy the list object immediately if another reference still exists.
+
+Example:
+
+```python
+arr = [1, 2, 3]
+
+backup = arr
+
+del arr
+
+print(backup)
+```
+
+Output:
+
+```text
+[1, 2, 3]
+```
+
+# 🔢 Nested Lists and Matrices
+
+A nested list is a list containing other lists.
 
 ```python
 matrix = [
-
-[1,2],
-
-[3,4]
+    [1, 2],
+    [3, 4]
 ]
 ```
 
-Access
+Access an element using two indices:
 
 ```python
-matrix[1][0]
+print(matrix[1][0])
 ```
 
-Output
+Output:
 
-```
+```text
 3
 ```
 
----
+Here:
 
-# Biggest Python Bug ⭐⭐⭐
+```text
+matrix[1]     → [3, 4]
 
-Never do
+matrix[1][0]  → 3
+```
+
+# 🚨 The Shared-Row Matrix Bug
+
+Avoid this:
 
 ```python
-matrix = [[0]*3]*3
+matrix = [[0] * 3] * 3
 ```
 
-Looks correct.
+At first, it appears to create:
 
-Actually
-
-```
-All rows
-
-↓
-
-Same List
+```text
+[
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
+]
 ```
 
-Example
+But the three rows are references to the **same inner list**.
+
+Conceptually:
+
+```text
+matrix[0] ───┐
+matrix[1] ───┼──> [0, 0, 0]
+matrix[2] ───┘
+```
+
+Therefore:
 
 ```python
 matrix[0][0] = 100
@@ -715,194 +783,205 @@ matrix[0][0] = 100
 print(matrix)
 ```
 
-Output
+Output:
 
-```
-[[100,0,0],
-
-[100,0,0],
-
-[100,0,0]]
-```
-
----
-
-Correct
-
-```python
-matrix = [
-
-[0]*3
-
-for _ in range(3)
-
+```text
+[
+    [100, 0, 0],
+    [100, 0, 0],
+    [100, 0, 0]
 ]
 ```
 
-Now
+All rows changed because they are the same object.
 
-Every row is independent.
-
----
-
-# Best Practices
-
-✅ Use
+You can verify this:
 
 ```python
-arr.copy()
+print(matrix[0] is matrix[1])
 ```
 
-or
+Output:
+
+```text
+True
+```
+
+# ✅ Correct Matrix Creation
+
+Use a list comprehension:
 
 ```python
-arr[:]
+matrix = [[0] * 3 for _ in range(3)]
 ```
 
-instead of aliasing.
+Now every iteration creates a new inner list.
 
----
+Conceptually:
 
-✅ Prefer
+```text
+matrix[0] ───> [0, 0, 0]
+
+matrix[1] ───> [0, 0, 0]
+
+matrix[2] ───> [0, 0, 0]
+```
+
+Verify:
 
 ```python
-sorted()
+print(matrix[0] is matrix[1])
 ```
 
-when original data must remain unchanged.
+Output:
 
----
+```text
+False
+```
 
-✅ Use
+Now:
 
 ```python
-sort()
+matrix[0][0] = 100
+
+print(matrix)
 ```
 
-when memory matters.
+Output:
 
----
-
-✅ Never use
-
-```python
-[[0]*n]*m
+```text
+[
+    [100, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
+]
 ```
 
-for matrices.
+Only the first row changes.
 
----
+# 💡 Best Practices
 
-# Common Mistakes
+* Use `arr.sort()` when you intentionally want to modify the original list.
+* Use `sorted(arr)` when you need to preserve the original order.
+* Remember that `sort()` returns `None`.
+* Use `arr.copy()` or `arr[:]` when you need a shallow copy.
+* Use `copy.deepcopy()` when nested mutable objects must also be independent.
+* Understand the difference between assignment and copying.
+* Use `+=` carefully when multiple variables reference the same list.
+* Never create a mutable 2D matrix using `[[0] * n] * m`.
 
-❌
+# ⚠️ Common Mistakes
+
+## Mistake 1
 
 ```python
 arr = arr.sort()
 ```
 
----
+`arr` becomes:
 
-❌
+```text
+None
+```
+
+## Mistake 2
 
 ```python
-copy = arr
+copy_arr = arr
 ```
 
-thinking
+This is **aliasing**, not copying.
 
-```
-Copy
-```
-
-Actually
-
-```
-Alias
-```
-
----
-
-❌
-
-Using
+## Mistake 3
 
 ```python
-a = a + [x]
+matrix = [[0] * n] * m
 ```
 
-inside loops.
+All rows reference the same inner list.
 
-Creates many temporary lists.
+## Mistake 4
 
----
+Assuming a shallow copy recursively copies everything.
 
-# DSA Tips
+It only creates a new outer container.
 
-✅ Learn
+# 🧠 DSA Tips
 
-- sort()
+Understanding references and copying is extremely important when solving:
 
-- sorted()
+* Matrix problems
+* Backtracking
+* Graph problems
+* Dynamic Programming
+* Recursive problems
 
-Very important.
-
----
-
-✅ Understand shallow copy before solving graph or matrix problems.
-
----
-
-✅ Prefer list comprehensions for matrix creation.
-
----
-
-✅ Never create 2D arrays using
+For example, in backtracking:
 
 ```python
-[[0]*n]*m
+result.append(path)
 ```
 
----
+may be wrong if `path` is later modified.
 
-# Interview Questions
-
-1. Difference between sort() and sorted()?
-
-2. Why does sort() return None?
-
-3. Explain Timsort.
-
-4. Difference between shallow and deep copy?
-
-5. Difference between copy() and aliasing?
-
-6. Difference between + and += ?
-
-7. Why is slicing O(k)?
-
-8. Why is [[0]*n]*m dangerous?
-
----
-
-# Quick Revision
-
-✔ sort() modifies original list.
-
-✔ sorted() returns new list.
-
-✔ copy() creates shallow copy.
-
-✔ deepcopy() creates independent copy.
-
-✔ Slicing creates a new list.
-
-✔ Lists store references.
-
-✔ Avoid aliasing unless intentional.
-
-✔ Never create matrices using
+You often need:
 
 ```python
-[[0]*n]*m
+result.append(path[:])
 ```
+
+Why?
+
+Because:
+
+```python
+path[:]
+```
+
+creates a snapshot of the current list.
+
+This small difference is extremely important in DSA.
+
+# 💼 Interview Questions
+
+1. What is the difference between `sort()` and `sorted()`?
+2. Why does `sort()` return `None`?
+3. What is a stable sorting algorithm?
+4. What is Timsort?
+5. What is aliasing?
+6. What is a shallow copy?
+7. What is a deep copy?
+8. What is the difference between `arr.copy()` and `copy.deepcopy(arr)`?
+9. Does `arr[:]` create a deep copy?
+10. What is the difference between `+` and `+=` for lists?
+11. Why is list slicing `O(k)`?
+12. Why is `[[0] * n] * m` dangerous?
+13. Why do we use `path[:]` while storing backtracking answers?
+
+# 📌 Quick Revision
+
+✔ `sort()` modifies the original list and returns `None`.
+
+✔ `sorted()` returns a new sorted list.
+
+✔ `arr = other` creates an alias, not a copy.
+
+✔ `arr.copy()` creates a shallow copy.
+
+✔ `arr[:]` also creates a shallow copy.
+
+✔ `copy.deepcopy()` recursively copies nested objects.
+
+✔ List slicing takes `O(k)` time and space for `k` copied elements.
+
+✔ For lists, `+=` normally modifies the existing object.
+
+✔ `+` creates a new list.
+
+✔ `del` can remove an element, slice, or variable binding.
+
+✔ Nested lists store references to inner lists.
+
+✔ Never use `[[0] * n] * m` to create an independently mutable matrix.
+
+✔ In backtracking, `path[:]` is commonly used to store a snapshot of the current path.
