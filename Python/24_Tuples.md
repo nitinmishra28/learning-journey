@@ -901,4 +901,4 @@ Invalid.
 
 ✔ Tuples are heavily used in heaps, graphs, BFS, DP, and memoization.
 
-✔ Tuples are chosen mainly because they are immutable.
+✔ Tuples are chosen mainly because they are immutable. 
