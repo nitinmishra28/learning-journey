@@ -897,7 +897,7 @@ Invalid.
 
 ✔ Tuples are compared lexicographically.
 
-✔ Tuples can be dictionary keys if all elements are hashable.
+✔ Tuples can be dictionary keys if all elements are hashable.   
 
 ✔ Tuples are heavily used in heaps, graphs, BFS, DP, and memoization. 
 
