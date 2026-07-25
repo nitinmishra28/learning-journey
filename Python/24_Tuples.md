@@ -899,6 +899,6 @@ Invalid.
 
 ✔ Tuples can be dictionary keys if all elements are hashable.   
 
-✔ Tuples are heavily used in heaps, graphs, BFS, DP, and memoization. 
+✔ Tuples are heavily used in heaps, graphs, BFS, DP, and memoization.    
 
-✔ Tuples are chosen mainly because they are immutable. 
+✔ Tuples are chosen mainly because they are immutable.   
