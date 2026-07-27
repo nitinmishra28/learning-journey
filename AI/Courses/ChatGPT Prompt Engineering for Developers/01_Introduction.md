@@ -411,4 +411,4 @@ Because they are optimized to understand and follow user instructions rather tha
 You'll learn the two fundamental principles of Prompt Engineering:
 
 - Write clear and specific instructions.
-- Give the model time to think.
+- Give the model time to think. 
