@@ -912,7 +912,7 @@ Linked List ko Array banao
 → Current ko push karo
 ```
 
-## Pattern Name -
+## Pattern Name - 
 
 ```text
 Linked List → Array + Monotonic Stack (Next Greater)
