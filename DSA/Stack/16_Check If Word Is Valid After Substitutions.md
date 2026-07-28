@@ -2,145 +2,56 @@
 
 ## Problem
 
-A string is considered **valid** if we can repeatedly remove the substring
+Given a string `s`, repeatedly remove the substring `"abc"` whenever it appears.
 
-```text
-abc
-```
-
-until the string becomes empty.
-
-Return
-
-```text
-True
-```
-
-if the string is valid,
-
-otherwise return
-
-```text
-False
-```
+Return `True` if the string becomes empty; otherwise, return `False`.
 
 ---
 
-## Examples
+# Brute Force
 
-### Example 1
+## Idea
 
-```text
-Input
+* Scan the string and find `"abc"`.
+* Remove every occurrence.
+* Repeat until no `"abc"` exists.
+* If the final string is empty, return `True`; otherwise, return `False`.
 
-abc
+## Code
+
+```python
+class Solution:
+    def isValid(self, s: str) -> bool:
+
+        while True:
+            found = False
+            new_s = ""
+            i = 0
+
+            while i < len(s):
+                if i + 2 < len(s) and s[i:i+3] == "abc":
+                    found = True
+                    i += 3
+                else:
+                    new_s += s[i]
+                    i += 1
+
+            if not found:
+                break
+
+            s = new_s
+
+        return s == ""
 ```
 
-Output
+### Complexity
 
-```text
-True
-```
+* **Time:** `O(n²)`
+* **Space:** `O(n)`
 
-Explanation
+### Why is it slow?
 
-```text
-abc
-
-↓
-
-Remove abc
-
-↓
-
-Empty String
-```
-
----
-
-### Example 2
-
-```text
-Input
-
-aabcbc
-```
-
-Output
-
-```text
-True
-```
-
-Explanation
-
-```text
-aabcbc
-
-↓
-
-a(abc)
-
-↓
-
-abc
-
-↓
-
-Remove abc
-
-↓
-
-Empty
-```
-
----
-
-### Example 3
-
-```text
-Input
-
-abccba
-```
-
-Output
-
-```text
-False
-```
-
-Explanation
-
-```text
-abccba
-
-↓
-
-Remove abc
-
-↓
-
-cba
-```
-
-Now
-
-```text
-cba
-```
-
-cannot produce
-
-```text
-abc
-```
-
-Therefore answer is
-
-```text
-False
-```
+The string is scanned multiple times, and a new string is created after every pass.
 
 ---
 
@@ -154,50 +65,23 @@ Stack + Pattern Elimination (Continuous Pattern Reduction)
 
 # Main Idea
 
-Whenever the last three characters become
-
-```text
-abc
-```
-
-remove them immediately.
-
-Repeat this until the entire string has been processed.
-
-If the stack becomes empty,
-
-the string was valid.
-
-Otherwise,
-
-some characters could never become
-
-```text
-abc
-```
-
-so the string is invalid.
+* Traverse the string once.
+* Push every character into a stack.
+* Whenever the last **3** characters become `"abc"`, remove them immediately.
+* If the stack is empty after processing all characters, the string is valid.
 
 ---
 
-# Complete Code with Comments
+# Optimal Solution
 
 ```python
 class Solution:
-
     def isValid(self, s: str) -> bool:
-
-        # Stack stores processed characters.
         stack = []
 
-        # Process every character one by one.
         for ch in s:
-
-            # Add current character.
             stack.append(ch)
 
-            # If last three characters become "abc",
-            # remove them immediately.
             if (
                 len(stack) >= 3
                 and stack[-3] == 'a'
@@ -208,464 +92,140 @@ class Solution:
                 stack.pop()
                 stack.pop()
 
-        # If stack becomes empty,
-        # every character was removed successfully.
         return len(stack) == 0
 ```
 
 ---
 
-# Brute Force Solution
+# Why This Works
 
-A straightforward idea is:
-
-```text
-Find "abc"
-
-↓
-
-Remove it
-
-↓
-
-Create a new string
-
-↓
-
-Again search for "abc"
-
-↓
-
-Repeat
-```
-
-Example
-
-```text
-aabcbc
-
-↓
-
-Remove abc
-
-↓
-
-abc
-
-↓
-
-Remove abc
-
-↓
-
-Empty
-```
-
-This works,
-
-but every removal creates a new string.
-
-Again we search from the beginning.
-
-Again we copy characters.
-
-Again we create another string.
-
-This repeated work makes the solution inefficient.
+* Every new `"abc"` must include the **latest inserted character**.
+* Therefore, checking only the **top 3** stack elements is sufficient.
+* Removing one `"abc"` may create another `"abc"` automatically (chain reaction), which the stack naturally handles.
+* Each character is pushed once and popped at most once.
 
 ---
 
-# Why Stack?
+# Dry Run
 
-Instead of rebuilding the string again and again,
-
-we process every character only once.
-
-Every new character is pushed into the stack.
-
-Whenever the top becomes
-
-```text
-abc
-```
-
-remove it immediately.
-
-Example
-
-```text
 Input
 
+```text
 aabcbc
 ```
 
-Process
+| Character | Stack | Action               |
+| --------- | ----- | -------------------- |
+| a         | a     | Push                 |
+| a         | aa    | Push                 |
+| b         | aab   | Push                 |
+| c         | aabc  | Remove `abc` → `a`   |
+| b         | ab    | Push                 |
+| c         | abc   | Remove `abc` → Empty |
 
-```text
-Push a
-
-Stack
-
-a
-```
-
-Push
-
-```text
-a
-
-Stack
-
-a
-a
-```
-
-Push
-
-```text
-b
-
-Stack
-
-a
-a
-b
-```
-
-Push
-
-```text
-c
-
-Stack
-
-a
-a
-b
-c
-```
-
-Last three characters are
-
-```text
-abc
-```
-
-Remove them.
-
-Stack becomes
-
-```text
-a
-```
-
-Continue.
-
-Push
-
-```text
-b
-
-Stack
-
-a
-b
-```
-
-Push
-
-```text
-c
-
-Stack
-
-a
-b
-c
-```
-
-Again
-
-```text
-abc
-```
-
-Remove.
-
-Stack
+Final Stack
 
 ```text
 Empty
 ```
 
-No rebuilding.
+Answer
 
-No rescanning.
-
-Everything happens while reading the string.
+```text
+True
+```
 
 ---
 
-# Why Push First?
+# Common Mistakes
 
-Notice the code
+### 1. Checking before pushing
+
+❌ Wrong
 
 ```python
+check()
 stack.append(ch)
 ```
 
-comes before checking
+✅ Correct
 
 ```python
-if len(stack) >= 3 ...
-```
-
-Why?
-
-Because the current character might complete
-
-```text
-abc
-```
-
-Suppose stack contains
-
-```text
-a
-b
-```
-
-Current character
-
-```text
-c
-```
-
-If we check before pushing,
-
-stack is
-
-```text
-a
-b
-```
-
-There is no
-
-```text
-abc
-```
-
-After pushing
-
-```text
-c
-```
-
-Stack becomes
-
-```text
-a
-b
-c
-```
-
-Now
-
-```text
-abc
-```
-
-is complete.
-
-Therefore
-
-```text
-Always Push First
-
-↓
-
-Then Check Pattern
+stack.append(ch)
+check()
 ```
 
 ---
 
-# Why Check Only Last Three Characters?
+### 2. Forgetting `len(stack) >= 3`
 
-Suppose stack is
-
-```text
-a
-a
-b
-c
-```
-
-Only the newest characters can create a **new** pattern.
-
-Everything before them has already been checked.
-
-Therefore,
-
-there is absolutely no need to scan the whole stack every time.
-
-Simply check
+Always check the size before accessing
 
 ```python
 stack[-3]
-stack[-2]
-stack[-1]
 ```
-
-Example
-
-```text
-Stack
-
-a
-a
-b
-c
-```
-
-Last three
-
-```text
-a
-b
-c
-```
-
-Pattern found.
-
-Remove it.
-
-Done.
-
-Checking the entire stack every time would increase the complexity unnecessarily.
 
 ---
 
-# Why Do We Remove Exactly Three Characters?
+### 3. Scanning the whole stack
 
-Because
-
-```text
-abc
-```
-
-contains exactly three characters.
-
-After confirming
-
-```text
-stack[-3] == 'a'
-
-stack[-2] == 'b'
-
-stack[-1] == 'c'
-```
-
-we simply remove
-
-```python
-stack.pop()
-stack.pop()
-stack.pop()
-```
-
-Remember,
-
-a stack always removes from the top.
-
-Order of removal becomes
-
-```text
-c
-
-↓
-
-b
-
-↓
-
-a
-```
-
-which is perfectly fine because the whole substring disappears together.
-
-You never need to remove
-
-```text
-a
-
-↓
-
-b
-
-↓
-
-c
-```
-
-A stack always pops from the top.
+Only the **last 3 characters** can form a new `"abc"`.
 
 ---
 
-# Mental Model
+### 4. Removing only one character
 
-Imagine the stack is a machine.
+Remove **all three** characters together.
 
-Every character enters from the right.
+---
 
-```text
-Input
+# Complexity Comparison
 
-a → b → c
-```
+| Approach                    | Time      | Space    |
+| --------------------------- | --------- | -------- |
+| Brute Force                 | **O(n²)** | **O(n)** |
+| Stack + Pattern Elimination | **O(n)**  | **O(n)** |
 
-As soon as the machine sees
+---
 
-```text
-abc
-```
+# Pattern Recognition
 
-at the top,
+Use this pattern when:
 
-it immediately destroys it.
+* A fixed substring is removed repeatedly.
+* Removing one pattern may create another.
+* Characters are processed sequentially.
+* Only recently added characters affect future operations.
 
-```text
-a b c
+Similar Problems:
 
-↓
+* Remove All Adjacent Duplicates
+* Remove All Adjacent Duplicates II
+* Valid Parentheses
+* Basic Calculator
 
-Machine
+---
 
-↓
-
-Removed
-```
-
-Then the next characters continue entering.
-
-The machine keeps destroying every newly formed
+# Revision Cheat Sheet
 
 ```text
-abc
+Pattern:
+Stack + Pattern Elimination
+
+Algorithm:
+1. Push every character.
+2. Check the top 3 characters.
+3. If they form "abc", remove them.
+4. Continue until the string ends.
+5. Empty stack ⇒ Valid.
+
+Brute Force:
+Repeatedly remove "abc" until no removal is possible.
+
+Time:
+Brute Force → O(n²)
+Optimal → O(n)
+
+Space:
+O(n)
 ```
-
-until the input ends.
-
-If nothing survives,
-
-the string is valid.
-
-Otherwise,
-
-the remaining characters can never become
-
-```text
-abc
-```
-
-so the answer is **False**.
