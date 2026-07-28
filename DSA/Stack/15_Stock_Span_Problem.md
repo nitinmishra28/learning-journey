@@ -1662,3 +1662,765 @@ Final Answers
 4
 6
 ```
+# Why Span Aggregation Works
+
+This is the most important concept in the Stock Span problem.
+
+If you understand this section, you will never forget the solution.
+
+---
+
+# What Is Span Aggregation?
+
+Instead of counting previous days again,
+
+we **reuse** the span that was already calculated.
+
+Suppose we already know
+
+```text
+(70, 2)
+```
+
+This means
+
+```text
+Price = 70
+
+Span = 2
+```
+
+But what does Span = 2 actually mean?
+
+It means
+
+```text
+70
+
+↓
+
+60
+```
+
+Both of these days are already covered.
+
+So if a future price is greater than **70**,
+
+it will automatically be greater than **60** as well.
+
+Therefore,
+
+there is no need to count those days again.
+
+Simply reuse
+
+```text
+2
+```
+
+This is called
+
+```text
+Span Aggregation
+```
+
+---
+
+# Visual Example
+
+Prices
+
+```text
+100
+80
+60
+70
+```
+
+When
+
+```text
+70
+```
+
+arrives,
+
+we remove
+
+```text
+60
+```
+
+Current span
+
+```text
+1
+
++
+
+1
+
+=
+
+2
+```
+
+Stack becomes
+
+```text
+(100,1)
+
+(80,1)
+
+(70,2)
+```
+
+Notice carefully.
+
+We are **not storing 60 anymore**.
+
+Instead,
+
+its information has been merged into
+
+```text
+(70,2)
+```
+
+Think of it like
+
+```text
+60
+
+merged into
+
+70
+```
+
+Now suppose
+
+```text
+75
+```
+
+comes.
+
+Without Span Aggregation,
+
+we would count
+
+```text
+70
+
+↓
+
+60
+```
+
+again.
+
+Instead,
+
+we simply do
+
+```python
+span += 2
+```
+
+Done.
+
+Both days are counted instantly.
+
+---
+
+# Why Is This Correct?
+
+Suppose
+
+```text
+70
+
+covers
+
+70
+
+↓
+
+60
+```
+
+Now today's price is
+
+```text
+75
+```
+
+Since
+
+```text
+75 >= 70
+```
+
+and
+
+```text
+70 already guaranteed
+
+70 >= 60
+```
+
+Then
+
+```text
+75
+
+also covers
+
+60
+```
+
+Mathematically
+
+```text
+75 >=70
+
+70 >=60
+
+Therefore
+
+75 >=60
+```
+
+That is why adding the previous span is always correct.
+
+---
+
+# Why Don't We Need the Removed Elements Again?
+
+Suppose
+
+```text
+Stack
+
+100
+
+80
+
+70
+```
+
+Now
+
+```text
+75
+```
+
+comes.
+
+We remove
+
+```text
+70
+```
+
+Will
+
+```text
+70
+```
+
+ever be useful again?
+
+No.
+
+Future prices will always compare against
+
+```text
+75
+```
+
+instead.
+
+Why?
+
+Because
+
+```text
+75
+
+is newer
+
+AND
+
+75 >70
+```
+
+For every future query,
+
+75 is a better representative.
+
+So
+
+```text
+70
+```
+
+can safely disappear forever.
+
+This is exactly why every element is popped only once.
+
+---
+
+# Why Is the Complexity O(1)?
+
+At first glance,
+
+the while loop looks scary.
+
+```python
+while stack:
+```
+
+People think
+
+```text
+O(N)
+```
+
+for every query.
+
+But that's not true.
+
+Let's count pushes and pops.
+
+Suppose prices are
+
+```text
+100
+
+80
+
+60
+
+70
+
+75
+
+90
+```
+
+Every price
+
+is pushed
+
+exactly once.
+
+```text
+100
+
+Push
+
+✔
+```
+
+Later,
+
+it may be popped
+
+once.
+
+```text
+100
+
+Pop
+
+✔
+```
+
+Can it be popped again?
+
+No.
+
+Once removed,
+
+it never comes back.
+
+Therefore,
+
+each element performs
+
+```text
+1 Push
+
++
+
+1 Pop
+```
+
+Maximum.
+
+So for
+
+```text
+N
+```
+
+prices,
+
+total operations are
+
+```text
+N Pushes
+
++
+
+N Pops
+```
+
+Total
+
+```text
+2N
+```
+
+Which is
+
+```text
+O(N)
+```
+
+for all queries together.
+
+Therefore,
+
+average cost of each query is
+
+```text
+O(1)
+```
+
+This is called
+
+```text
+Amortized O(1)
+```
+
+---
+
+# Dry Run Showing Amortized Complexity
+
+Prices
+
+```text
+100
+80
+60
+70
+75
+90
+```
+
+Pushes
+
+```text
+100 ✔
+
+80 ✔
+
+60 ✔
+
+70 ✔
+
+75 ✔
+
+90 ✔
+```
+
+Pops
+
+```text
+60 ✔
+
+70 ✔
+
+75 ✔
+
+80 ✔
+```
+
+Notice
+
+```text
+60
+
+was popped only once.
+```
+
+It never returns.
+
+Same for every other price.
+
+That is the entire reason why the algorithm is efficient.
+
+---
+
+# Common Mistakes
+
+## Mistake 1
+
+Using `if` instead of `while`
+
+Wrong
+
+```python
+if stack[-1][0] <= price:
+```
+
+Correct
+
+```python
+while stack and stack[-1][0] <= price:
+```
+
+Why?
+
+There can be many smaller prices.
+
+---
+
+## Mistake 2
+
+Storing only the price
+
+Wrong
+
+```python
+stack.append(price)
+```
+
+Correct
+
+```python
+stack.append((price, span))
+```
+
+Without storing the span,
+
+you will have to count previous days again.
+
+---
+
+## Mistake 3
+
+Using `<`
+
+Wrong
+
+```python
+while stack[-1][0] < price
+```
+
+Correct
+
+```python
+while stack[-1][0] <= price
+```
+
+The problem clearly says
+
+```text
+Less than OR Equal
+```
+
+Equal prices must also be included.
+
+---
+
+## Mistake 4
+
+Pushing Before Calculating Span
+
+Wrong
+
+```python
+Push Current Price
+
+↓
+
+Calculate Span
+```
+
+Correct
+
+```text
+Remove Smaller Prices
+
+↓
+
+Calculate Span
+
+↓
+
+Push Current Price
+```
+
+---
+
+# Pattern Recognition
+
+Whenever you hear
+
+```text
+Nearest Greater
+
+Nearest Smaller
+
+Previous Greater
+
+Previous Smaller
+
+Span
+
+Histogram
+
+Temperature
+
+Subarray Minimum
+
+Subarray Maximum
+```
+
+Always think
+
+```text
+Monotonic Stack
+```
+
+If previous work can be reused,
+
+think
+
+```text
+Aggregation
+```
+
+---
+
+# Complexity
+
+| Operation | Complexity         |
+| --------- | ------------------ |
+| next()    | Amortized **O(1)** |
+| Space     | **O(N)**           |
+
+---
+
+# Revision Cheat Sheet
+
+```text
+Pattern
+
+↓
+
+Monotonic Decreasing Stack
+
+
+Store
+
+↓
+
+(price, span)
+
+
+Current Span
+
+↓
+
+Starts from 1
+
+
+Remove
+
+↓
+
+All prices <= current
+
+
+Reuse
+
+↓
+
+Previous Span
+
+
+Push
+
+↓
+
+(price, span)
+
+
+Time
+
+↓
+
+Amortized O(1)
+
+
+Space
+
+↓
+
+O(N)
+```
+
+---
+
+# One-Line Pattern
+
+```text
+Monotonic Decreasing Stack + Span Aggregation
+```
+
+---
+
+# Interview Tips
+
+Whenever the interviewer asks:
+
+> Why are you storing `(price, span)` instead of only `price`?
+
+Your answer should be:
+
+> We store the span so that when a price is popped in the future, we can reuse all the consecutive days it already represents instead of recounting them. This aggregation avoids repeated work and gives an amortized **O(1)** time complexity.
+
+If they ask:
+
+> Why is the while loop not O(N) for every operation?
+
+Answer:
+
+> Although one call may pop multiple elements, every price is pushed exactly once and popped at most once. Across all operations, the total number of pops is at most **N**, so the average cost of each `next()` call is **Amortized O(1)**.
+
+---
+
+# Final Takeaway
+
+The Stock Span problem is **not** about counting previous days.
+
+It is about **reusing previously computed spans**.
+
+The stack stores **compressed information**:
+
+```text
+(price, span)
+```
+
+Every time a bigger price arrives:
+
+* Remove all smaller or equal prices.
+* Reuse their spans.
+* Merge them into today's span.
+* Store the merged result for future days.
+
+This simple idea transforms an **O(N²)** brute-force approach into an **Amortized O(1)** solution using a **Monotonic Decreasing Stack + Span Aggregation** pattern.
