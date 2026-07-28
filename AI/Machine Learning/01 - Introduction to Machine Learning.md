@@ -471,13 +471,3 @@ A mathematical function that learns patterns from training data and predicts out
 ```
 
 ---
-
-### 💡 Ek suggestion (jo long term me bahut help karega)
-
-Har lecture ke end me ye 3 sections zarur rakhna:
-
-1. **Revision (1 minute)**
-2. **Interview Questions**
-3. **Common Confusions**
-
-Jaise is lecture me "Raw Data vs Features", "Features vs Target", aur "Traditional Programming vs Machine Learning" wale confusions. Jab tum 6–8 mahine baad revise karoge ya interview doge, ye sections sabse zyada useful rahenge.
