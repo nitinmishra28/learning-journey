@@ -1,473 +1,454 @@
-# 01 - Introduction to Machine Learning
+# 01 - AI, Machine Learning & Model Fundamentals
 
-## What is Machine Learning?
+## 🎯 Goal
 
-Machine Learning (ML) is a branch of Artificial Intelligence (AI) that enables computers to learn patterns from historical data and make predictions or decisions without being explicitly programmed for every scenario.
-
-Instead of writing thousands of rules manually, we provide data to the machine, and it learns those rules automatically.
+Understand the foundation of Machine Learning before building any ML model.
 
 ---
 
-## Traditional Programming vs Machine Learning
+# 1. Artificial Intelligence (AI)
+
+Artificial Intelligence (AI) is the field of making machines perform tasks that normally require human intelligence.
+
+Examples:
+- ChatGPT
+- Self-driving Cars
+- Face Recognition
+- Recommendation Systems
+- Voice Assistants
+
+> AI is a broad field. Machine Learning is one part of AI.
+
+---
+
+# 2. Machine Learning (ML)
+
+Machine Learning is a technique where computers learn patterns from historical data instead of following manually written rules.
 
 ### Traditional Programming
 
 ```
-Data + Rules
-        ↓
-     Program
-        ↓
-      Output
+Input + Rules
+      ↓
+   Output
 ```
 
-Example:
+Example
 
-```
-Age = 22
-Rule:
-If age >= 18
-    Eligible
-Else
-    Not Eligible
+```python
+if marks >= 40:
+    print("Pass")
 ```
 
-Here, **we write the rules**.
+Rules are written by the programmer.
 
 ---
 
 ### Machine Learning
 
 ```
-Data + Correct Output
-          ↓
-     Train Model
-          ↓
-      Learned Rules
-          ↓
-      Prediction
+Historical Data + Correct Answers
+               ↓
+          Model Learns Patterns
+               ↓
+           Future Prediction
 ```
 
-Instead of writing rules manually, the algorithm learns them from the data.
+Rules are **not** written manually.
+
+The model learns them automatically from data.
 
 ---
 
-# Retail Forecasting Example
+# 3. AI vs Machine Learning
 
-Suppose you own a supermarket.
-
-Every day you record:
-
-| Date | Product | Price | Discount | Store | Quantity Sold |
-|------|----------|--------|-----------|---------|---------------|
-|1 Jan|Milk|50|10%|Delhi|120|
-|2 Jan|Milk|45|20%|Delhi|165|
-|3 Jan|Milk|55|0%|Delhi|95|
-
-After collecting data for many months, we want to answer:
-
-> **"How many units will be sold tomorrow?"**
-
-This is where Machine Learning is used.
+| AI | Machine Learning |
+|----|------------------|
+| Broad field | Subset of AI |
+| Focuses on intelligent systems | Focuses on learning from data |
+| Can be rule-based | Always learns from data |
 
 ---
 
-# Machine Learning Pipeline
+# 4. Where does our Retail Forecasting Project fit?
 
 ```
+Artificial Intelligence
+        │
+Machine Learning
+        │
+Regression
+        │
+Time Series Forecasting
+        │
+Retail Sales Forecasting
+```
+
+Our project belongs to **Machine Learning (Regression + Time Series)**.
+
+---
+
+# 5. Machine Learning Goal
+
+The goal of Machine Learning is:
+
+> Learn hidden relationships from historical data and use them to predict unseen data.
+
+Example
+
+Input
+
+- Month
+- Product
+- Territory
+- Brand
+- Previous Sales
+
+↓
+
+Output
+
+- Next Month Sales Quantity
+
+---
+
+# 6. Raw Data vs Features
+
+## Raw Data
+
+Data received directly from the company.
+
+Example
+
+| Posting Date | Customer Name | Document No | Sales Quantity |
+|--------------|---------------|-------------|----------------|
+
+Raw data contains:
+
+- Useful information
+- Duplicate information
+- Noise
+- IDs
+- Missing values
+
+---
+
+## Features
+
+Features are useful pieces of information extracted from raw data that help the model learn patterns.
+
+Example
+
 Raw Data
-     ↓
-Data Cleaning
-     ↓
+
+```
+Posting Date = 15-Jul-2026
+```
+
+Features
+
+```
+Month = July
+Quarter = Q3
+Year = 2026
+```
+
+Another Example
+
+Raw Data
+
+```
+Posting Date
+```
+
 Feature Engineering
-     ↓
-Train Model
-     ↓
-Evaluate Model
-     ↓
+
+```
+Lag 1 Month Sales
+Rolling Average
+Lag 12 Month Sales
+```
+
+These features do not exist in raw data.
+
+We create them.
+
+---
+
+### Golden Definition
+
+> Features are meaningful representations of raw data that help the model learn patterns.
+
+---
+
+# 7. Feature & Target
+
+### Features (Input)
+
+Examples
+
+- Month
+- Year
+- Territory
+- Brand
+- ItemCode
+
+### Target (Output)
+
+```
+Sales Quantity
+```
+
+The model learns the relationship between Features and Target.
+
+---
+
+# 8. What is a Model?
+
+A Model is **not AI magic**.
+
+A Model is simply a mathematical function that learns the relationship between input features and the target.
+
+Example
+
+```
+Experience
+      ↓
+Model Learns
+      ↓
+Salary
+```
+
+Mathematically
+
+```
+Salary = f(Experience)
+```
+
+Here **f** is the model.
+
+---
+
+# 9. What happens inside model.fit() ?
+
+```
+Historical Data
+        ↓
+Model Learns Relationships
+        ↓
+Creates Trained Model
+```
+
+`fit()` does **NOT** memorize the dataset.
+
+It learns patterns.
+
+---
+
+# 10. What happens inside model.predict() ?
+
+```
+New Features
+       ↓
+Trained Model
+       ↓
 Prediction
 ```
 
-Let's understand every step.
+Prediction uses learned knowledge.
+
+It does **not** read the original CSV again.
 
 ---
 
-# Step 1 - Raw Data
+# 11. Does the Model store the CSV?
 
-Raw Data is the original data collected from different sources.
+No.
 
-It contains everything, including useful information, unnecessary columns, duplicate records and missing values.
+The model stores only learned knowledge.
 
-Example:
+Different algorithms store different information.
 
-| Date | Product | Price | Discount | Store | Quantity Sold |
-|------|----------|--------|-----------|---------|---------------|
-|1 Jan|Milk|50|10%|Delhi|120|
+Examples
 
-This is simply collected data.
+### Linear Regression
 
-Nothing has been prepared for Machine Learning yet.
+Stores
 
----
+- Slope
+- Intercept
 
-# Step 2 - Data Cleaning
+### Decision Tree
 
-Raw data is usually messy.
+Stores
 
-Problems may include
+- Decision Rules
 
-- Missing values
-- Duplicate rows
-- Wrong values
-- Different formats
-- Incorrect data types
+### LightGBM
 
-Example
+Stores
 
-```
-Price = NULL
-
-↓
-
-Replace with average price
-```
-
-or
-
-```
-Store = delhi
-Store = Delhi
-
-↓
-
-Store = Delhi
-```
-
-Goal:
-
-Make the dataset clean before training.
+- Hundreds/Thousands of Decision Trees
 
 ---
 
-# Step 3 - Features
-
-Features are the input variables given to the model.
-
-They are represented by **X**.
-
-For our retail dataset,
-
-Possible Features are:
-
-- Product Category
-- Price
-- Discount
-- Store Location
-- Day of Week
-
-The model studies these variables to learn patterns.
-
----
-
-# Step 4 - Target
-
-Target is the value that we want the model to predict.
-
-It is represented by **y**.
-
-For Retail Forecasting,
+# 12. ML Pipeline
 
 ```
-Target = Quantity Sold
-```
-
-The model learns
-
-```
-Features
-↓
-
-Quantity Sold
-```
-
----
-
-# Features vs Target
-
-Example
-
-| Price | Discount | Store | Day | Quantity Sold |
-|--------|-----------|--------|-----|---------------|
-|50|10%|Delhi|Monday|120|
-
-Features (X)
-
-- Price
-- Discount
-- Store
-- Day
-
-Target (y)
-
-- Quantity Sold
-
----
-
-# Step 5 - Feature Engineering
-
-Feature Engineering means creating better input features from existing data.
-
-Instead of directly giving the date,
-
-```
-01-01-2025
-```
-
-we can extract
-
-- Day
-- Month
-- Weekend
-- Festival
-- Quarter
-
-These new features help the model learn better.
-
-Example
-
-```
-Date
-
-↓
-
-Saturday
-
-↓
-
-Weekend = Yes
-```
-
-This gives more useful information to the model.
-
----
-
-# Step 6 - Model
-
-A model is a mathematical function that learns patterns from historical data.
-
-During training,
-
-the model learns relationships like
-
-```
-Higher Discount
-        +
-Weekend
-        +
-Festival
-
-↓
-
-Higher Sales
-```
-
-After training,
-
-the model can predict sales for unseen data.
-
----
-
-# Step 7 - Training
-
-Training means teaching the model using historical data.
-
-Example
-
-```
-Previous 2 Years Sales
-
-↓
-
-Model learns patterns
-
-↓
-
-Ready for Prediction
-```
-
-The more quality data we have, the better the model usually performs.
-
----
-
-# Step 8 - Prediction
-
-Now suppose tomorrow's information is
-
-| Price | Discount | Store | Weekend |
-|--------|-----------|--------|----------|
-|45|20%|Delhi|Yes|
-
-The trained model predicts
-
-```
-Expected Quantity Sold = 170 Units
-```
-
-This prediction helps the business plan inventory.
-
----
-
-# Why Machine Learning?
-
-Without ML,
-
-we would need thousands of rules.
-
-Example
-
-```
-IF Weekend
-AND Discount > 20%
-AND Festival
-
-THEN Increase Sales
-```
-
-But writing rules for every situation is impossible.
-
-Machine Learning automatically learns these patterns.
-
----
-
-# Real-Life Applications
-
-- Retail Sales Forecasting
-- House Price Prediction
-- Stock Price Prediction
-- Recommendation Systems
-- Spam Detection
-- Fraud Detection
-- Medical Diagnosis
-- Face Recognition
-
----
-
-# Important Terms
-
-## Dataset
-
-A collection of data used for Machine Learning.
-
----
-
-## Observation
-
-One complete row in the dataset.
-
----
-
-## Feature
-
-Input variable (X)
-
----
-
-## Target
-
-Output variable (y)
-
----
-
-## Model
-
-Mathematical function that learns patterns.
-
----
-
-## Prediction
-
-Output produced by the trained model.
-
----
-
-# Quick Revision
-
-```
-Raw Data
-    ↓
+CSV
+   ↓
+Pandas
+   ↓
 Data Cleaning
-    ↓
+   ↓
 Feature Engineering
-    ↓
-Features (X)
-    ↓
-Train Model
-    ↓
-Prediction (Target y)
+   ↓
+Train/Test Split
+   ↓
+model.fit()
+   ↓
+Trained Model
+   ↓
+model.predict()
+   ↓
+Prediction
 ```
 
 ---
 
-# Interview Questions
+# 13. Software Engineering vs AI
 
-### What is Machine Learning?
+| Task | AI? |
+|------|-----|
+| Read CSV | ❌ |
+| Data Cleaning | ❌ |
+| GroupBy | ❌ |
+| Feature Engineering | ❌ |
+| Train Model (`fit`) | ✅ |
+| Prediction (`predict`) | ✅ |
+| Save Model | ❌ |
+| FastAPI Deployment | ❌ |
 
-Machine Learning is a technique where computers learn patterns from historical data to make predictions without explicitly programming every rule.
-
----
-
-### What are Features?
-
-Features are the input variables given to the model.
-
-Example:
-
-- Price
-- Discount
-- Store
-- Day
+> Most of an ML Engineer's work is Software Engineering.
 
 ---
 
-### What is Target?
+# 14. Learning vs Memorization
 
-The output variable that the model predicts.
+Machine Learning should learn patterns, not memorize data.
 
-Example:
+### Learning
 
-Quantity Sold
+```
+Training Data
+      ↓
+Learns Relationship
+      ↓
+Correct Prediction on New Data
+```
 
----
+### Memorization
 
-### What is a Model?
-
-A mathematical function that learns patterns from training data and predicts outputs for unseen data.
-
----
-
-### Difference between Raw Data and Features?
-
-| Raw Data | Features |
-|----------|-----------|
-|Original collected data|Useful input variables|
-|Contains everything|Contains selected useful columns|
-|May contain noise|Prepared for the model|
-
----
-
-### Retail Forecasting Problem
-
-**Features (X)**
-
-- Product Category
-- Price
-- Discount
-- Store Location
-- Day of Week
-
-**Target (y)**
-
-- Quantity Sold
-
+```
+Training Data
+      ↓
+Remembers Every Record
+      ↓
+Fails on New Data
 ```
 
 ---
+
+# 15. Generalization
+
+Generalization means:
+
+> The ability of a model to make accurate predictions on unseen data.
+
+This is the ultimate goal of Machine Learning.
+
+---
+
+# 16. Overfitting
+
+Overfitting happens when the model memorizes the training data instead of learning general patterns.
+
+Characteristics
+
+- Very high training accuracy
+- Poor performance on new data
+
+```
+Training Data
+      ↓
+Model memorizes everything
+      ↓
+Future prediction becomes poor
+```
+
+---
+
+# 17. Underfitting
+
+Underfitting happens when the model is too simple to learn the patterns.
+
+Characteristics
+
+- Poor training performance
+- Poor testing performance
+
+```
+Too Simple Model
+        ↓
+Fails to learn patterns
+```
+
+---
+
+# 18. Golden Rules
+
+### Rule 1
+
+> Machine Learning learns patterns, not rules written by programmers.
+
+---
+
+### Rule 2
+
+> Features are more important than algorithms.
+
+---
+
+### Rule 3
+
+> `fit()` learns relationships.
+
+---
+
+### Rule 4
+
+> `predict()` uses learned relationships.
+
+---
+
+### Rule 5
+
+> The goal of ML is **Generalization**, not high training accuracy.
+
+---
+
+# 📝 Key Takeaways
+
+- AI is the broader field.
+- Machine Learning is a subset of AI.
+- Forecasting is a Regression problem.
+- Features are created from raw data.
+- Target is the value we want to predict.
+- A model is a mathematical function that learns relationships.
+- `fit()` trains the model.
+- `predict()` makes predictions using learned knowledge.
+- Models do not store the original dataset.
+- ML should learn patterns, not memorize data.
+- Generalization is the primary goal of Machine Learning.
+- Overfitting memorizes data.
+- Underfitting fails to learn patterns.
