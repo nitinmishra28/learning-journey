@@ -599,3 +599,1066 @@ Instead of counting days again,
 we reuse the previous calculation.
 
 This is the biggest optimization of the Stock Span problem.
+
+
+# Line by Line Explanation
+
+Now let's understand every single line of the algorithm.
+
+---
+
+# Step 1 : Start With Span = 1
+
+```python
+span = 1
+```
+
+Why do we initialize the span with **1**?
+
+Because today's price is always included in its own span.
+
+The definition says:
+
+> Number of consecutive days **including today**.
+
+Even if every previous price is greater,
+
+today itself still counts.
+
+Example
+
+```text
+Today's Price
+
+100
+```
+
+There are no previous days.
+
+Answer
+
+```text
+Span = 1
+```
+
+Another example
+
+```text
+Prices
+
+100
+80
+60
+```
+
+Today's price
+
+```text
+60
+```
+
+Previous day
+
+```text
+80 > 60
+```
+
+Span is still
+
+```text
+1
+```
+
+So every new price starts with
+
+```text
+Today's Day
+
++
+
+Any previous consecutive days
+```
+
+That is why
+
+```python
+span = 1
+```
+
+is always correct.
+
+---
+
+# Step 2 : Why While Loop?
+
+```python
+while self.stack and self.stack[-1][0] <= price:
+```
+
+This is the heart of the algorithm.
+
+Let's break it.
+
+First condition
+
+```python
+self.stack
+```
+
+means
+
+```text
+Stack should not be empty.
+```
+
+Second condition
+
+```python
+self.stack[-1][0] <= price
+```
+
+means
+
+```text
+Top Price
+
+<=
+
+Current Price
+```
+
+If true,
+
+that previous price belongs to today's span.
+
+So remove it.
+
+---
+
+# Why NOT if?
+
+Many beginners write
+
+```python
+if self.stack[-1][0] <= price:
+```
+
+This is wrong.
+
+Suppose
+
+```text
+Stack
+
+100
+80
+60
+```
+
+Current price
+
+```text
+90
+```
+
+We should remove
+
+```text
+60
+
+↓
+
+80
+```
+
+Both are smaller.
+
+An **if** removes only one element.
+
+A **while** keeps removing until the condition becomes false.
+
+After popping
+
+```text
+60
+```
+
+Stack becomes
+
+```text
+100
+80
+```
+
+Still
+
+```text
+80 <= 90
+```
+
+Pop again.
+
+Finally
+
+```text
+100
+```
+
+is greater.
+
+Now stop.
+
+That is why
+
+```python
+while
+```
+
+is mandatory.
+
+---
+
+# Why Compare Only the Top?
+
+Suppose stack is
+
+```text
+100
+
+80
+
+70
+
+50
+```
+
+Current price
+
+```text
+75
+```
+
+We only compare with
+
+```text
+50
+```
+
+Why?
+
+Because the stack is already sorted in decreasing order.
+
+If the top is greater,
+
+everything below it is also greater.
+
+Example
+
+```text
+100
+
+90
+
+80
+```
+
+Current price
+
+```text
+70
+```
+
+Top
+
+```text
+80
+```
+
+already blocks us.
+
+There is no need to check
+
+```text
+90
+
+100
+```
+
+This is one of the biggest advantages of a Monotonic Stack.
+
+---
+
+# Why stack[-1][0]?
+
+Remember,
+
+our stack stores
+
+```text
+(price, span)
+```
+
+Example
+
+```text
+(100,1)
+
+(80,1)
+
+(75,4)
+```
+
+The first value is
+
+```text
+Price
+```
+
+The second value is
+
+```text
+Span
+```
+
+So
+
+```python
+stack[-1][0]
+```
+
+means
+
+```text
+Top Price
+```
+
+while
+
+```python
+stack[-1][1]
+```
+
+means
+
+```text
+Top Span
+```
+
+---
+
+# Step 3 : Pop the Previous Node
+
+```python
+previous_price, previous_span = self.stack.pop()
+```
+
+Suppose
+
+```text
+Stack
+
+(100,1)
+
+(80,1)
+
+(70,2)
+```
+
+Current price
+
+```text
+75
+```
+
+Top
+
+```text
+(70,2)
+```
+
+gets removed.
+
+After pop
+
+```text
+previous_price
+
+70
+
+
+previous_span
+
+2
+```
+
+Now we know
+
+* previous price
+* previous span
+
+Both are available immediately.
+
+---
+
+# Why Store Span?
+
+Suppose prices are
+
+```text
+100
+80
+60
+70
+```
+
+When
+
+```text
+70
+```
+
+was inserted,
+
+its span became
+
+```text
+2
+```
+
+because
+
+```text
+70
+
+↓
+
+60
+```
+
+Now suppose
+
+```text
+75
+```
+
+comes.
+
+If we stored only
+
+```text
+70
+```
+
+we would again count
+
+```text
+60
+```
+
+This repeats unnecessary work.
+
+Instead,
+
+we stored
+
+```text
+(70,2)
+```
+
+Immediately we know
+
+```text
+70
+
+already represents
+
+2 consecutive days.
+```
+
+No recounting required.
+
+---
+
+# Step 4 : Span Aggregation
+
+```python
+span += previous_span
+```
+
+This is the magic line.
+
+Suppose
+
+```text
+Current Span
+
+1
+```
+
+because of today.
+
+Top node
+
+```text
+(70,2)
+```
+
+means
+
+```text
+70 already covers
+
+70
+
+↓
+
+60
+```
+
+Instead of counting both days again,
+
+simply add
+
+```text
+2
+```
+
+Now
+
+```text
+Span
+
+1 + 2
+
+=
+
+3
+```
+
+Notice something.
+
+We didn't visit
+
+```text
+60
+```
+
+again.
+
+The previous calculation was reused.
+
+This idea is called
+
+```text
+Span Aggregation
+```
+
+---
+
+# Visual Example
+
+Suppose stack contains
+
+```text
+(100,1)
+
+(80,1)
+
+(75,4)
+```
+
+Current price
+
+```text
+85
+```
+
+Current span starts with
+
+```text
+1
+```
+
+Top
+
+```text
+(75,4)
+```
+
+gets removed.
+
+Now
+
+```text
+Span
+
+1
+
++
+
+4
+
+=
+
+5
+```
+
+Stack becomes
+
+```text
+(100,1)
+
+(80,1)
+```
+
+Again
+
+```text
+80 <= 85
+```
+
+Remove
+
+```text
+(80,1)
+```
+
+Now
+
+```text
+Span
+
+5
+
++
+
+1
+
+=
+
+6
+```
+
+Stack
+
+```text
+(100,1)
+```
+
+Since
+
+```text
+100 > 85
+```
+
+Stop.
+
+Today's answer
+
+```text
+6
+```
+
+Without span aggregation,
+
+we would have counted
+
+```text
+75
+
+↓
+
+70
+
+↓
+
+60
+
+↓
+
+60
+
+↓
+
+80
+```
+
+again.
+
+Instead,
+
+we reused previous work.
+
+---
+
+# Step 5 : Push Current Price
+
+```python
+self.stack.append((price, span))
+```
+
+Suppose today's price is
+
+```text
+85
+```
+
+and its span is
+
+```text
+6
+```
+
+Push
+
+```text
+(85,6)
+```
+
+Now future prices can directly reuse these
+
+```text
+6
+```
+
+days.
+
+Example
+
+```text
+Stack
+
+(100,1)
+
+(85,6)
+```
+
+Imagine tomorrow's price is
+
+```text
+90
+```
+
+When
+
+```text
+(85,6)
+```
+
+is removed,
+
+we immediately gain
+
+```text
+6
+```
+
+days.
+
+No recounting.
+
+---
+
+# Why Push After the While Loop?
+
+Suppose
+
+```text
+Current Price
+
+75
+```
+
+If we push first,
+
+stack becomes
+
+```text
+100
+
+80
+
+75
+
+60
+```
+
+Now
+
+```text
+75
+```
+
+itself blocks the while loop.
+
+The algorithm breaks.
+
+Correct order is
+
+```text
+Remove Smaller Prices
+
+↓
+
+Calculate Span
+
+↓
+
+Push Current Price
+```
+
+Always remember this order.
+
+---
+
+# Complete Dry Run
+
+Input
+
+```text
+100
+80
+60
+70
+60
+75
+85
+```
+
+Initially
+
+```text
+Stack
+
+Empty
+```
+
+---
+
+Insert
+
+```text
+100
+```
+
+Span
+
+```text
+1
+```
+
+Stack
+
+```text
+(100,1)
+```
+
+---
+
+Insert
+
+```text
+80
+```
+
+Top
+
+```text
+100
+```
+
+greater.
+
+Span
+
+```text
+1
+```
+
+Stack
+
+```text
+(100,1)
+
+(80,1)
+```
+
+---
+
+Insert
+
+```text
+60
+```
+
+Top
+
+```text
+80
+```
+
+greater.
+
+Push
+
+```text
+(60,1)
+```
+
+---
+
+Insert
+
+```text
+70
+```
+
+Remove
+
+```text
+(60,1)
+```
+
+Span
+
+```text
+1 + 1
+
+=
+
+2
+```
+
+Push
+
+```text
+(70,2)
+```
+
+Stack
+
+```text
+(100,1)
+
+(80,1)
+
+(70,2)
+```
+
+---
+
+Insert
+
+```text
+60
+```
+
+Top
+
+```text
+70
+```
+
+greater.
+
+Push
+
+```text
+(60,1)
+```
+
+---
+
+Insert
+
+```text
+75
+```
+
+Remove
+
+```text
+(60,1)
+
+↓
+
+(70,2)
+```
+
+Span
+
+```text
+1
+
++
+
+1
+
++
+
+2
+
+=
+
+4
+```
+
+Push
+
+```text
+(75,4)
+```
+
+---
+
+Insert
+
+```text
+85
+```
+
+Remove
+
+```text
+(75,4)
+
+↓
+
+(80,1)
+```
+
+Span
+
+```text
+1
+
++
+
+4
+
++
+
+1
+
+=
+
+6
+```
+
+Push
+
+```text
+(85,6)
+```
+
+Final Answers
+
+```text
+1
+1
+1
+2
+1
+4
+6
+```
