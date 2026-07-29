@@ -1,467 +1,524 @@
-# 02 - Dataset, Samples, Features & Target
+# 02 - Dataset Exploration using Pandas
 
 ## 🎯 Goal
 
-Understand the basic terminology of Machine Learning datasets.
+Before training any Machine Learning model, we must first understand our dataset.
 
-After this chapter you should be able to identify:
+Questions we should answer:
 
-- Dataset
-- Sample
-- Observation
-- Record
-- Feature
-- Target
-- Label
-- X and y
+- How many rows and columns are there?
+- What are the column names?
+- What is the datatype of each column?
+- Are there missing values?
+- Are there duplicate rows?
+- What kind of data do we have?
+
+This process is called **Dataset Exploration**.
 
 ---
 
-# 1. What is a Dataset?
+# Why Dataset Exploration?
 
-A dataset is a collection of observations (rows) used to train a Machine Learning model.
+Imagine your company gives you an Excel file.
+
+Before building a forecasting model, you should know:
+
+- Is the dataset complete?
+- Are dates stored correctly?
+- Is Sales Quantity numeric?
+- Are there missing values?
+- Which columns are useful?
+
+Without understanding the dataset, we cannot build a reliable ML model.
+
+---
+
+# Step 1 - Import Pandas
+
+Pandas is a Python library used for data manipulation and analysis.
+
+```python
+import pandas as pd
+```
+
+Why?
+
+Because Python itself cannot easily analyze tables like Excel files.
+
+Pandas provides a DataFrame, which makes working with tabular data much easier.
+
+---
+
+# Step 2 - Load the Dataset
 
 Example
 
-| Month | State | Item | Sales |
-|--------|-------|------|------:|
-| Jan | MP | Urea | 100 |
-| Jan | UP | Urea | 120 |
-| Feb | MP | Urea | 150 |
-| Feb | UP | DAP | 180 |
+```python
+df = pd.read_excel("../data/raw/sales_data.xlsx")
+```
 
-The complete table is called a **Dataset**.
+or
+
+```python
+df = pd.read_csv("sales.csv")
+```
+
+### Why do we load the dataset?
+
+The model cannot directly read Excel or CSV files.
+
+We first load the data into a **DataFrame**, where we can inspect, clean, and prepare it.
 
 ---
 
-# 2. What is a Sample?
+# Step 3 - View the First Few Rows
 
-Each row inside a dataset is called a:
+```python
+df.head()
+```
 
-- Sample
-- Observation
-- Record
+Output
 
-All three terms mean the same thing.
+| Posting Date | Product | Sales Quantity |
+|--------------|----------|---------------:|
+|2025-01-01|Urea|120|
+|2025-01-02|DAP|145|
+|2025-01-03|Urea|132|
+
+### Why use `head()`?
+
+Datasets may contain thousands of rows.
+
+Instead of printing everything, `head()` shows the first **5 rows** by default.
+
+You can also specify the number of rows:
+
+```python
+df.head(10)
+```
+
+---
+
+# Step 4 - View the Last Few Rows
+
+```python
+df.tail()
+```
+
+### Why use `tail()`?
+
+Useful for checking:
+
+- Whether the file loaded completely.
+- Whether the last rows contain unexpected values.
 
 Example
 
-| Month | State | Item | Sales |
-|--------|-------|------|------:|
-| Jan | MP | Urea | 100 |
-
-This single row is **one sample**.
-
----
-
-# 3. Dataset Structure
-
-```
-Dataset
-│
-├── Sample 1
-├── Sample 2
-├── Sample 3
-└── Sample N
+```python
+df.tail(3)
 ```
 
 ---
 
-# 4. What is a Feature?
-
-Features are the input variables given to the model.
-
-Example
-
-| Month | State | Item | Sales |
-|--------|-------|------|------:|
-| Jan | MP | Urea | 100 |
-
-Features are:
-
-- Month
-- State
-- Item
-
-These help the model learn patterns.
-
----
-
-# 5. What is a Target?
-
-The target is the value we want the model to predict.
-
-Example
-
-| Month | State | Item | Sales |
-|--------|-------|------|------:|
-| Jan | MP | Urea | 100 |
-
-Target
-
-```
-Sales = 100
-```
-
-For our Retail Forecasting project,
-
-```
-Target = Sales Quantity
-```
-
----
-
-# 6. Feature vs Target
-
-| Feature | Target |
-|----------|---------|
-| Input | Output |
-| Used for learning | Predicted by the model |
-| Multiple columns | Usually one column |
-
-Example
-
-```
-Features
-
-Month
-State
-Brand
-ItemCode
-Territory
-
-↓
-
-Model
-
-↓
-
-Target
-
-Sales Quantity
-```
-
----
-
-# 7. Raw Data vs Features
-
-Raw Data comes directly from the business.
-
-Example
-
-| Posting Date | Customer Name | Invoice No | Sales Quantity |
-|--------------|---------------|------------|----------------|
-
-Raw data contains
-
-- Useful columns
-- IDs
-- Duplicate information
-- Noise
-- Missing values
-
----
-
-Features are useful information extracted from raw data.
-
-Example
-
-Raw Data
-
-```
-Posting Date = 15-Jul-2026
-```
-
-Features
-
-```
-Month = July
-
-Quarter = Q3
-
-Year = 2026
-```
-
-Another Example
-
-Raw Data
-
-```
-Sales Quantity
-```
-
-Feature Engineering
-
-```
-Lag 1 Month Sales
-
-Rolling Average
-
-Lag 12 Month Sales
-```
-
-These features are created by us.
-
----
-
-# 8. Columns ≠ Features
-
-Not every column becomes a feature.
-
-Example
-
-| Column | Used as Feature? |
-|---------|------------------|
-| Customer Name | ❌ |
-| Invoice Number | ❌ |
-| Posting Date | ✅ |
-| ItemCode | ✅ |
-| Territory | ✅ |
-| Sales Quantity | 🎯 Target |
-
-Always select only meaningful columns.
-
----
-
-# 9. Dataset Shape
-
-The size of a dataset is represented as
-
-```
-(rows, columns)
-```
-
-Example
-
-```
-(20321,22)
-```
-
-Means
-
-- 20,321 rows
-- 22 columns
-
-Python
+# Step 5 - Check Dataset Shape
 
 ```python
 df.shape
 ```
 
----
-
-# 10. Shape does NOT mean Features
-
-Example
-
-```
-Dataset Shape
-
-(20321,22)
-```
-
-Does **NOT** mean 22 Features.
-
-Because some columns may be
-
-- IDs
-- Duplicate columns
-- Target
-- Metadata
-
-Example
-
-| Column | Feature? |
-|---------|-----------|
-| CustomerCode | ❌ |
-| CustomerName | ❌ |
-| Sales Quantity | 🎯 Target |
-| Month | ✅ |
-| ItemCode | ✅ |
-
----
-
-# 11. X and y
-
-Machine Learning uses a standard notation.
-
-```
-X
-
-↓
-
-Input Features
-
-↓
-
-Model
-
-↓
-
-Output
-
-↓
-
-y
-```
-
-Python Example
+Example Output
 
 ```python
-X = df[["Month", "State", "ItemCode"]]
-
-y = df["Sales Quantity"]
+(20321, 22)
 ```
 
-Where
+Meaning
 
-```
-X = Features
+- 20,321 rows
+- 22 columns
 
-y = Target
-```
+### Why is this important?
+
+It tells us how large the dataset is.
+
+This helps estimate memory usage and training time.
 
 ---
 
-# 12. Labels
+# Step 6 - View Column Names
 
-Regression terminology
-
+```python
+df.columns
 ```
-Target = Label
-```
-
-Both terms refer to the value we want to predict.
 
 Example
 
-```
-Sales Quantity
-
-↓
-
-Target
-
-↓
-
-Label
+```python
+Index([
+'Posting Date',
+'CustomerName',
+'ItemCode',
+'Sales Quantity'
+])
 ```
 
+### Why?
+
+Before selecting features, we need to know what columns are available.
+
 ---
 
-# 13. Retail Forecasting Example
+# Step 7 - Check Data Types
 
-Dataset
-
-| Month | Territory | Item | Brand | Sales Qty |
-|--------|-----------|------|--------|----------:|
-| Jul | MP | Pesticide A | Bayer | 220 |
-
-Features
-
-- Month
-- Territory
-- Item
-- Brand
-
-Target
-
-```
-Sales Quantity
+```python
+df.dtypes
 ```
 
----
+Example
 
-# 14. Machine Learning View of a Dataset
-
-```
-Dataset
-
-↓
-
-Samples (Rows)
-
-↓
-
-Features (Inputs)
-
-↓
-
-Model
-
-↓
-
-Target Prediction
+```python
+Posting Date      datetime64
+ItemCode          object
+Sales Quantity    int64
+Amount            float64
 ```
 
----
+### Why?
 
-# 15. Important Terminology
+The model expects the correct datatype.
 
-| ML Term | Database Equivalent |
-|----------|---------------------|
-| Dataset | Table |
-| Sample | Row |
-| Feature | Column (Input) |
-| Target | Output Column |
-| Observation | Row |
-| Record | Row |
+Example
 
----
-
-# ⭐ Golden Rules
-
-### Rule 1
-
-A dataset is a collection of samples.
-
----
-
-### Rule 2
-
-Each row is called a sample (or observation or record).
-
----
-
-### Rule 3
-
-Features are the inputs given to the model.
-
----
-
-### Rule 4
-
-The target is what we want to predict.
-
----
-
-### Rule 5
-
-Not every column should be used as a feature.
-
----
-
-### Rule 6
+If Sales Quantity is stored as text,
 
 ```
-X = Features
-
-y = Target
+"120"
 ```
 
-This is the universal Machine Learning convention.
+instead of
+
+```
+120
+```
+
+the model cannot learn properly.
+
+---
+
+# Common Data Types
+
+| Datatype | Meaning |
+|----------|---------|
+| int64 | Integer numbers |
+| float64 | Decimal numbers |
+| object | Text |
+| datetime64 | Date & Time |
+| bool | True / False |
+
+---
+
+# Step 8 - Dataset Information
+
+```python
+df.info()
+```
+
+Example
+
+```text
+RangeIndex: 20321 entries
+
+22 columns
+
+Non-Null Count
+
+Dtypes
+```
+
+### Why?
+
+`info()` gives a quick overview of the dataset.
+
+It tells us:
+
+- Number of rows
+- Number of columns
+- Missing values
+- Datatypes
+- Memory usage
+
+---
+
+# Step 9 - Statistical Summary
+
+```python
+df.describe()
+```
+
+Example
+
+| | Sales |
+|---|------:|
+|count|20321|
+|mean|158.4|
+|std|42.1|
+|min|2|
+|max|650|
+
+### Why?
+
+Useful for understanding numerical columns.
+
+We can quickly detect:
+
+- Unusually high values
+- Negative values
+- Large variations
+
+---
+
+# Step 10 - Missing Values
+
+```python
+df.isnull().sum()
+```
+
+Example
+
+```python
+Posting Date       0
+State              0
+Sales Quantity    18
+Amount            42
+```
+
+### Why?
+
+Machine Learning models generally cannot handle missing values directly.
+
+We must identify and clean them before training.
+
+---
+
+# Step 11 - Duplicate Rows
+
+```python
+df.duplicated().sum()
+```
+
+Example
+
+```python
+12
+```
+
+Meaning
+
+The dataset contains **12 duplicate rows**.
+
+### Why?
+
+Duplicates can bias the model and should usually be removed.
+
+---
+
+# Step 12 - Unique Values
+
+```python
+df["State"].unique()
+```
+
+Example
+
+```python
+['MP', 'UP', 'Delhi']
+```
+
+Count unique values
+
+```python
+df["State"].nunique()
+```
+
+### Why?
+
+Helps understand categorical columns.
+
+Example:
+
+How many different states exist?
+
+---
+
+# Step 13 - Value Counts
+
+```python
+df["State"].value_counts()
+```
+
+Example
+
+```python
+MP       5200
+UP       4300
+Delhi    3100
+```
+
+### Why?
+
+Useful for checking class distribution and understanding the data.
+
+---
+
+# Step 14 - Selecting Columns
+
+Single Column
+
+```python
+df["Sales Quantity"]
+```
+
+Multiple Columns
+
+```python
+df[["Posting Date", "Sales Quantity"]]
+```
+
+### Why?
+
+Later, we will select only useful columns (Features).
+
+---
+
+# Step 15 - Filtering Data
+
+Example
+
+```python
+df[df["Year"] == 2025]
+```
+
+Another Example
+
+```python
+df[df["Sales Quantity"] > 500]
+```
+
+### Why?
+
+Filtering helps inspect specific subsets of the data.
+
+---
+
+# Step 16 - Sorting Data
+
+```python
+df.sort_values("Sales Quantity")
+```
+
+Descending Order
+
+```python
+df.sort_values("Sales Quantity", ascending=False)
+```
+
+### Why?
+
+Useful for finding:
+
+- Highest sales
+- Lowest sales
+- Outliers
+
+---
+
+# Real Workflow
+
+```
+Excel File
+      ↓
+Read using Pandas
+      ↓
+Understand Dataset
+      ↓
+Find Problems
+      ↓
+Clean Data
+      ↓
+Feature Engineering
+      ↓
+Train Machine Learning Model
+```
+
+---
+
+# Golden Rules
+
+✅ Never train a model without understanding the dataset.
+
+✅ Always check:
+
+- Shape
+- Columns
+- Datatypes
+- Missing Values
+- Duplicates
+
+These five checks should be your habit in every ML project.
+
+---
+
+# Interview Questions
+
+### Why do we use Pandas?
+
+To load, inspect, clean, and manipulate tabular data before training a Machine Learning model.
+
+---
+
+### What does `df.shape` return?
+
+A tuple:
+
+```
+(rows, columns)
+```
+
+---
+
+### Difference between `head()` and `tail()`?
+
+- `head()` shows the first rows.
+- `tail()` shows the last rows.
+
+---
+
+### Why is `df.info()` useful?
+
+It provides a quick summary of:
+
+- Rows
+- Columns
+- Datatypes
+- Missing values
+- Memory usage
+
+---
+
+### Why should we check missing values?
+
+Most ML algorithms cannot work directly with missing data.
 
 ---
 
 # 📝 Key Takeaways
 
-- A dataset is a collection of samples.
-- Every row is one sample.
-- Features are input variables.
-- Target is the output variable.
-- Raw data must be transformed into useful features.
-- Dataset shape tells only rows and columns.
-- Not every column becomes a feature.
-- X represents features.
-- y represents the target.
-- Good feature selection is more important than having many columns.
+- Every ML project starts with dataset exploration.
+- Pandas is used to read and inspect datasets.
+- `head()` and `tail()` help preview the data.
+- `shape` tells us the dataset size.
+- `columns` lists all available columns.
+- `dtypes` shows the datatype of each column.
+- `info()` provides an overall summary.
+- `describe()` summarizes numerical data.
+- Missing values and duplicates should be identified before model training.
