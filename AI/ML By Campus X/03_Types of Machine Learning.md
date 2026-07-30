@@ -1,476 +1,564 @@
-# Day 3 - Types of Machine Learning
+# Day 3 - Types of Machine Learning (Part 1)
 
-> **Course:** CampusX – 100 Days of Machine Learning
-> **Notes By:** Nitin Mishra
-> **Purpose:** Learning + Interview Preparation + Project Revision
+> "Not every Machine Learning problem is solved in the same way."
+> The type of data decides the type of Machine Learning.
 
 ---
 
 # 🎯 Learning Objectives
 
-After this lecture you should be able to:
+After completing this lecture, you should be able to:
 
-* Understand the major types of Machine Learning.
-* Differentiate between Supervised, Unsupervised and Reinforcement Learning.
-* Differentiate Regression and Classification.
-* Understand different types of Unsupervised Learning.
-* Select the correct ML approach for a real-world problem.
-* Answer common interview questions.
+- Explain why Machine Learning is divided into different types.
+- Understand Supervised Learning in detail.
+- Differentiate Regression and Classification.
+- Identify whether a real-world problem is Regression or Classification.
+- Answer interview questions based on Supervised Learning.
+
+---
+
+# Prerequisites
+
+Before starting this lecture you should know
+
+- What is AI?
+- What is Machine Learning?
+- Difference between AI, ML and DL
 
 ---
 
 # Why Do We Need Different Types of Machine Learning?
 
-Not every dataset looks the same.
+Suppose you are a teacher.
 
-Sometimes we already know the correct answer.
+Sometimes students come with:
 
-Sometimes we only have raw data.
+- Questions + Answers
 
-Sometimes a machine has to learn by interacting with an environment.
+Sometimes they come with:
 
-Because of these different situations, Machine Learning is divided into different categories.
+- Only Questions
+
+Sometimes they learn by making mistakes.
+
+Will you teach everyone in the same way?
+
+No.
+
+Exactly the same thing happens in Machine Learning.
+
+Every dataset is different.
+
+Therefore every learning approach is different.
+
+---
+
+# Simple Analogy
+
+Imagine you want to teach a child.
+
+### Case 1
+
+You show
+
+Apple
+
+and tell him
+
+"This is Apple."
+
+You repeat many examples.
+
+Now the child learns.
+
+This is
+
+✅ Supervised Learning
+
+---
+
+### Case 2
+
+You simply give him
+
+Apple
+
+Banana
+
+Orange
+
+Mango
+
+without telling names.
+
+After some time
+
+he starts grouping similar fruits.
+
+This is
+
+✅ Unsupervised Learning
+
+---
+
+### Case 3
+
+You teach using
+
+small number of labeled fruits
+
+and many unlabeled fruits.
+
+This becomes
+
+✅ Semi-Supervised Learning
+
+---
+
+### Case 4
+
+You teach a child to ride a bicycle.
+
+Correct balance
+
+↓
+
+Praise
+
+Wrong balance
+
+↓
+
+Falls
+
+↓
+
+Learns
+
+This is
+
+✅ Reinforcement Learning
+
+---
+
+# Machine Learning Paradigms
+
+Machine Learning is mainly divided into four learning paradigms.
 
 ```
 Machine Learning
 
+│
+
 ├── Supervised Learning
+
 ├── Unsupervised Learning
+
+├── Semi-Supervised Learning
+
 └── Reinforcement Learning
 ```
 
 ---
 
-# 1. Supervised Learning
+# How to Remember?
+
+| Type | Learns From |
+|------|-------------|
+| Supervised | Labeled Data |
+| Unsupervised | Unlabeled Data |
+| Semi-Supervised | Few Labels + Many Unlabeled Samples |
+| Reinforcement | Rewards & Penalties |
+
+---
+
+# Interview Definition
+
+## What is Machine Learning?
+
+Machine Learning is a branch of Artificial Intelligence that enables computers to learn patterns from historical data and make predictions or decisions without being explicitly programmed.
+
+---
+
+# What is Supervised Learning?
 
 ## Definition
 
-Supervised Learning is a Machine Learning technique where the dataset contains:
+Supervised Learning is a Machine Learning technique in which the training dataset contains both
 
-* Input Features (X)
-* Correct Output (Y)
+- Input Features (X)
 
-The model learns the relationship between them and predicts outputs for unseen data.
+and
 
-Think of it as learning under the supervision of a teacher who already knows the correct answers.
+- Correct Output (Y)
 
-### Example
-
-| Hours Studied | Marks |
-| ------------- | ----: |
-| 2             |    40 |
-| 4             |    65 |
-| 6             |    85 |
-
-Input → Hours Studied
-
-Output → Marks
-
-The model learns the relationship and predicts marks for new students.
-
----
-
-## Real World Applications
-
-* House Price Prediction
-* Salary Prediction
-* Loan Approval
-* Disease Prediction
-* Sales Forecasting
-* Email Spam Detection
-
----
-
-# Types of Supervised Learning
+The model learns the mapping
 
 ```
-Supervised Learning
+X
 
-├── Regression
-└── Classification
+↓
+
+Model
+
+↓
+
+Y
+```
+
+Later,
+
+for a new X,
+
+it predicts Y.
+
+---
+
+# Why is it called "Supervised"?
+
+Because the model is learning under the supervision of correct answers.
+
+Think of a school exam.
+
+Teacher gives
+
+Question
+
++
+
+Correct Answer
+
+Student learns.
+
+Exactly the same happens here.
+
+---
+
+# Mathematical View
+
+Training Data
+
+```
+(X₁,Y₁)
+
+(X₂,Y₂)
+
+(X₃,Y₃)
+
+...
+
+(Xₙ,Yₙ)
+```
+
+Goal
+
+Learn a function
+
+```
+f(X)=Y
+```
+
+Once learned,
+
+predict
+
+```
+f(New X)=?
 ```
 
 ---
 
-## Regression
+# Real World Examples
 
-### Definition
-
-Regression predicts continuous numerical values.
-
-Think:
-
-**"How Much?"**
-
-Examples
-
-* House Price
-* Sales
-* Temperature
-* Salary
-* Electricity Consumption
-
-### Popular Algorithms
-
-* Linear Regression
-* Decision Tree Regressor
-* Random Forest Regressor
-* XGBoost Regressor
-
----
-
-## Classification
-
-### Definition
-
-Classification predicts categories or classes.
-
-Think:
-
-**"Which Class?"**
-
-Examples
-
-* Spam / Not Spam
-* Fraud / Genuine
-* Diabetes / No Diabetes
-* Pass / Fail
-
-### Popular Algorithms
-
-* Logistic Regression
-* Decision Tree
-* Random Forest
-* SVM
-* Naive Bayes
-* KNN
-
----
-
-## Regression vs Classification
-
-| Regression        | Classification          |
-| ----------------- | ----------------------- |
-| Predicts Numbers  | Predicts Categories     |
-| Continuous Output | Discrete Output         |
-| Example: Sales    | Example: Spam Detection |
+- House Price Prediction
+- Sales Forecasting
+- Weather Prediction
+- Disease Prediction
+- Loan Approval
+- Credit Risk
+- Employee Attrition
+- Customer Churn
+- Spam Detection
+- Face Mask Detection
 
 ---
 
 # Retail Sales Forecasting Example
 
+Suppose we have
+
+| Store | Product | Month | Discount | Sales |
+|-------|---------|--------|----------|------|
+| A | TV | Jan | 10% | 120 |
+| A | TV | Feb | 5% | 105 |
+| B | AC | Jan | 15% | 60 |
+
 Features
 
-* Product
-* Store
-* Discount
-* Holiday
-* Weather
-* Previous Sales
+- Store
+- Product
+- Month
+- Discount
 
 Target
 
-**Next Month Sales**
+Sales
 
-Since the target is numerical, Retail Sales Forecasting is generally a **Supervised Regression** problem.
+Since the correct output is already available,
 
----
+this is
 
-# 2. Unsupervised Learning
-
-## Definition
-
-In Unsupervised Learning, the dataset contains only input features.
-
-There is **no target column**.
-
-The model automatically discovers hidden patterns.
-
-Think of giving someone a box of mixed objects without labels and asking them to organize similar objects together.
+✅ Supervised Learning.
 
 ---
 
-# Types of Unsupervised Learning
+# Types of Supervised Learning
+
+There are only two major categories.
 
 ```
-Unsupervised Learning
+Supervised Learning
 
-├── Clustering
-├── Association Rule Learning
-├── Dimensionality Reduction
-└── Anomaly Detection
+│
+
+├── Regression
+
+└── Classification
 ```
 
 ---
 
-# A. Clustering
+# Regression
 
 ## Definition
 
-Clustering groups similar data points together.
+Regression predicts
 
-No labels are provided.
+continuous numerical values.
 
-The algorithm itself discovers natural groups.
+Simple question:
 
-### Applications
+**How much?**
 
-* Customer Segmentation
-* Image Segmentation
-* Document Clustering
-* News Grouping
+Examples
 
-### Popular Algorithms
+- ₹25,000
+- 45°C
+- 123 Sales
+- ₹15 Lakhs
 
-* K-Means
-* Hierarchical Clustering
-* DBSCAN
+These are numbers.
 
-### Retail Example
+Hence,
 
-A supermarket has one million customers.
-
-The company doesn't know who is
-
-* Premium
-* Budget
-* Regular
-
-The algorithm automatically creates these customer groups.
+Regression.
 
 ---
 
-# B. Association Rule Learning
+# Everyday Examples
 
-## Definition
+Predict
 
-Association Rule Learning discovers relationships between items that frequently occur together.
-
-It answers the question:
-
-**"If a customer buys X, what else are they likely to buy?"**
-
-### Classic Example
-
-Bread → Butter
-
-Milk → Bread
-
-Bread + Butter → Jam
-
-### Business Applications
-
-* Product Recommendations
-* Cross Selling
-* Grocery Basket Analysis
-* E-commerce Recommendations
-
-### Popular Algorithms
-
-* Apriori
-* FP-Growth
-
-### Beer & Diapers Case Study
-
-One of the most famous examples of Association Rule Learning is the **Beer and Diapers** story.
-
-The idea is that transaction data can reveal products that are frequently purchased together, allowing stores to improve product placement and marketing campaigns.
-
-> **Interview Note:** Whether every detail of the original story is historically accurate is debated, but it remains an excellent illustration of Market Basket Analysis.
+- House Price
+- Petrol Consumption
+- Salary
+- Rainfall
+- Electricity Usage
+- Sales
+- Gold Price
 
 ---
 
-# C. Dimensionality Reduction
+# Retail Example
 
-## Definition
+Question
 
-Real-world datasets often contain hundreds or thousands of features.
+How many units of Milk will be sold next Sunday?
 
-Many features are redundant or highly correlated.
+Output
 
-Dimensionality Reduction reduces the number of features while preserving most of the useful information.
-
-### Benefits
-
-* Faster Training
-* Better Visualization
-* Lower Memory Usage
-* Reduced Noise
-* Can reduce overfitting
-
-### Popular Algorithms
-
-* PCA (Principal Component Analysis)
-* t-SNE
-* UMAP
-
-### MNIST Visualization
-
-The famous **MNIST handwritten digit dataset** contains images represented in high-dimensional space.
-
-Using techniques like **t-SNE**, these high-dimensional images can be projected into 2D, making clusters of handwritten digits visible.
-
-This demonstrates why Dimensionality Reduction is valuable—not just for speeding up models, but also for understanding data visually.
-
----
-
-# D. Anomaly Detection
-
-## Definition
-
-Anomaly Detection identifies observations that behave very differently from the majority of the data.
-
-These unusual observations are called:
-
-* Outliers
-* Anomalies
-* Exceptions
-
-### Examples
-
-* Credit Card Fraud
-* Network Intrusion
-* Manufacturing Defects
-* Medical Diagnosis
-* Server Monitoring
-
-### Retail Example
-
-Suppose daily sales are:
-
-210
-
-225
-
-205
-
-215
-
-220
-
-Suddenly one day:
-
-3500
-
-The model flags this observation because it is significantly different from normal sales.
-
-Possible reasons:
-
-* Festival
-* Flash Sale
-* Data Entry Error
-* Fraud
-
-### Popular Algorithms
-
-* Isolation Forest
-* One-Class SVM
-* Local Outlier Factor (LOF)
-
-> **Beyond Lecture:** Isolation Forest is one of the most commonly used anomaly detection algorithms in industry interviews.
-
----
-
-# 3. Reinforcement Learning
-
-## Definition
-
-Reinforcement Learning is a learning technique where an **Agent** interacts with an **Environment**.
-
-Based on its actions, it receives:
-
-* Reward
-* Penalty
-
-The objective is to maximize long-term rewards.
-
-### Applications
-
-* Self Driving Cars
-* Robotics
-* Chess
-* Go
-* Recommendation Optimization
-
----
-
-# Choosing the Right Machine Learning Type
-
-| Question                                | Technique              |
-| --------------------------------------- | ---------------------- |
-| Do you have labeled outputs?            | Supervised Learning    |
-| Need to discover hidden patterns?       | Unsupervised Learning  |
-| Learning through rewards and penalties? | Reinforcement Learning |
-
----
-
-# Python Example
-
-```python
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-from sklearn.ensemble import IsolationForest
-
-# Clustering
-kmeans = KMeans(n_clusters=3)
-
-# Dimensionality Reduction
-pca = PCA(n_components=2)
-
-# Anomaly Detection
-model = IsolationForest(random_state=42)
+```
+215 Units
 ```
 
----
+Since output is a number,
 
-# Common Interview Questions
-
-### What are the three major types of Machine Learning?
-
-* Supervised Learning
-* Unsupervised Learning
-* Reinforcement Learning
+this is Regression.
 
 ---
 
-### What are the two types of Supervised Learning?
+# Popular Regression Algorithms
 
-* Regression
-* Classification
+- Linear Regression
+- Ridge Regression
+- Lasso Regression
+- ElasticNet
+- Decision Tree Regressor
+- Random Forest Regressor
+- Gradient Boosting
+- XGBoost
+- LightGBM
+- CatBoost
 
----
-
-### What are the four common types of Unsupervised Learning?
-
-* Clustering
-* Association Rule Learning
-* Dimensionality Reduction
-* Anomaly Detection
-
----
-
-### Why is Sales Forecasting a Regression problem?
-
-Because the target variable (future sales) is a continuous numerical value.
+> **Interview Tip:** Linear Regression is usually the first baseline model in regression problems.
 
 ---
 
-### Why is Customer Segmentation an Unsupervised Learning problem?
+# Classification
 
-Because there are no predefined labels; the algorithm discovers groups automatically.
+## Definition
+
+Classification predicts categories.
+
+Question
+
+**Which class?**
+
+Examples
+
+Spam
+
+Not Spam
+
+Fraud
+
+Not Fraud
+
+Diabetes
+
+No Diabetes
+
+Customer Will Churn
+
+Customer Will Not Churn
 
 ---
 
-### What is the difference between Clustering and Classification?
+# Retail Example
 
-| Clustering   | Classification         |
-| ------------ | ---------------------- |
-| No Labels    | Labels Available       |
-| Finds Groups | Predicts Known Classes |
+Predict
+
+Will customer buy again?
+
+Possible outputs
+
+```
+Yes
+
+No
+```
+
+Since output belongs to predefined classes,
+
+this is Classification.
 
 ---
 
-# Common Interview Traps
+# Types of Classification
+
+### Binary Classification
+
+Only two classes.
+
+Examples
+
+- Spam / Not Spam
+- Yes / No
+- Fraud / Genuine
+
+---
+
+### Multi-Class Classification
+
+More than two classes.
+
+Example
+
+Animal Image
+
+↓
+
+Cat
+
+Dog
+
+Horse
+
+Cow
+
+---
+
+### Multi-Label Classification
+
+One sample can belong to multiple classes.
+
+Example
+
+Movie Genres
+
+↓
+
+Comedy
+
+Action
+
+Drama
+
+All can be true together.
+
+---
+
+# Popular Classification Algorithms
+
+- Logistic Regression
+- KNN
+- Decision Tree
+- Random Forest
+- SVM
+- Naive Bayes
+- XGBoost Classifier
+- LightGBM Classifier
+
+---
+
+# Regression vs Classification
+
+| Regression | Classification |
+|------------|----------------|
+| Predicts Numbers | Predicts Categories |
+| Continuous Output | Discrete Output |
+| Example: Salary | Example: Spam Detection |
+| Example: Sales | Example: Fraud Detection |
+
+---
+
+# Memory Trick
+
+Regression
+
+↓
+
+"How Much?"
+
+Classification
+
+↓
+
+"Which Class?"
+
+Remember this.
+
+90% interview confusion ends here.
+
+---
+
+# Common Mistakes
+
+❌ House Price → Classification
+
+✅ Regression
+
+---
 
 ❌ Spam Detection → Regression
 
@@ -478,75 +566,67 @@ Because there are no predefined labels; the algorithm discovers groups automatic
 
 ---
 
-❌ Customer Segmentation → Supervised Learning
-
-✅ Unsupervised Learning
-
----
-
-❌ House Price Prediction → Classification
+❌ Sales Forecasting → Classification
 
 ✅ Regression
 
 ---
 
-❌ Market Basket Analysis → Clustering
+# Interview Questions
 
-✅ Association Rule Learning
+### Q1. What is Supervised Learning?
+
+A learning technique where both input features and target labels are available during training.
+
+---
+
+### Q2. Why is it called Supervised Learning?
+
+Because the model learns using correct answers already present in the dataset.
+
+---
+
+### Q3. What are the types of Supervised Learning?
+
+- Regression
+- Classification
+
+---
+
+### Q4. Difference between Regression and Classification?
+
+Regression predicts continuous numerical values, whereas Classification predicts categorical outputs.
+
+---
+
+### Q5. Is Retail Sales Forecasting Regression or Classification?
+
+Regression, because future sales are numerical.
 
 ---
 
 # Key Takeaways
 
-* Machine Learning is divided into Supervised, Unsupervised and Reinforcement Learning.
-* Supervised Learning requires labeled data.
-* Regression predicts numbers.
-* Classification predicts categories.
-* Unsupervised Learning includes Clustering, Association Rule Learning, Dimensionality Reduction and Anomaly Detection.
-* Reinforcement Learning learns through rewards and penalties.
+- Supervised Learning requires labeled data.
+- It is divided into Regression and Classification.
+- Regression predicts numbers.
+- Classification predicts categories.
+- Choosing the correct problem type is the first step in building an ML model.
 
 ---
 
-# 30-Second Revision
+# What's Coming in Part 2?
 
-```
-Machine Learning
-│
-├── Supervised
-│   ├── Regression
-│   └── Classification
-│
-├── Unsupervised
-│   ├── Clustering
-│   ├── Association
-│   ├── Dimensionality Reduction
-│   └── Anomaly Detection
-│
-└── Reinforcement Learning
-```
+We will cover:
 
----
-
-# Further Reading
-
-* Visualizing high-dimensional data using t-SNE with the MNIST dataset (helps build intuition for Dimensionality Reduction).
-* Beer & Diapers / Market Basket Analysis (understanding Association Rule Learning in retail).
-
----
-
-# Coverage Checklist
-
-✅ Supervised Learning
-✅ Regression
-✅ Classification
-✅ Unsupervised Learning
-✅ Clustering
-✅ Association Rule Learning
-✅ Dimensionality Reduction
-✅ Anomaly Detection
-✅ Reinforcement Learning
-✅ Retail Examples
-✅ Python Examples
-✅ Interview Questions
-✅ Common Interview Traps
-✅ Revision Notes
+- Unsupervised Learning
+- Clustering
+- Association Rule Learning
+- Beer & Diapers Case Study
+- Dimensionality Reduction
+- PCA
+- t-SNE
+- MNIST Visualization
+- Anomaly Detection
+- Python Examples
+- Interview Questions
