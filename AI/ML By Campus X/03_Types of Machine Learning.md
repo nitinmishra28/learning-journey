@@ -630,3 +630,671 @@ We will cover:
 - Anomaly Detection
 - Python Examples
 - Interview Questions
+
+
+# Day 3 - Types of Machine Learning (Part 2)
+
+> Topics Covered
+>
+> - Unsupervised Learning
+> - Clustering
+> - Association Rule Learning
+> - Beer & Diapers Story
+> - Market Basket Analysis
+> - Dimensionality Reduction
+> - PCA
+> - t-SNE
+> - MNIST Visualization
+> - Anomaly Detection
+
+---
+
+# 2. Unsupervised Learning
+
+## Definition
+
+Unsupervised Learning is a Machine Learning paradigm where the dataset contains **only input features (X)** and **no target variable (Y)**.
+
+Unlike Supervised Learning, the model is **not told the correct answer**.
+
+Instead, it tries to discover hidden structures, similarities, relationships, or unusual patterns in the data.
+
+---
+
+## Intuition
+
+Imagine you enter a library where thousands of books are scattered on the floor.
+
+Nobody tells you which book belongs to which category.
+
+You naturally start grouping books based on similarity:
+
+- Programming Books
+- Mathematics Books
+- History Books
+- Fiction Books
+
+No one supervised you.
+
+You found the patterns yourself.
+
+This is exactly what an Unsupervised Learning algorithm does.
+
+---
+
+# Why Do We Need Unsupervised Learning?
+
+Real-world companies generate huge amounts of data.
+
+Example:
+
+Customer Data
+
+- Age
+- Income
+- Location
+- Purchase Amount
+- Number of Orders
+
+But nobody has labeled customers as
+
+- Premium
+- Regular
+- Budget
+
+The machine automatically discovers these groups.
+
+---
+
+# Mathematical View
+
+Dataset
+
+```
+X₁
+
+X₂
+
+X₃
+
+...
+
+Xₙ
+```
+
+Notice
+
+There is **no Y**.
+
+Goal
+
+```
+Find Hidden Patterns
+```
+
+---
+
+# Applications
+
+- Customer Segmentation
+- Product Recommendation
+- Market Basket Analysis
+- Fraud Pattern Discovery
+- Image Compression
+- Topic Modeling
+- Document Clustering
+- Medical Research
+- Social Network Analysis
+
+---
+
+# Types of Unsupervised Learning
+
+```
+Unsupervised Learning
+
+│
+
+├── Clustering
+
+├── Association Rule Learning
+
+├── Dimensionality Reduction
+
+└── Anomaly Detection
+```
+
+---
+
+# 1. Clustering
+
+## Definition
+
+Clustering means grouping similar data points together.
+
+Points inside one cluster are more similar to each other than to points in other clusters.
+
+---
+
+## Everyday Example
+
+Imagine your phone gallery.
+
+You never told your phone
+
+"This is Mom."
+
+"This is Dad."
+
+"This is Friend."
+
+Still,
+
+Google Photos groups similar faces together.
+
+This is Clustering.
+
+---
+
+## Retail Example
+
+Suppose a supermarket has data of 5 lakh customers.
+
+Available information:
+
+- Income
+- Age
+- Shopping Frequency
+- Monthly Spending
+
+The company doesn't know who is:
+
+- Premium
+- Budget
+- Regular
+
+The algorithm automatically forms groups.
+
+Example:
+
+```
+Cluster 1
+
+High Income
+
+High Spending
+
+↓
+
+Premium Customers
+```
+
+```
+Cluster 2
+
+Low Income
+
+Low Spending
+
+↓
+
+Budget Customers
+```
+
+---
+
+## Applications
+
+- Customer Segmentation
+- Image Segmentation
+- News Grouping
+- Disease Analysis
+- Social Network Communities
+
+---
+
+## Popular Algorithms
+
+### K-Means
+
+Most popular clustering algorithm.
+
+Works well when clusters are roughly spherical.
+
+---
+
+### Hierarchical Clustering
+
+Creates a tree-like hierarchy of clusters.
+
+Useful when you want to understand relationships between groups.
+
+---
+
+### DBSCAN
+
+Density-Based Spatial Clustering.
+
+Advantages
+
+- Finds irregular-shaped clusters.
+- Detects noise.
+- Finds outliers.
+
+Interview Tip:
+
+DBSCAN does **not require specifying the number of clusters** beforehand.
+
+---
+
+# Interview Question
+
+### Difference Between K-Means and DBSCAN?
+
+| K-Means | DBSCAN |
+|----------|---------|
+| Need K | No K Required |
+| Spherical Clusters | Arbitrary Shapes |
+| Sensitive to Outliers | Handles Outliers |
+
+---
+
+# 2. Association Rule Learning
+
+## Definition
+
+Association Rule Learning discovers relationships between items that frequently occur together.
+
+Question:
+
+"If a customer buys Product A, what else is likely to be purchased?"
+
+---
+
+## Example
+
+Customer 1
+
+Bread
+
+Milk
+
+Butter
+
+Customer 2
+
+Bread
+
+Butter
+
+Jam
+
+Customer 3
+
+Milk
+
+Bread
+
+Machine discovers
+
+```
+Bread
+
+↓
+
+Butter
+```
+
+This is called an **Association Rule**.
+
+---
+
+# Market Basket Analysis
+
+Market Basket Analysis studies customer transactions to discover product combinations.
+
+Purpose
+
+- Increase Sales
+- Improve Product Placement
+- Build Recommendation Systems
+
+Example
+
+If customers buying
+
+Laptop
+
+also buy
+
+Mouse
+
+then place them nearby or recommend the mouse online.
+
+---
+
+# Beer & Diapers Story
+
+One of the most famous stories in Data Mining is the Beer & Diapers example.
+
+### Story
+
+A retailer analyzed customer transactions.
+
+They noticed that customers buying diapers were also buying beer more often than expected.
+
+The retailer used this information for better shelf placement and promotions.
+
+> **Important Interview Note**
+>
+> The historical accuracy of every detail of this story is debated, but it remains one of the best examples for explaining Association Rule Learning and Market Basket Analysis.
+
+---
+
+## Important Terms
+
+### Support
+
+How frequently an itemset appears in the dataset.
+
+### Confidence
+
+How often Rule B is true when Rule A is true.
+
+### Lift
+
+Measures whether the relationship is stronger than random chance.
+
+> Interview Tip:
+>
+> Lift > 1 indicates a positive association.
+
+---
+
+## Popular Algorithms
+
+- Apriori
+- FP-Growth
+- ECLAT
+
+---
+
+# 3. Dimensionality Reduction
+
+## Definition
+
+Real-world datasets may contain hundreds or even thousands of features.
+
+Many features are:
+
+- Redundant
+- Highly Correlated
+- Noisy
+
+Dimensionality Reduction reduces the number of features while preserving most of the useful information.
+
+---
+
+## Why Is It Needed?
+
+Imagine a retail dataset with
+
+- Product ID
+- Brand
+- Category
+- Supplier
+- Region
+- State
+- City
+- Temperature
+- Holiday
+- Promotion
+- Inventory
+- Competitor Price
+- ... (200+ features)
+
+Training directly on all features can:
+
+- Increase computation time.
+- Cause overfitting.
+- Reduce interpretability.
+
+Instead, we transform the data into fewer informative dimensions.
+
+---
+
+## Benefits
+
+- Faster Training
+- Less Storage
+- Better Visualization
+- Reduced Noise
+- Reduced Multicollinearity
+- Can improve model performance
+
+---
+
+## PCA (Principal Component Analysis)
+
+PCA is the most widely used Dimensionality Reduction technique.
+
+It creates **new features**, called **Principal Components**, that capture the maximum variance in the data.
+
+### Key Points
+
+- Components are orthogonal (uncorrelated).
+- First component captures the maximum variance.
+- Second captures the remaining variance, and so on.
+
+Interview Tip:
+
+PCA is a **feature extraction** technique, not simply feature selection.
+
+---
+
+## t-SNE (t-Distributed Stochastic Neighbor Embedding)
+
+t-SNE is mainly used for **visualization**.
+
+It projects high-dimensional data into 2D or 3D while preserving local neighborhood relationships.
+
+### Where is it used?
+
+- Data Visualization
+- Cluster Inspection
+- Embedding Visualization
+
+### Interview Tip
+
+t-SNE is **not** typically used for model training because it is computationally expensive and does not preserve global distances well.
+
+---
+
+# MNIST Visualization
+
+MNIST contains handwritten digits (0–9).
+
+Each image is 28 × 28 pixels.
+
+This means every image has **784 features**.
+
+Humans cannot visualize data in 784 dimensions.
+
+Using PCA or t-SNE, these 784-dimensional points can be projected into **2D**, where digits with similar shapes naturally cluster together.
+
+This makes it much easier to inspect the data visually.
+
+---
+
+# PCA vs t-SNE
+
+| PCA | t-SNE |
+|------|--------|
+| Linear | Non-linear |
+| Faster | Slower |
+| Good for preprocessing | Good for visualization |
+| Preserves variance | Preserves local neighborhoods |
+
+---
+
+# 4. Anomaly Detection
+
+## Definition
+
+Anomaly Detection identifies observations that are significantly different from the majority of the data.
+
+These observations are called:
+
+- Outliers
+- Anomalies
+- Rare Events
+
+---
+
+## Examples
+
+- Credit Card Fraud
+- Cyber Attacks
+- Manufacturing Defects
+- Medical Abnormalities
+- Retail Sales Outliers
+
+---
+
+## Retail Example
+
+Daily Sales
+
+```
+210
+
+215
+
+205
+
+220
+
+210
+
+218
+```
+
+Suddenly
+
+```
+3500
+```
+
+Possible Reasons
+
+- Festival
+- Flash Sale
+- Data Entry Error
+- Fraud
+
+Anomaly Detection flags this observation for investigation.
+
+---
+
+## Popular Algorithms
+
+- Isolation Forest
+- One-Class SVM
+- Local Outlier Factor (LOF)
+- DBSCAN (can identify noise points)
+
+---
+
+# Interview Questions
+
+### What is Unsupervised Learning?
+
+Learning from unlabeled data to discover hidden patterns.
+
+---
+
+### Name the common tasks in Unsupervised Learning.
+
+- Clustering
+- Association Rule Learning
+- Dimensionality Reduction
+- Anomaly Detection
+
+---
+
+### Why is Customer Segmentation Unsupervised?
+
+Because there are no predefined labels.
+
+---
+
+### Difference Between PCA and t-SNE?
+
+PCA is mainly used for feature extraction and dimensionality reduction.
+
+t-SNE is mainly used for visualization.
+
+---
+
+### Which algorithm is commonly used for Market Basket Analysis?
+
+- Apriori
+- FP-Growth
+
+---
+
+### Which algorithm detects anomalies?
+
+- Isolation Forest
+- One-Class SVM
+- LOF
+
+---
+
+# Common Interview Traps
+
+❌ Customer Segmentation → Classification
+
+✅ Clustering
+
+---
+
+❌ PCA removes useless columns.
+
+✅ PCA creates new components from existing features.
+
+---
+
+❌ t-SNE is mainly for model training.
+
+✅ t-SNE is mainly for visualization.
+
+---
+
+❌ Beer & Diapers is a Clustering example.
+
+✅ It is an Association Rule Learning example.
+
+---
+
+# Key Takeaways
+
+- Unsupervised Learning works without labels.
+- Clustering groups similar observations.
+- Association Rule Learning discovers relationships between items.
+- Market Basket Analysis is a business application of Association Rules.
+- PCA reduces dimensions while preserving variance.
+- t-SNE is primarily for visualization.
+- Anomaly Detection identifies unusual observations.
+
+---
+
+# What's Coming in Part 3?
+
+- Semi-Supervised Learning
+- Reinforcement Learning
+- Complete ML Comparison
+- Retail Forecasting Mapping
+- Python Examples
+- Industry Notes
+- Interview Cheat Sheet
