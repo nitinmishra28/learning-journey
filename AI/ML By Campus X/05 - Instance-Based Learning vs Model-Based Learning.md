@@ -430,3 +430,510 @@ In Part 2 we will cover:
 - Decision Trees
 - Training vs Prediction
 - Instance vs Model comparison
+
+
+# Day 05 - Instance-Based Learning vs Model-Based Learning (Part 2)
+
+> **Topics Covered**
+>
+> - Model-Based Learning
+> - Eager Learning
+> - Training Process
+> - Mathematical Models
+> - Linear Regression
+> - Logistic Regression
+> - Decision Trees
+> - Advantages & Disadvantages
+> - Python Examples
+> - Interview Questions
+
+---
+
+# Model-Based Learning
+
+## Definition
+
+Model-Based Learning is a Machine Learning approach where the algorithm **learns a mathematical model** from the training data.
+
+Instead of storing every training example,
+
+the algorithm finds the underlying relationship or pattern in the data.
+
+After training,
+
+only the learned model is used for prediction.
+
+---
+
+# Why is it called Model-Based?
+
+Because the algorithm builds a **model** that represents the knowledge learned from the data.
+
+Instead of remembering every training sample,
+
+it remembers only the learned parameters.
+
+---
+
+# How Model-Based Learning Works
+
+```
+Training Data
+
+↓
+
+Choose Algorithm
+
+↓
+
+Learn Pattern
+
+↓
+
+Build Mathematical Model
+
+↓
+
+Discard Raw Data (optional)
+
+↓
+
+Prediction
+```
+
+Unlike Instance-Based Learning,
+
+most of the computation happens **during training**.
+
+---
+
+# Everyday Analogy
+
+Imagine preparing for an exam.
+
+Instead of memorizing 500 solved questions,
+
+you understand
+
+- Concepts
+- Formulas
+- Rules
+
+During the exam,
+
+you solve completely new questions using those concepts.
+
+This is Model-Based Learning.
+
+---
+
+# Why is it called Eager Learning?
+
+Model-Based Learning is also called **Eager Learning**.
+
+Reason:
+
+The algorithm learns everything during the training phase.
+
+When prediction time comes,
+
+it simply uses the already learned model.
+
+---
+
+# Training Phase
+
+```
+Training Data
+
+↓
+
+Learn Relationship
+
+↓
+
+Create Model
+
+↓
+
+Training Complete
+```
+
+Training usually takes longer than Instance-Based Learning because the model is learning patterns.
+
+---
+
+# Prediction Phase
+
+```
+New Data
+
+↓
+
+Use Learned Model
+
+↓
+
+Prediction
+```
+
+Prediction is fast because the model already knows the relationship.
+
+---
+
+# Characteristics
+
+- Learns mathematical relationships.
+- Creates a predictive model.
+- Slow training.
+- Fast prediction.
+- Lower memory usage after training.
+- Suitable for large-scale applications.
+
+---
+
+# Example 1: Linear Regression
+
+Suppose we want to predict house prices.
+
+Training Data:
+
+| House Size (sq.ft.) | Price (₹ Lakhs) |
+|---------------------|-----------------|
+| 800 | 40 |
+| 1000 | 52 |
+| 1200 | 63 |
+| 1500 | 80 |
+
+The algorithm does **not** store every house.
+
+Instead, it learns a line like:
+
+```
+Price = m × Size + c
+```
+
+This equation becomes the model.
+
+When a new house arrives,
+
+the equation is used to predict its price.
+
+---
+
+# Example 2: Logistic Regression
+
+Goal:
+
+Predict whether an email is Spam or Not Spam.
+
+The model learns the relationship between input features and the probability of spam.
+
+Instead of memorizing all emails,
+
+it learns weights that help classify future emails.
+
+---
+
+# Example 3: Decision Tree
+
+A Decision Tree learns a set of decision rules.
+
+Example:
+
+```
+Income > ₹50,000 ?
+
+        │
+
+      Yes
+
+        │
+
+Credit Score > 700 ?
+
+        │
+
+      Yes
+
+        │
+
+Approve Loan
+```
+
+The tree itself becomes the model.
+
+---
+
+# Retail Forecasting Example
+
+Suppose a supermarket wants to predict tomorrow's sales.
+
+Features:
+
+- Store ID
+- Product Category
+- Holiday
+- Promotion
+- Temperature
+- Day of Week
+
+The algorithm learns how these features influence sales.
+
+It does **not** remember every historical sales record.
+
+Instead, it creates a predictive model.
+
+---
+
+# Popular Model-Based Algorithms
+
+### Regression Algorithms
+
+- Linear Regression
+- Ridge Regression
+- Lasso Regression
+
+---
+
+### Classification Algorithms
+
+- Logistic Regression
+- Decision Tree
+- Random Forest
+- Naive Bayes
+- Support Vector Machine
+- XGBoost
+- LightGBM
+
+---
+
+### Neural Networks
+
+- Artificial Neural Networks (ANN)
+- Convolutional Neural Networks (CNN)
+- Recurrent Neural Networks (RNN)
+- Transformers
+
+All of these are Model-Based Learning algorithms because they learn parameters during training.
+
+---
+
+# Advantages
+
+✅ Fast predictions
+
+✅ Lower memory usage
+
+✅ Better scalability
+
+✅ Suitable for production systems
+
+✅ Captures underlying relationships
+
+---
+
+# Disadvantages
+
+❌ Training can be expensive
+
+❌ May underfit if the model is too simple
+
+❌ May overfit if the model is too complex
+
+❌ Choosing the right model requires experience
+
+---
+
+# Python Example: Linear Regression
+
+```python
+from sklearn.linear_model import LinearRegression
+
+model = LinearRegression()
+
+model.fit(X_train, y_train)
+
+prediction = model.predict(X_test)
+```
+
+Here,
+
+`fit()` learns the parameters (coefficients and intercept).
+
+The model is then used for prediction.
+
+---
+
+# Python Example: Logistic Regression
+
+```python
+from sklearn.linear_model import LogisticRegression
+
+model = LogisticRegression()
+
+model.fit(X_train, y_train)
+
+prediction = model.predict(X_test)
+```
+
+The algorithm learns decision boundaries instead of storing all samples.
+
+---
+
+# Python Example: Decision Tree
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+
+model = DecisionTreeClassifier()
+
+model.fit(X_train, y_train)
+
+prediction = model.predict(X_test)
+```
+
+The learned tree becomes the model.
+
+---
+
+# Training vs Prediction
+
+| Stage | Instance-Based | Model-Based |
+|--------|----------------|-------------|
+| Training | Store Data | Learn Model |
+| Prediction | Compare with Stored Data | Use Learned Model |
+
+---
+
+# Memory Usage
+
+### Instance-Based
+
+```
+Store Entire Dataset
+
+↓
+
+High Memory
+```
+
+### Model-Based
+
+```
+Store Only Parameters
+
+↓
+
+Low Memory
+```
+
+---
+
+# Speed Comparison
+
+### Training
+
+- Instance-Based → Fast
+- Model-Based → Slower
+
+### Prediction
+
+- Instance-Based → Slower
+- Model-Based → Fast
+
+---
+
+# Real World Applications
+
+- House Price Prediction
+- Sales Forecasting
+- Disease Prediction
+- Loan Approval
+- Weather Forecasting
+- Customer Churn Prediction
+- Demand Forecasting
+- Credit Risk Analysis
+
+---
+
+# Interview Questions
+
+### What is Model-Based Learning?
+
+A learning approach where the algorithm builds a mathematical model from the training data.
+
+---
+
+### Why is it called Eager Learning?
+
+Because the algorithm performs learning during the training phase.
+
+---
+
+### Give examples of Model-Based algorithms.
+
+- Linear Regression
+- Logistic Regression
+- Decision Tree
+- Random Forest
+- Neural Networks
+
+---
+
+### Why are Neural Networks Model-Based?
+
+Because they learn weights and biases that represent the knowledge extracted from the data.
+
+---
+
+### Which is faster during prediction: KNN or Linear Regression?
+
+Linear Regression.
+
+KNN must search through stored data, while Linear Regression directly uses its learned equation.
+
+---
+
+# Common Interview Traps
+
+❌ Linear Regression stores all training examples.
+
+✅ It stores only learned coefficients.
+
+---
+
+❌ Decision Trees are Instance-Based.
+
+✅ Decision Trees are Model-Based.
+
+---
+
+❌ Neural Networks memorize data.
+
+✅ Neural Networks learn parameters (weights and biases).
+
+---
+
+# Key Takeaways
+
+- Model-Based Learning creates a mathematical model.
+- Most computation happens during training.
+- Prediction is generally fast.
+- Linear Regression, Logistic Regression, Decision Trees, and Neural Networks are Model-Based algorithms.
+- Model-Based Learning is also known as Eager Learning.
+
+---
+
+# What's Next?
+
+In Part 3 we will cover:
+
+- Instance-Based vs Model-Based Comparison
+- Lazy vs Eager Learning
+- Parametric vs Non-Parametric Models
+- KNN vs Linear Regression
+- Retail Forecasting Mapping
+- Industry Use Cases
+- Revision Cheat Sheet
+- Advanced Interview Questions
