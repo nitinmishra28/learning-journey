@@ -1298,3 +1298,668 @@ t-SNE is mainly used for visualization.
 - Python Examples
 - Industry Notes
 - Interview Cheat Sheet
+
+# Day 3 - Types of Machine Learning (Part 3)
+
+> Topics Covered
+>
+> - Semi-Supervised Learning
+> - Reinforcement Learning
+> - Complete Comparison of ML Types
+> - Choosing the Right Machine Learning Approach
+> - Retail Forecasting Mapping
+> - Industry Use Cases
+> - Python Examples
+> - Interview Questions
+> - Common Mistakes
+
+---
+
+# 3. Semi-Supervised Learning
+
+## Definition
+
+Semi-Supervised Learning is a Machine Learning paradigm where the model is trained using:
+
+- A **small amount of labeled data**
+- A **large amount of unlabeled data**
+
+It lies between Supervised Learning and Unsupervised Learning.
+
+---
+
+## Why Do We Need Semi-Supervised Learning?
+
+Labeling data is expensive.
+
+Imagine building a model for skin disease detection.
+
+Suppose you have:
+
+- 10,000 medical images
+
+But only
+
+- 500 images are labeled by doctors.
+
+Getting labels for the remaining 9,500 images may cost lakhs of rupees and months of effort.
+
+Instead of ignoring them, Semi-Supervised Learning learns from both labeled and unlabeled data.
+
+---
+
+# Intuition
+
+Imagine a classroom.
+
+Teacher solves only five questions.
+
+Students then solve the remaining fifty by observing those examples.
+
+That is exactly how Semi-Supervised Learning works.
+
+---
+
+# Diagram
+
+```
+Dataset
+
+│
+
+├── Small Labeled Data
+
+└── Large Unlabeled Data
+
+↓
+
+Model learns from both
+
+↓
+
+Better Accuracy
+```
+
+---
+
+# Where Is It Used?
+
+- Face Recognition
+- Speech Recognition
+- Medical Imaging
+- Document Classification
+- Image Classification
+- OCR Systems
+- Satellite Image Analysis
+
+---
+
+# Retail Example
+
+Suppose an e-commerce company has
+
+10 million product images.
+
+Only
+
+50,000
+
+have proper categories.
+
+Instead of manually labeling every product,
+
+the model learns from
+
+- labeled products
+
++
+
+- unlabeled products.
+
+---
+
+# Advantages
+
+- Requires fewer labeled samples.
+- Reduces labeling cost.
+- Improves accuracy over pure supervised learning when labels are scarce.
+- Makes use of abundant unlabeled data.
+
+---
+
+# Limitations
+
+- Poor-quality labeled data can mislead the model.
+- Incorrect pseudo-labels may propagate errors.
+- More complex than standard supervised learning.
+
+---
+
+# Popular Techniques
+
+- Self-Training
+- Label Propagation
+- Label Spreading
+- Pseudo Labeling
+- Consistency Regularization
+
+---
+
+# Interview Question
+
+### Why not use only Supervised Learning?
+
+Because collecting labeled data is expensive and time-consuming.
+
+Semi-Supervised Learning makes use of the large amount of unlabeled data that organizations already have.
+
+---
+
+# 4. Reinforcement Learning
+
+## Definition
+
+Reinforcement Learning (RL) is a Machine Learning paradigm in which an **agent learns by interacting with an environment**.
+
+Instead of learning from labeled examples, the agent learns through **trial and error**.
+
+Correct actions receive **rewards**.
+
+Incorrect actions receive **penalties**.
+
+The goal is to maximize the total reward over time.
+
+---
+
+# Everyday Analogy
+
+Think about teaching a child to ride a bicycle.
+
+No one gives a labeled dataset.
+
+The child:
+
+- Tries
+- Falls
+- Learns
+- Improves
+
+Eventually, the child rides successfully.
+
+That is Reinforcement Learning.
+
+---
+
+# Components of Reinforcement Learning
+
+```
+Agent
+
+↓
+
+Takes Action
+
+↓
+
+Environment
+
+↓
+
+Reward / Penalty
+
+↓
+
+Agent Learns
+
+↓
+
+Better Action
+```
+
+---
+
+# Important Terminology
+
+### Agent
+
+The learner or decision-maker.
+
+Example:
+
+A robot.
+
+---
+
+### Environment
+
+The world in which the agent operates.
+
+Example:
+
+Road, Game Board, Warehouse.
+
+---
+
+### State
+
+The current situation.
+
+Example:
+
+Current board position in Chess.
+
+---
+
+### Action
+
+The decision taken by the agent.
+
+Example:
+
+Move left.
+
+Move right.
+
+Accelerate.
+
+Brake.
+
+---
+
+### Reward
+
+Feedback received after taking an action.
+
+Positive reward encourages the action.
+
+Negative reward discourages the action.
+
+---
+
+### Policy
+
+A strategy that tells the agent what action to take in each state.
+
+---
+
+# Example: Self-Driving Car
+
+State
+
+↓
+
+Traffic Signal
+
+↓
+
+Action
+
+↓
+
+Brake
+
+↓
+
+Reward
+
+↓
+
+Safe Driving
+
+---
+
+# Example: Chess AI
+
+State
+
+↓
+
+Current Board
+
+↓
+
+Action
+
+↓
+
+Move Queen
+
+↓
+
+Reward
+
+↓
+
+Win Probability Increases
+
+---
+
+# Applications
+
+- Robotics
+- Self-Driving Cars
+- Chess Engines
+- Recommendation Systems
+- Dynamic Pricing
+- Resource Allocation
+- Traffic Signal Optimization
+- Game AI
+
+---
+
+# Retail Example
+
+Suppose an online shopping platform wants to maximize profit.
+
+The system experiments with:
+
+- 5% Discount
+- 10% Discount
+- 15% Discount
+
+Over time it learns
+
+which discount gives the highest long-term profit.
+
+This is Reinforcement Learning.
+
+---
+
+# Popular Algorithms
+
+- Q-Learning
+- SARSA
+- Deep Q Network (DQN)
+- Policy Gradient
+- PPO (Proximal Policy Optimization)
+- Actor-Critic
+
+---
+
+# Comparison of Machine Learning Types
+
+| Learning Type | Labeled Data | Goal | Example |
+|--------------|-------------|------|---------|
+| Supervised | ✅ Yes | Predict Output | Sales Forecasting |
+| Unsupervised | ❌ No | Discover Patterns | Customer Segmentation |
+| Semi-Supervised | Partial | Use Few Labels + Many Unlabeled | Image Classification |
+| Reinforcement | Reward Signal | Learn Best Actions | Self-Driving Cars |
+
+---
+
+# Which Machine Learning Technique Should You Choose?
+
+## Use Supervised Learning When
+
+- Target variable is available.
+- Prediction is required.
+- Historical labeled data exists.
+
+Examples
+
+- House Price Prediction
+- Sales Forecasting
+- Churn Prediction
+
+---
+
+## Use Unsupervised Learning When
+
+- No labels are available.
+- Hidden patterns need to be discovered.
+- Customer segmentation is required.
+
+---
+
+## Use Semi-Supervised Learning When
+
+- Labels are expensive.
+- Large unlabeled datasets exist.
+- Small labeled datasets are available.
+
+---
+
+## Use Reinforcement Learning When
+
+- Sequential decision-making is required.
+- Rewards and penalties are available.
+- Long-term optimization matters.
+
+---
+
+# Retail Sales Forecasting Mapping
+
+Let's connect today's concepts with our Retail Sales Forecasting project.
+
+### Supervised Learning
+
+Predict future sales.
+
+Example
+
+```
+Tomorrow Sales = 250 Units
+```
+
+This is Regression.
+
+---
+
+### Unsupervised Learning
+
+Group stores based on sales patterns.
+
+Example
+
+```
+Premium Stores
+
+Budget Stores
+
+Seasonal Stores
+```
+
+---
+
+### Association Rule Learning
+
+Discover products frequently purchased together.
+
+Example
+
+```
+Bread
+
+↓
+
+Butter
+```
+
+---
+
+### Dimensionality Reduction
+
+Reduce 200 sales-related features into a smaller informative set before training.
+
+---
+
+### Anomaly Detection
+
+Detect unusual sales.
+
+Example
+
+Store usually sells
+
+200 Units
+
+Suddenly
+
+3000 Units
+
+↓
+
+Possible Fraud
+
+---
+
+### Semi-Supervised Learning
+
+Only some products have categories.
+
+The remaining products are automatically categorized using both labeled and unlabeled data.
+
+---
+
+### Reinforcement Learning
+
+An online retailer adjusts discounts dynamically.
+
+The system learns which pricing strategy maximizes long-term revenue.
+
+---
+
+# Python Examples
+
+## K-Means Clustering
+
+```python
+from sklearn.cluster import KMeans
+
+model = KMeans(n_clusters=3)
+
+model.fit(X)
+```
+
+---
+
+## PCA
+
+```python
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components=2)
+
+X_new = pca.fit_transform(X)
+```
+
+---
+
+## Isolation Forest
+
+```python
+from sklearn.ensemble import IsolationForest
+
+model = IsolationForest()
+
+model.fit(X)
+```
+
+---
+
+## Q-Learning (Conceptual)
+
+```python
+Q[state, action] = reward + gamma * max(Q[next_state])
+```
+
+---
+
+# Common Interview Questions
+
+### Explain the four major Machine Learning paradigms.
+
+---
+
+### Difference between Supervised and Semi-Supervised Learning?
+
+---
+
+### Why is Customer Segmentation not a Classification problem?
+
+---
+
+### Why is Reinforcement Learning suitable for robotics?
+
+---
+
+### What is the role of rewards in Reinforcement Learning?
+
+---
+
+### Give one retail use case of each learning paradigm.
+
+---
+
+# Common Interview Traps
+
+❌ Reinforcement Learning requires labeled data.
+
+✅ RL learns through rewards.
+
+---
+
+❌ Semi-Supervised means 50% labeled data.
+
+✅ There is no fixed ratio.
+
+---
+
+❌ PCA removes columns.
+
+✅ PCA creates new transformed features.
+
+---
+
+❌ Customer Segmentation is Classification.
+
+✅ It is Clustering.
+
+---
+
+# Revision Cheat Sheet
+
+```
+Machine Learning
+
+│
+
+├── Supervised
+│      ├── Regression
+│      └── Classification
+│
+├── Unsupervised
+│      ├── Clustering
+│      ├── Association Rule Learning
+│      ├── Dimensionality Reduction
+│      └── Anomaly Detection
+│
+├── Semi-Supervised
+│
+└── Reinforcement Learning
+```
+
+---
+
+# Key Takeaways
+
+- Semi-Supervised Learning combines labeled and unlabeled data.
+- Reinforcement Learning learns through rewards and penalties.
+- Choosing the correct learning paradigm depends on the problem and available data.
+- A single business problem may involve multiple Machine Learning paradigms.
+- Understanding **when** to use each approach is as important as understanding **how** it works.
+
+---
+
+# What's Coming in Part 4?
+
+- Machine Learning Decision Flowchart
+- Memory Tricks
+- FAQs
+- Advanced Interview Questions
+- Common Myths
+- Beyond CampusX Notes
+- Best Practices
+- Revision Sheet
+- References
+- Final Coverage Checklist
