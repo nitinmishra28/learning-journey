@@ -530,3 +530,358 @@ array.size
 - Rank represents the number of dimensions.
 - Shape represents the size of each dimension.
 - NumPy provides simple methods like `.ndim`, `.shape`, and `.size` to work with tensors.
+
+---
+
+# Visual Representation of Tensors
+
+Understanding tensors visually makes the concept much easier.
+
+## 0D Tensor (Scalar)
+
+A single value.
+
+```
+
+7
+
+```
+
+Shape
+
+```
+
+()
+
+```
+
+Rank
+
+```
+
+0
+
+```
+
+---
+
+## 1D Tensor (Vector)
+
+A collection of values.
+
+```
+
+[10, 20, 30, 40]
+
+```
+
+Shape
+
+```
+
+(4,)
+
+```
+
+Rank
+
+```
+
+1
+
+```
+
+---
+
+## 2D Tensor (Matrix)
+
+Rows and Columns.
+
+```
+
+[
+[1, 2, 3],
+[4, 5, 6]
+]
+
+```
+
+Shape
+
+```
+
+(2,3)
+
+```
+
+Rank
+
+```
+
+2
+
+```
+
+---
+
+## 3D Tensor
+
+Collection of multiple matrices.
+
+```
+
+[
+[
+[1,2],
+[3,4]
+],
+
+[
+[5,6],
+[7,8]
+]
+]
+
+```
+
+Shape
+
+```
+
+(2,2,2)
+
+```
+
+Rank
+
+```
+
+3
+
+```
+
+---
+
+# Understanding Rank vs Shape
+
+Many beginners confuse these two terms.
+
+## Rank
+
+Rank tells **how many dimensions** a tensor has.
+
+Examples
+
+| Tensor | Rank |
+|----------|------|
+| Scalar | 0 |
+| Vector | 1 |
+| Matrix | 2 |
+| 3D Tensor | 3 |
+
+---
+
+## Shape
+
+Shape tells **how many values are present in each dimension**.
+
+Example
+
+```
+
+[
+[1,2,3],
+[4,5,6]
+]
+
+```
+
+Shape
+
+```
+
+(2,3)
+
+```
+
+Meaning
+
+- 2 Rows
+- 3 Columns
+
+---
+
+### Easy Memory Trick
+
+```
+
+Rank = Number of Dimensions
+
+Shape = Size of each Dimension
+
+```
+
+---
+
+# Real Machine Learning Examples
+
+Machine Learning datasets are usually represented as tensors.
+
+## Example 1: Student Dataset
+
+| Math | Science | English |
+|-------|----------|----------|
+| 80 | 75 | 90 |
+| 65 | 82 | 88 |
+| 91 | 79 | 95 |
+
+This dataset is a **2D Tensor**.
+
+Shape
+
+```
+
+(3,3)
+
+```
+
+---
+
+## Example 2: Retail Sales Dataset
+
+| Store | Product | Sales |
+|--------|----------|-------|
+| A | Milk | 120 |
+| A | Bread | 90 |
+| B | Milk | 150 |
+
+Again,
+
+this is a **2D Tensor** because it contains rows and columns.
+
+---
+
+## Example 3: Weather Data
+
+```
+
+[32, 31, 29, 35, 34]
+
+```
+
+Daily temperatures stored as a **1D Tensor**.
+
+---
+
+# Why Are Tensors Useful in Machine Learning?
+
+Machine Learning algorithms expect numerical input.
+
+Tensors provide a standard way to represent data, regardless of whether it is:
+
+- A single value
+- A list of values
+- A table of values
+- Higher-dimensional structured data
+
+Using one common representation makes data processing easier.
+
+---
+
+# NumPy Practice Examples
+
+## Creating a Scalar
+
+```python
+import numpy as np
+
+scalar = np.array(15)
+
+print(scalar.ndim)
+print(scalar.shape)
+```
+
+---
+
+## Creating a Vector
+
+```python
+vector = np.array([5,10,15,20])
+
+print(vector.ndim)
+print(vector.shape)
+```
+
+---
+
+## Creating a Matrix
+
+```python
+matrix = np.array([
+    [1,2],
+    [3,4]
+])
+
+print(matrix.ndim)
+print(matrix.shape)
+```
+
+---
+
+## Creating a 3D Tensor
+
+```python
+tensor = np.array([
+    [[1,2],[3,4]],
+    [[5,6],[7,8]]
+])
+
+print(tensor.ndim)
+print(tensor.shape)
+```
+
+---
+
+# Summary
+
+| Tensor Type | Rank | Shape Example |
+|--------------|------|---------------|
+| Scalar | 0 | () |
+| Vector | 1 | (4,) |
+| Matrix | 2 | (2,3) |
+| 3D Tensor | 3 | (2,2,2) |
+
+---
+
+# Revision Notes
+
+- Tensor is a generalization of Scalars, Vectors, and Matrices.
+- Scalar is a 0D Tensor.
+- Vector is a 1D Tensor.
+- Matrix is a 2D Tensor.
+- Higher-order tensors have three or more dimensions.
+- Rank tells the number of dimensions.
+- Shape tells the size of each dimension.
+- NumPy provides `.ndim`, `.shape`, and `.size` to inspect tensors.
+
+---
+
+# Practice Questions
+
+1. What is a Tensor?
+2. Is every Matrix a Tensor?
+3. What is the difference between Rank and Shape?
+4. What is the Rank of a Matrix?
+5. What is the Shape of a Vector containing 8 elements?
+6. Which NumPy attribute returns the number of dimensions?
+7. Which NumPy attribute returns the shape?
+8. Which NumPy attribute returns the total number of elements?
+
+---
+
+# Final Takeaways
+
+- Tensor is the fundamental data structure used to represent numerical data in Machine Learning.
+- Scalars, Vectors, and Matrices are all special cases of tensors.
+- Rank and Shape are the two most important properties of a tensor.
+- Understanding tensors makes it easier to work with NumPy arrays and prepares you for more advanced Machine Learning topics.
