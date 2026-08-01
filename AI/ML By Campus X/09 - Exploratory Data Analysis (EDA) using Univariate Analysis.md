@@ -1313,3 +1313,584 @@ In **Part 3**, we will study
 - Complete Univariate Workflow
 - Retail Sales Forecasting Example
 - Interview Cheat Sheet
+
+
+# Day 09 - Exploratory Data Analysis (EDA) using Univariate Analysis (Part 3)
+
+> **Topics Covered**
+>
+> - Box Plot
+> - Outliers
+> - Five Number Summary
+> - Percentiles
+> - IQR (Interquartile Range)
+> - Complete Univariate Workflow
+> - Retail Sales Forecasting Example
+> - Interview Questions
+> - Revision Cheat Sheet
+
+---
+
+# Box Plot
+
+## Definition
+
+A **Box Plot** is a graphical representation used to understand the distribution of numerical data and identify outliers.
+
+Unlike a Histogram,
+
+a Box Plot focuses on
+
+- Spread of data
+- Center of data
+- Outliers
+
+---
+
+# Why Do We Use Box Plot?
+
+A Box Plot helps answer:
+
+- Are there any outliers?
+- How spread is the data?
+- Where is the median located?
+- Is the distribution symmetric?
+
+---
+
+# Python Example
+
+```python
+import seaborn as sns
+
+sns.boxplot(x=df["Sales"])
+```
+
+---
+
+# Components of a Box Plot
+
+A Box Plot is built using the **Five Number Summary**.
+
+```
+Minimum
+
+↓
+
+Q1 (25%)
+
+↓
+
+Median (50%)
+
+↓
+
+Q3 (75%)
+
+↓
+
+Maximum
+```
+
+---
+
+# Five Number Summary
+
+The five-number summary gives a quick overview of a numerical feature.
+
+| Statistic | Meaning |
+|-----------|---------|
+| Minimum | Smallest value |
+| Q1 | 25th Percentile |
+| Median | 50th Percentile |
+| Q3 | 75th Percentile |
+| Maximum | Largest value |
+
+---
+
+# Percentiles
+
+A percentile divides the dataset into 100 equal parts.
+
+Examples
+
+### 25th Percentile (Q1)
+
+25% of observations lie below this value.
+
+---
+
+### 50th Percentile
+
+This is the Median.
+
+50% of observations lie below it.
+
+---
+
+### 75th Percentile (Q3)
+
+75% of observations lie below this value.
+
+---
+
+# Example
+
+Sorted Data
+
+```
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+70
+
+80
+```
+
+Approximate Percentiles
+
+```
+Q1 → 25
+
+Median → 45
+
+Q3 → 65
+```
+
+---
+
+# Interquartile Range (IQR)
+
+## Definition
+
+IQR measures the spread of the middle 50% of the data.
+
+Formula
+
+```
+IQR = Q3 - Q1
+```
+
+Example
+
+```
+Q1 = 20
+
+Q3 = 40
+```
+
+```
+IQR = 40 - 20 = 20
+```
+
+---
+
+# Why is IQR Important?
+
+IQR helps detect **outliers**.
+
+Unlike the Mean,
+
+IQR is not heavily affected by extreme values.
+
+---
+
+# Outliers
+
+## Definition
+
+Outliers are observations that are significantly different from the rest of the data.
+
+Example
+
+```
+200
+
+205
+
+210
+
+215
+
+220
+
+5000
+```
+
+The value **5000** is an outlier.
+
+---
+
+# Why Do Outliers Matter?
+
+Outliers can
+
+- Distort the Mean
+- Affect model training
+- Reduce prediction accuracy
+- Influence statistical analysis
+
+However, not every outlier is an error.
+
+Sometimes it represents a real business event.
+
+---
+
+# Detecting Outliers Using IQR
+
+A value is considered an outlier if
+
+```
+Value < Q1 − 1.5 × IQR
+```
+
+or
+
+```
+Value > Q3 + 1.5 × IQR
+```
+
+---
+
+# Python Example
+
+```python
+Q1 = df["Sales"].quantile(0.25)
+Q3 = df["Sales"].quantile(0.75)
+
+IQR = Q3 - Q1
+
+lower = Q1 - 1.5 * IQR
+upper = Q3 + 1.5 * IQR
+
+outliers = df[
+    (df["Sales"] < lower) |
+    (df["Sales"] > upper)
+]
+```
+
+---
+
+# Retail Sales Forecasting Example
+
+Suppose daily sales are
+
+```
+210
+
+220
+
+215
+
+225
+
+218
+
+5000
+```
+
+Possible reasons for the outlier:
+
+- Festival season
+- Flash sale
+- Data entry mistake
+- Bulk corporate order
+
+As an ML engineer,
+
+never remove outliers blindly.
+
+Always understand the business reason first.
+
+---
+
+# Box Plot Interpretation
+
+Suppose a Box Plot shows
+
+- Long upper whisker
+- Several points above the whisker
+
+This usually indicates
+
+- Positive Skew
+- Presence of Outliers
+
+---
+
+# Complete Univariate Analysis Workflow
+
+Whenever you receive a numerical feature,
+
+follow this order.
+
+```
+Select Feature
+
+↓
+
+Check Data Type
+
+↓
+
+Summary Statistics
+
+↓
+
+Mean
+
+↓
+
+Median
+
+↓
+
+Mode
+
+↓
+
+Histogram
+
+↓
+
+KDE Plot
+
+↓
+
+Box Plot
+
+↓
+
+Check Outliers
+
+↓
+
+Understand Distribution
+
+↓
+
+Ready for Feature Engineering
+```
+
+---
+
+# Retail Example Workflow
+
+Feature
+
+```
+Sales
+```
+
+Steps
+
+```
+Check Missing Values
+
+↓
+
+Describe()
+
+↓
+
+Mean
+
+↓
+
+Median
+
+↓
+
+Histogram
+
+↓
+
+Box Plot
+
+↓
+
+Outlier Detection
+
+↓
+
+Decision
+
+↓
+
+Model Training
+```
+
+---
+
+# Which Plot Should I Use?
+
+| Feature Type | Preferred Plot |
+|--------------|----------------|
+| Categorical | Count Plot |
+| Numerical Distribution | Histogram |
+| Numerical Density | KDE Plot |
+| Outliers | Box Plot |
+
+---
+
+# Interview Questions
+
+### What is Univariate Analysis?
+
+Studying one feature at a time.
+
+---
+
+### Which plot is best for detecting outliers?
+
+Box Plot.
+
+---
+
+### What is IQR?
+
+The difference between Q3 and Q1.
+
+---
+
+### Formula of IQR?
+
+```
+IQR = Q3 - Q1
+```
+
+---
+
+### Why is IQR preferred over Mean for outlier detection?
+
+Because IQR is less affected by extreme values.
+
+---
+
+### What is the Five Number Summary?
+
+- Minimum
+- Q1
+- Median
+- Q3
+- Maximum
+
+---
+
+### Can every outlier be removed?
+
+No.
+
+Some outliers represent real-world events and contain valuable information.
+
+---
+
+### Which plot shows the distribution of numerical data?
+
+Histogram.
+
+---
+
+### Which plot shows both distribution and outliers?
+
+Box Plot.
+
+---
+
+# Common Mistakes
+
+❌ Removing every outlier automatically.
+
+✅ First understand whether it is a business event or a data error.
+
+---
+
+❌ Using Box Plot for categorical data.
+
+✅ Use Box Plot only for numerical features.
+
+---
+
+❌ Assuming Mean is always reliable.
+
+✅ Outliers can significantly affect the Mean.
+
+---
+
+❌ Ignoring skewness while interpreting a Box Plot.
+
+✅ Skewness often explains why outliers appear.
+
+---
+
+# Revision Cheat Sheet
+
+```
+EDA
+
+│
+
+└── Univariate Analysis
+
+        │
+
+        ├── Categorical
+
+        │      ├── value_counts()
+
+        │      ├── Count Plot
+
+        │      └── Pie Chart
+
+        │
+
+        └── Numerical
+
+               ├── Mean
+
+               ├── Median
+
+               ├── Mode
+
+               ├── Histogram
+
+               ├── KDE Plot
+
+               ├── Box Plot
+
+               ├── Percentiles
+
+               ├── IQR
+
+               └── Outlier Detection
+```
+
+---
+
+# Key Takeaways
+
+- Univariate Analysis studies one feature at a time.
+- Categorical features are analyzed using frequency tables and Count Plots.
+- Numerical features are analyzed using summary statistics and visualizations.
+- Histograms help understand distributions.
+- KDE plots provide a smoother view of the distribution.
+- Box Plots help identify outliers.
+- IQR is a robust method for outlier detection.
+- Always interpret outliers using business context before removing them.
+
+---
+
+# Final Summary
+
+Univariate Analysis is the first step of Exploratory Data Analysis (EDA). It helps us understand the characteristics of individual features before applying preprocessing or Machine Learning algorithms.
+
+By analyzing categorical and numerical features separately, identifying distributions, detecting outliers, and understanding statistical summaries, we build a strong foundation for feature engineering and model development.
