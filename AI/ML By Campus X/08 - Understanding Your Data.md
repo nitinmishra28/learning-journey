@@ -901,3 +901,510 @@ In **Part 3**, we will cover:
 - Common Data Quality Issues
 - End-to-End Dataset Inspection Workflow
 - Interview Cheat Sheet
+
+# Day 08 - Understanding Your Data (Part 3)
+
+> **Topics Covered**
+>
+> - Understanding Data Distribution
+> - Correlation (Introduction)
+> - Understanding Target Variable
+> - End-to-End Dataset Inspection Workflow
+> - Retail Sales Forecasting Example
+> - Interview Questions
+> - Common Mistakes
+> - Revision Cheat Sheet
+
+---
+
+# Step 13: Understand Data Distribution
+
+## Definition
+
+After checking the dataset,
+
+we should understand how the values are distributed.
+
+Questions to ask:
+
+- Are most values small?
+- Are most values large?
+- Are values evenly distributed?
+- Are there extreme values?
+
+Understanding the distribution helps in choosing preprocessing techniques and ML algorithms.
+
+---
+
+# Example
+
+Suppose Salary values are
+
+```
+25000
+27000
+28000
+30000
+32000
+35000
+400000
+```
+
+Notice
+
+Most salaries are between **25k–35k**, but one value is **400k**.
+
+This could be:
+
+- A CEO's salary
+- A data entry mistake
+- An outlier
+
+---
+
+# Why Does Distribution Matter?
+
+Many Machine Learning algorithms assume that data follows certain patterns.
+
+If the data is highly skewed,
+
+we may need transformations later during preprocessing.
+
+---
+
+# Step 14: Understand the Target Variable
+
+Before training a model,
+
+we must understand the target column.
+
+Questions to ask:
+
+- Is it numerical?
+- Is it categorical?
+- Is it balanced?
+- Does it contain missing values?
+
+---
+
+# Example 1
+
+Target
+
+```
+Sales
+```
+
+Output
+
+```
+150
+
+200
+
+250
+```
+
+This is a **Regression** problem.
+
+---
+
+# Example 2
+
+Target
+
+```
+Purchased
+```
+
+Output
+
+```
+Yes
+
+No
+```
+
+This is a **Classification** problem.
+
+---
+
+# Retail Sales Forecasting Example
+
+Dataset
+
+| Date | Store | Product | Sales |
+|------|--------|----------|------:|
+
+Target
+
+```
+Sales
+```
+
+Since Sales is numeric,
+
+the problem is
+
+**Regression**.
+
+---
+
+# Step 15: Correlation (Introduction)
+
+## Definition
+
+Correlation measures how strongly two numerical variables are related.
+
+It helps answer questions like:
+
+- Does temperature affect sales?
+- Does discount increase demand?
+- Does advertising increase revenue?
+
+---
+
+# Example
+
+Suppose
+
+```
+Temperature ↑
+
+Ice Cream Sales ↑
+```
+
+Both increase together.
+
+Positive Correlation.
+
+---
+
+Suppose
+
+```
+Price ↑
+
+Demand ↓
+```
+
+One increases,
+
+the other decreases.
+
+Negative Correlation.
+
+---
+
+# Correlation Values
+
+| Correlation | Meaning |
+|-------------|---------|
+| +1 | Perfect Positive |
+| 0 | No Relationship |
+| -1 | Perfect Negative |
+
+---
+
+# Python Example
+
+```python
+df.corr(numeric_only=True)
+```
+
+This generates a correlation matrix for numerical columns.
+
+---
+
+# Why Is Correlation Useful?
+
+Correlation helps us
+
+- Understand feature relationships.
+- Detect redundant features.
+- Improve feature selection.
+- Reduce multicollinearity (later topic).
+
+---
+
+# Step 16: Initial Business Insights
+
+Understanding data is not only for Machine Learning.
+
+It also provides business insights.
+
+Example
+
+Suppose you discover:
+
+- Weekend sales are higher.
+- Milk sells more during winter.
+- Promotions increase demand.
+
+Even before building a model,
+
+these insights can help business teams make better decisions.
+
+---
+
+# End-to-End Dataset Inspection Workflow
+
+Whenever you receive a new dataset,
+
+follow this sequence.
+
+```
+Load Dataset
+
+↓
+
+View First Rows
+
+↓
+
+Check Shape
+
+↓
+
+Check Columns
+
+↓
+
+Check Data Types
+
+↓
+
+Check Missing Values
+
+↓
+
+Check Duplicates
+
+↓
+
+Generate Summary Statistics
+
+↓
+
+Check Unique Values
+
+↓
+
+Check Target Variable
+
+↓
+
+Understand Distribution
+
+↓
+
+Study Correlation
+
+↓
+
+Ready for Data Preprocessing
+```
+
+---
+
+# Retail Sales Forecasting Workflow
+
+Suppose your dataset contains
+
+- Date
+- Product
+- Store
+- Temperature
+- Promotion
+- Holiday
+- Sales
+
+Your workflow becomes
+
+```
+Load Dataset
+
+↓
+
+Understand Columns
+
+↓
+
+Identify Target
+
+↓
+
+Check Missing Values
+
+↓
+
+Remove Duplicates
+
+↓
+
+Study Sales Distribution
+
+↓
+
+Study Correlation
+
+↓
+
+Feature Engineering
+
+↓
+
+Model Building
+```
+
+This is the same approach followed in real-world ML projects.
+
+---
+
+# Complete Pandas Checklist
+
+```python
+import pandas as pd
+
+df = pd.read_csv("sales.csv")
+
+df.head()
+
+df.tail()
+
+df.shape
+
+df.columns
+
+df.info()
+
+df.describe()
+
+df.isnull().sum()
+
+df.duplicated().sum()
+
+df.nunique()
+
+df["Sales"].value_counts()
+
+df.corr(numeric_only=True)
+```
+
+These commands provide a strong initial understanding of most datasets.
+
+---
+
+# Interview Questions
+
+### What is the purpose of Understanding Your Data?
+
+To understand the structure, quality, and characteristics of the dataset before preprocessing and model training.
+
+---
+
+### Why should we inspect the target variable?
+
+Because it determines the Machine Learning problem type and influences model selection.
+
+---
+
+### What is Correlation?
+
+Correlation measures the strength and direction of the relationship between two numerical variables.
+
+---
+
+### What does a correlation of +1 indicate?
+
+A perfect positive relationship.
+
+---
+
+### What does a correlation of 0 indicate?
+
+No linear relationship.
+
+---
+
+### Why is understanding data important before preprocessing?
+
+Because preprocessing decisions depend on the dataset's characteristics.
+
+---
+
+# Common Mistakes
+
+❌ Jumping directly to Feature Engineering.
+
+✅ First understand the dataset completely.
+
+---
+
+❌ Assuming every numerical column is useful.
+
+✅ Check correlation and business relevance.
+
+---
+
+❌ Ignoring the target variable.
+
+✅ Understand the target before selecting algorithms.
+
+---
+
+# Revision Cheat Sheet
+
+```
+Understanding Your Data
+
+│
+
+├── Load Dataset
+│
+├── View Sample Rows
+│
+├── Check Shape
+│
+├── Check Columns
+│
+├── Check Data Types
+│
+├── Missing Values
+│
+├── Duplicate Records
+│
+├── Statistical Summary
+│
+├── Unique Values
+│
+├── Target Variable
+│
+├── Data Distribution
+│
+├── Correlation
+│
+└── Ready for Preprocessing
+```
+
+---
+
+# Key Takeaways
+
+- Never train a model without understanding the dataset.
+- Inspect rows, columns, data types, and missing values.
+- Study the target variable before choosing an algorithm.
+- Correlation helps understand relationships between numerical features.
+- Dataset understanding is the foundation of every successful Machine Learning project.
+
+---
+
+# Final Summary
+
+Understanding Your Data is the first practical step after collecting a dataset.
+
+A Machine Learning engineer spends significant time exploring data before model building.
+
+By understanding the dataset's structure, quality, and relationships, we reduce errors, improve feature engineering, and build more reliable Machine Learning models.
+
+Mastering this step will make every future stage—data preprocessing, feature engineering, model selection, and evaluation—much easier.
