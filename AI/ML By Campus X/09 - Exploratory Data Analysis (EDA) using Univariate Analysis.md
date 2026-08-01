@@ -590,3 +590,726 @@ In **Part 2**, we will study **Numerical Features** using:
 - Mode
 - Skewness
 - Python Examples
+
+
+
+# Day 09 - Exploratory Data Analysis (EDA) using Univariate Analysis (Part 2)
+
+> **Topics Covered**
+>
+> - Numerical Features
+> - Descriptive Statistics
+> - Histogram
+> - KDE Plot
+> - Distribution
+> - Mean
+> - Median
+> - Mode
+> - Skewness
+> - Distribution Shape
+> - Python Examples
+
+---
+
+# Numerical Features
+
+## Definition
+
+A Numerical Feature contains quantitative values that can be measured.
+
+Examples
+
+```
+Age
+
+Salary
+
+Marks
+
+Height
+
+Weight
+
+Sales
+
+Temperature
+```
+
+Unlike categorical features,
+
+numerical features allow mathematical operations such as
+
+- Addition
+- Average
+- Minimum
+- Maximum
+
+---
+
+# Types of Numerical Features
+
+Numerical features are mainly divided into
+
+```
+Numerical Data
+
+│
+
+├── Discrete
+
+└── Continuous
+```
+
+---
+
+## Discrete Data
+
+Contains countable values.
+
+Examples
+
+```
+Number of Students
+
+Number of Cars
+
+Number of Orders
+
+Number of Products Sold
+```
+
+Possible values
+
+```
+1
+
+2
+
+3
+
+4
+```
+
+Decimals usually don't make sense.
+
+---
+
+## Continuous Data
+
+Contains measurable values.
+
+Examples
+
+```
+Height
+
+Weight
+
+Temperature
+
+Salary
+
+Sales
+```
+
+Possible values
+
+```
+45.2
+
+175.6
+
+22.8
+
+1000.75
+```
+
+---
+
+# How Do We Analyze Numerical Features?
+
+The most common methods are
+
+- Summary Statistics
+- Histogram
+- KDE Plot
+- Box Plot
+- Distribution Analysis
+
+In this part we will focus on
+
+- Summary Statistics
+- Histogram
+- KDE Plot
+
+---
+
+# Descriptive Statistics
+
+Descriptive Statistics summarize numerical data.
+
+The easiest way is
+
+```python
+df.describe()
+```
+
+Example Output
+
+| Statistic | Sales |
+|-----------|------:|
+| Count | 1000 |
+| Mean | 245 |
+| Std | 32 |
+| Min | 120 |
+| 25% | 220 |
+| 50% | 240 |
+| 75% | 265 |
+| Max | 380 |
+
+---
+
+# Mean
+
+## Definition
+
+Mean is the average value.
+
+Formula
+
+```
+Sum of Values
+
+──────────────
+
+Number of Values
+```
+
+Example
+
+```
+10
+
+20
+
+30
+
+40
+
+50
+```
+
+Mean
+
+```
+30
+```
+
+Python
+
+```python
+df["Sales"].mean()
+```
+
+---
+
+# Median
+
+## Definition
+
+Median is the middle value after sorting the data.
+
+Example
+
+```
+10
+
+20
+
+30
+
+40
+
+50
+```
+
+Median
+
+```
+30
+```
+
+Python
+
+```python
+df["Sales"].median()
+```
+
+---
+
+# Mode
+
+## Definition
+
+Mode is the most frequently occurring value.
+
+Example
+
+```
+10
+
+20
+
+20
+
+20
+
+40
+```
+
+Mode
+
+```
+20
+```
+
+Python
+
+```python
+df["Sales"].mode()
+```
+
+---
+
+# Mean vs Median vs Mode
+
+| Measure | Meaning |
+|----------|---------|
+| Mean | Average |
+| Median | Middle Value |
+| Mode | Most Frequent Value |
+
+---
+
+# When Should We Use Median?
+
+Suppose salaries are
+
+```
+25000
+
+27000
+
+29000
+
+30000
+
+5000000
+```
+
+Mean becomes very large because of one extreme salary.
+
+Median still represents the center correctly.
+
+This is why Median is preferred when outliers are present.
+
+---
+
+# Histogram
+
+## Definition
+
+Histogram is the most commonly used plot for numerical features.
+
+It divides data into intervals called **bins**.
+
+Then,
+
+it counts how many observations fall into each interval.
+
+---
+
+# Python Example
+
+```python
+import seaborn as sns
+
+sns.histplot(df["Sales"])
+```
+
+---
+
+# Why Histogram?
+
+Histogram helps answer
+
+- Is the data normally distributed?
+- Is the data skewed?
+- Are there gaps?
+- Are there multiple peaks?
+
+---
+
+# Example
+
+```
+Frequency
+
+│
+
+│      ███
+
+│   ███████
+
+│ ███████████
+
+│██████████████
+
+└────────────────
+
+        Sales
+```
+
+The tallest bars indicate where most observations lie.
+
+---
+
+# Number of Bins
+
+Bins divide the data into intervals.
+
+Example
+
+Sales
+
+```
+100-150
+
+150-200
+
+200-250
+
+250-300
+```
+
+Each interval becomes one bar.
+
+More bins
+
+↓
+
+More detailed histogram.
+
+Fewer bins
+
+↓
+
+Simpler histogram.
+
+---
+
+# KDE Plot
+
+## Definition
+
+KDE stands for
+
+Kernel Density Estimation.
+
+It is a smooth version of a Histogram.
+
+Instead of bars,
+
+it shows a smooth probability curve.
+
+---
+
+# Python Example
+
+```python
+sns.kdeplot(df["Sales"])
+```
+
+---
+
+# Histogram + KDE
+
+A common practice is
+
+```python
+sns.histplot(
+    df["Sales"],
+    kde=True
+)
+```
+
+This displays
+
+- Histogram
+- KDE Curve
+
+together.
+
+---
+
+# Why Use KDE?
+
+KDE makes it easier to understand
+
+- Distribution Shape
+- Peaks
+- Spread
+
+without the effect of histogram bins.
+
+---
+
+# Distribution
+
+Distribution tells us
+
+how values are spread.
+
+Questions
+
+- Are values concentrated?
+- Are they spread out?
+- Is the distribution symmetric?
+
+Understanding distribution is one of the most important goals of EDA.
+
+---
+
+# Symmetric Distribution
+
+Example
+
+```
+        █
+
+      ███
+
+    ███████
+
+      ███
+
+        █
+```
+
+Left side
+
+≈
+
+Right side
+
+Mean
+
+≈
+
+Median
+
+---
+
+# Skewed Distribution
+
+Sometimes data is not symmetric.
+
+Instead,
+
+one side becomes longer.
+
+This is called
+
+**Skewness**.
+
+---
+
+# Positive Skew
+
+```
+███████
+
+████
+
+██
+
+█
+
+──────────────►
+```
+
+Long tail on the right.
+
+Usually
+
+```
+Mean > Median
+```
+
+---
+
+# Negative Skew
+
+```
+◄──────────────
+
+█
+
+██
+
+████
+
+███████
+```
+
+Long tail on the left.
+
+Usually
+
+```
+Mean < Median
+```
+
+---
+
+# Why Is Skewness Important?
+
+Many Machine Learning algorithms work better when data is approximately symmetric.
+
+Highly skewed data may require transformation during preprocessing.
+
+---
+
+# Retail Example
+
+Suppose
+
+Most stores sell
+
+```
+200–250 units
+```
+
+A few stores sell
+
+```
+5000 units
+```
+
+The sales distribution becomes positively skewed.
+
+---
+
+# Python Example
+
+```python
+df["Sales"].skew()
+```
+
+Output
+
+```
+1.87
+```
+
+Positive value
+
+↓
+
+Positive Skew.
+
+---
+
+# Interview Questions
+
+### What is Histogram?
+
+A graphical representation of numerical data using bins.
+
+---
+
+### What is KDE Plot?
+
+A smooth estimate of the data distribution.
+
+---
+
+### Difference between Histogram and KDE?
+
+Histogram uses bars.
+
+KDE uses a smooth curve.
+
+---
+
+### Difference between Mean and Median?
+
+Mean is the average.
+
+Median is the middle value.
+
+---
+
+### Why is Median preferred when outliers exist?
+
+Because Median is less affected by extreme values.
+
+---
+
+### What is Positive Skew?
+
+Distribution with a long right tail.
+
+---
+
+### What is Negative Skew?
+
+Distribution with a long left tail.
+
+---
+
+# Common Mistakes
+
+❌ Using Count Plot for numerical features.
+
+✅ Use Histogram.
+
+---
+
+❌ Assuming Mean always represents the center.
+
+✅ Median is often better when outliers exist.
+
+---
+
+❌ Confusing Histogram with Bar Plot.
+
+Histogram is used for numerical data.
+
+Bar Plot is generally used for categorical summaries.
+
+---
+
+# Key Takeaways
+
+- Numerical features are analyzed differently from categorical features.
+- Mean, Median, and Mode summarize the center of the data.
+- Histograms help visualize frequency distributions.
+- KDE plots provide a smoother view of the distribution.
+- Skewness describes the asymmetry of the data.
+- Understanding the distribution helps in preprocessing and model selection.
+
+---
+
+# What's Next?
+
+In **Part 3**, we will study
+
+- Box Plot
+- Outliers
+- Five Number Summary
+- IQR
+- Percentiles
+- Complete Univariate Workflow
+- Retail Sales Forecasting Example
+- Interview Cheat Sheet
