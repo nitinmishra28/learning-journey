@@ -418,3 +418,486 @@ In **Part 2**, we will learn:
 - Unique Values
 - Descriptive Statistics
 - Data Quality Checks
+
+
+# Day 08 - Understanding Your Data (Part 2)
+
+> **Topics Covered**
+>
+> - Missing Values
+> - Duplicate Records
+> - Statistical Summary
+> - Unique Values
+> - Value Counts
+> - Memory Usage
+> - Data Quality Checks
+
+---
+
+# Step 7: Check Missing Values
+
+## Definition
+
+Missing values are data points where information is not available.
+
+Example
+
+| Name | Age | Salary |
+|------|-----|--------|
+| Rahul | 25 | 30000 |
+| Amit | NULL | 45000 |
+| Neha | 28 | NULL |
+
+Missing values are one of the most common problems in Machine Learning datasets.
+
+---
+
+# Why Should We Check Missing Values?
+
+Many ML algorithms cannot handle missing values directly.
+
+If ignored, they may:
+
+- Produce incorrect predictions
+- Cause training errors
+- Reduce model accuracy
+
+---
+
+# Python Example
+
+```python
+df.isnull().sum()
+```
+
+Example Output
+
+```
+Age          5
+
+Salary      12
+
+Gender       0
+```
+
+Meaning
+
+- Age has 5 missing values.
+- Salary has 12 missing values.
+
+---
+
+# Retail Example
+
+| Product | Sales |
+|----------|------:|
+| Milk | 120 |
+| Bread | NULL |
+| Eggs | 95 |
+
+Before training a forecasting model,
+
+we must decide how to handle the missing sales value.
+
+---
+
+# Step 8: Check Duplicate Records
+
+Duplicate rows increase dataset size unnecessarily and may bias the model.
+
+Example
+
+| Customer | Product |
+|----------|----------|
+| A | Milk |
+| A | Milk |
+
+The second row may be an accidental duplicate.
+
+---
+
+# Python Example
+
+```python
+df.duplicated().sum()
+```
+
+To remove duplicates
+
+```python
+df.drop_duplicates()
+```
+
+---
+
+# Why Remove Duplicates?
+
+Duplicates can
+
+- Increase training time
+- Bias statistics
+- Distort model learning
+
+---
+
+# Step 9: Statistical Summary
+
+One of the most useful Pandas functions is
+
+```python
+df.describe()
+```
+
+It generates summary statistics for numerical columns.
+
+Example Output
+
+| Statistic | Age |
+|-----------|----:|
+| Count | 1000 |
+| Mean | 35.8 |
+| Std | 8.2 |
+| Min | 18 |
+| 25% | 28 |
+| 50% | 35 |
+| 75% | 42 |
+| Max | 65 |
+
+---
+
+# Understanding Each Metric
+
+## Count
+
+Number of non-missing values.
+
+---
+
+## Mean
+
+Average value.
+
+Formula
+
+```
+Sum of Values
+
+──────────────
+
+Number of Values
+```
+
+---
+
+## Standard Deviation (Std)
+
+Measures how spread out the data is.
+
+- Small Std → Values are close together.
+- Large Std → Values are widely spread.
+
+---
+
+## Minimum
+
+Smallest value in the column.
+
+---
+
+## Maximum
+
+Largest value in the column.
+
+---
+
+## Quartiles
+
+### 25%
+
+25% of observations lie below this value.
+
+---
+
+### 50%
+
+Median (middle value).
+
+---
+
+### 75%
+
+75% of observations lie below this value.
+
+---
+
+# Why is describe() Important?
+
+It helps identify:
+
+- Outliers
+- Data distribution
+- Missing values (through count)
+- Suspicious values
+
+---
+
+# Retail Example
+
+Suppose
+
+```
+Average Sales = 220
+
+Maximum Sales = 18000
+```
+
+Immediately,
+
+you may suspect an outlier or a special event.
+
+---
+
+# Step 10: Unique Values
+
+To know how many distinct values exist in a column,
+
+use
+
+```python
+df["Gender"].nunique()
+```
+
+Example Output
+
+```
+2
+```
+
+Meaning
+
+Only two unique values exist.
+
+---
+
+# Why is nunique() Useful?
+
+It helps identify:
+
+- Categorical features
+- Identifier columns
+- Low-cardinality columns
+
+---
+
+# Step 11: Value Counts
+
+Sometimes,
+
+knowing unique values is not enough.
+
+We also need their frequencies.
+
+Example
+
+```python
+df["Gender"].value_counts()
+```
+
+Output
+
+```
+Male      650
+
+Female    350
+```
+
+---
+
+# Why is value_counts() Important?
+
+It helps identify:
+
+- Class imbalance
+- Dominant categories
+- Rare categories
+
+---
+
+# Retail Example
+
+Product Category
+
+```
+Milk      1200
+
+Bread      850
+
+Eggs       600
+
+Butter      20
+```
+
+Butter appears very rarely.
+
+This insight may influence preprocessing or business decisions.
+
+---
+
+# Step 12: Memory Usage
+
+Large datasets consume memory.
+
+To inspect memory usage
+
+```python
+df.memory_usage()
+```
+
+or
+
+```python
+df.info()
+```
+
+Example
+
+```
+Memory Usage
+
+45.8 MB
+```
+
+Knowing memory usage is useful when working with large datasets.
+
+---
+
+# Complete Data Inspection Checklist
+
+Whenever you receive a new dataset,
+
+check the following:
+
+✅ Shape
+
+✅ Head
+
+✅ Tail
+
+✅ Columns
+
+✅ Data Types
+
+✅ Missing Values
+
+✅ Duplicates
+
+✅ Statistical Summary
+
+✅ Unique Values
+
+✅ Value Counts
+
+---
+
+# Python Summary
+
+```python
+df.head()
+
+df.tail()
+
+df.shape
+
+df.columns
+
+df.info()
+
+df.describe()
+
+df.isnull().sum()
+
+df.duplicated().sum()
+
+df.nunique()
+
+df["Gender"].value_counts()
+```
+
+These commands are enough to perform an initial inspection of most datasets.
+
+---
+
+# Interview Questions
+
+### Why do we check missing values?
+
+To identify incomplete data before model training.
+
+---
+
+### What does describe() return?
+
+Summary statistics for numerical columns.
+
+---
+
+### What is the purpose of value_counts()?
+
+It returns the frequency of each unique value in a column.
+
+---
+
+### Difference between unique() and nunique()?
+
+- `unique()` returns the actual unique values.
+- `nunique()` returns only the count of unique values.
+
+---
+
+### Why remove duplicate records?
+
+Duplicates may bias the model and distort statistics.
+
+---
+
+# Common Mistakes
+
+❌ Ignoring missing values.
+
+✅ Always inspect them before preprocessing.
+
+---
+
+❌ Using describe() on all columns and assuming it summarizes categorical data.
+
+✅ By default, `describe()` focuses on numerical columns (unless configured otherwise).
+
+---
+
+❌ Assuming balanced classes.
+
+✅ Verify class distribution using `value_counts()`.
+
+---
+
+# Key Takeaways
+
+- Missing values must be identified before training.
+- Duplicate records should be checked and handled appropriately.
+- `describe()` provides a quick statistical overview.
+- `nunique()` and `value_counts()` help understand categorical features.
+- Initial data inspection saves significant debugging time later.
+
+---
+
+# What's Next?
+
+In **Part 3**, we will cover:
+
+- Univariate Analysis (Introduction)
+- Bivariate Analysis (Introduction)
+- Correlation
+- Data Distribution
+- Common Data Quality Issues
+- End-to-End Dataset Inspection Workflow
+- Interview Cheat Sheet
