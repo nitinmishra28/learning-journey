@@ -3,7 +3,7 @@
 ## 🎯 Learning Objective
 
 Understand:
-- What Machine Learning is
+- What Machine Learning is  
 - Why it is needed
 - Where it is used
 - Types of learning problems
