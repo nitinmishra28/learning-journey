@@ -1,5 +1,5 @@
 # Next Smaller Element to the Right
-
+ 
 ## Problem Overview
 
 Given an array, for every element find the **first smaller element on its right side**.
