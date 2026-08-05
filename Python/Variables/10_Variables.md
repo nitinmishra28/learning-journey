@@ -7,7 +7,7 @@
 # 📚 Table of Contents
 
 - What is a Variable?
-- Why Do We Need Variables?
+- Why Do We Need Variables? 
 - Variable Assignment
 - How Variables Work Internally
 - Object References
