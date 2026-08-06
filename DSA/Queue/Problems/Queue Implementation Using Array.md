@@ -534,7 +534,7 @@ Circular Queue
 Time:
 Enqueue → O(1)
 Dequeue → O(1)
- 
+
 Space:
 O(n)
 ``` 
