@@ -4,7 +4,7 @@
 
 ---
 
-# 🎯 Learning Objectives
+# 🎯 Learning Objectives 
 
 After completing this lecture, you will be able to:
 
