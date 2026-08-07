@@ -495,7 +495,7 @@ Use this implementation when:
 For production code and most Python DSA problems, prefer:
 
 ```python
-from collections import deque
+from collections import deque 
 ```
 
 ---
