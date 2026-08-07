@@ -500,7 +500,7 @@ from collections import deque
 
 ---
 
-# Revision Cheat Sheet
+# Revision Cheat Sheet 
 
 ```text
 Pattern:
