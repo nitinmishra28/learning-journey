@@ -445,7 +445,7 @@ Always reset
 front = rear = -1
 ```
 
-when the last element is removed.
+when the last element is removed. 
 
 ---
 
@@ -495,7 +495,7 @@ Use this implementation when:
 For production code and most Python DSA problems, prefer:
 
 ```python 
-from collections import deque 
+from collections import deque   
 ```
 
 ---
