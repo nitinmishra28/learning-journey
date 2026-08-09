@@ -442,7 +442,7 @@ if self.isEmpty():
 Always reset
 
 ```python
-front = rear = -1
+front = rear = -1 
 ```
 
 when the last element is removed. 
