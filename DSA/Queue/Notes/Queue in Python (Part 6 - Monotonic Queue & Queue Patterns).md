@@ -7,7 +7,7 @@ A **Monotonic Queue** is a deque that always maintains its elements in a specifi
 There are two types:
 
 * **Monotonic Increasing Queue**
-* **Monotonic Decreasing Queue**
+* **Monotonic Decreasing Queue**  
 
 Unlike a normal queue, elements that are no longer useful are removed immediately.
 
