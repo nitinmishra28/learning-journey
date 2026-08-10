@@ -1,6 +1,6 @@
 # Queue in Python (Part 6 - Monotonic Queue & Queue Patterns)
 
-# What is a Monotonic Queue?
+# What is a Monotonic Queue? 
 
 A **Monotonic Queue** is a deque that always maintains its elements in a specific order.
 
