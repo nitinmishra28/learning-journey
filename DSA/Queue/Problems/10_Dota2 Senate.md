@@ -617,5 +617,5 @@ O(n)
 # One-Line Pattern
 
 ```text
-Store party indices in two queues → compare front indices → smaller index acts first → losing senator is removed → winner goes to next round using index + n.
+Store party indices in two queues → compare front indices → smaller index acts first → losing senator is removed → winner goes to next round using index + n. 
 ```
