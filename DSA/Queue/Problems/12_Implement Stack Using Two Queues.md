@@ -831,7 +831,7 @@ O(n)
 
 ---
 
-# One-Line Pattern
+# One-Line Pattern 
 
 ```text
 Two Queues → move old elements aside → insert new element first → move old elements back → front of q1 becomes Stack top.
