@@ -830,7 +830,7 @@ O(n)
 ```
 
 ---
-
+ 
 # One-Line Pattern 
 
 ```text
