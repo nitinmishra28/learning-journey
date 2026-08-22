@@ -1017,6 +1017,6 @@ O(n)
 
 # One-Line Pattern
 
-```text
+```text 
 Group people by the day they learn → use one queue for when they start spreading and another for when they forget → maintain active spreaders and total people. 
 ```
