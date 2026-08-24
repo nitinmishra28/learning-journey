@@ -1069,7 +1069,7 @@ The most important idea from this lecture:
 ```text
 __init__()
     ↓
-Initialize the object's state
+Initialize the object's state 
 ```
 
 And:
