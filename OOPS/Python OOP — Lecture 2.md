@@ -1067,7 +1067,7 @@ Methods Operate on State
 The most important idea from this lecture:
 
 ```text
-__init__() 
+__init__()  
     ↓
 Initialize the object's state 
 ```
