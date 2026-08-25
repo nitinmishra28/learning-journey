@@ -464,7 +464,7 @@ This is a post-order DFS idea.
 Complexity:
 
 Time  → O(n)
-Space → O(h)
+Space → O(h) (The auxiliary space is O(h) because of the recursion call stack, where h is the height of the tree.)
 
 h = height of tree
 ```
