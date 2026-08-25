@@ -1,25 +1,30 @@
-````markdown
 # 🌳 Trees in Python — Generic & Binary Trees
 
-This README covers the **Generic Tree** and **Binary Tree** concepts required for DSA, problem solving, practical understanding, and interviews.
+This README covers **Generic Trees** and **Binary Trees** required for DSA, problem solving, practical understanding, and interviews.
 
-It focuses on:
-- Core concepts
-- Python implementation
-- Tree representation
-- DFS/BFS
-- Recursive and iterative traversal
-- Important problem-solving patterns
-- Common interview problems
-- Complexity analysis
+### What This Covers
 
-It does **not** cover BST, Heap, Trie, or advanced specialized trees.
+- Tree fundamentals and terminology
+- Generic Tree implementation
+- Binary Tree implementation
+- DFS and BFS
+- Recursive and iterative traversals
+- Tree height and depth
+- Tree properties
+- Common tree problem-solving patterns
+- Path and backtracking problems
+- Important interview problems
+- Practical applications
+- Time and space complexity
+
+> **Scope:** Generic Trees and Binary Trees only.  
+> BST, Heap, Trie, and advanced trees will be covered separately.
 
 ---
 
 # 1. What is a Tree?
 
-A **Tree** is a non-linear hierarchical data structure made up of nodes connected by edges.
+A **Tree** is a non-linear hierarchical data structure consisting of nodes connected by edges.
 
 Example:
 
@@ -31,17 +36,6 @@ Example:
        5   6
 ```
 
-A tree has:
-
-- **Nodes** → store data
-- **Edges** → connect nodes
-- **Root** → topmost node
-- **Parent** → node directly above another node
-- **Child** → node directly below another node
-- **Leaf** → node with no children
-
-### Important Properties
-
 For a tree containing `n` nodes:
 
 ```text
@@ -50,7 +44,7 @@ Number of edges = n - 1
 
 A tree:
 
-- Has exactly one root.
+- Has one root.
 - Has no cycles.
 - Has exactly one path between any two nodes.
 
@@ -78,7 +72,7 @@ Root = 1
 
 ### Parent
 
-A node directly connected above another node.
+The node directly above another node.
 
 ```text
 Parent of 5 = 2
@@ -86,7 +80,7 @@ Parent of 5 = 2
 
 ### Child
 
-A node directly connected below another node.
+The node directly below another node.
 
 ```text
 Children of 2 = 5, 6
@@ -97,7 +91,7 @@ Children of 2 = 5, 6
 Nodes having the same parent.
 
 ```text
-5 and 6 are siblings
+5 and 6 are siblings.
 ```
 
 ### Leaf Node
@@ -136,8 +130,6 @@ For node `2`:
      / \
     5   6
 ```
-
-This is a subtree.
 
 ---
 
@@ -180,7 +172,7 @@ height(2) = 1
 height(1) = 2
 ```
 
-> Some problems define height in terms of nodes instead of edges. Always follow the definition given in the problem.
+> Some problems define height using number of nodes instead of edges. Always check the problem's definition.
 
 ---
 
@@ -213,7 +205,7 @@ There is no fixed limit on the number of children.
 
 # 6. Generic Tree Node in Python
 
-A common representation:
+A common representation is:
 
 ```python
 class Node:
@@ -223,7 +215,7 @@ class Node:
         self.children = []
 ```
 
-Create a tree:
+Creating a tree:
 
 ```python
 root = Node(1)
@@ -248,20 +240,9 @@ Result:
 
 ---
 
-# 7. Generic Tree Traversal
+# 7. Generic Tree DFS
 
-The two main traversal techniques are:
-
-```text
-DFS → Depth First Search
-BFS → Breadth First Search
-```
-
-For Generic Trees, DFS is usually implemented recursively because every node has a list of children.
-
----
-
-# 8. Generic Tree DFS
+DFS = **Depth First Search**
 
 Basic pattern:
 
@@ -289,9 +270,9 @@ Recursively process each child
 
 ---
 
-# 9. Generic Tree Preorder
+# 8. Generic Tree Preorder
 
-Preorder means:
+Preorder:
 
 ```text
 Root → Children
@@ -329,9 +310,9 @@ def preorder(root):
 
 ---
 
-# 10. Generic Tree Postorder
+# 9. Generic Tree Postorder
 
-Postorder means:
+Postorder:
 
 ```text
 Children → Root
@@ -369,9 +350,9 @@ def postorder(root):
 
 ### When is Postorder Useful?
 
-When the current node depends on information calculated from its children.
+When the current node depends on information from its children.
 
-Examples:
+Common examples:
 
 - Height
 - Subtree sum
@@ -380,11 +361,11 @@ Examples:
 
 ---
 
-# 11. Generic Tree BFS
+# 10. Generic Tree BFS
 
-BFS visits nodes level by level.
+BFS = **Breadth First Search**
 
-Use `deque`:
+Use `deque` for efficient queue operations.
 
 ```python
 from collections import deque
@@ -428,9 +409,9 @@ Output:
 
 ---
 
-# 12. Generic Tree Level Order
+# 11. Generic Tree Level Order
 
-If the problem requires nodes grouped by levels:
+If nodes need to be grouped level by level:
 
 ```python
 from collections import deque
@@ -471,21 +452,21 @@ Output:
 ]
 ```
 
-### Important Pattern
+### Important BFS Pattern
 
 ```python
 for _ in range(len(q)):
 ```
 
-processes exactly one tree level.
+processes exactly one level.
 
-This same pattern is heavily used in Binary Tree BFS problems.
+This pattern is heavily used in Binary Tree problems too.
 
 ---
 
-# 13. Generic Tree Height
+# 12. Generic Tree Height
 
-If height is measured in **number of nodes**:
+Height measured in number of nodes:
 
 ```python
 def height(root):
@@ -501,7 +482,7 @@ def height(root):
     return 1 + max_height
 ```
 
-If height is measured in **edges**:
+Height measured in edges:
 
 ```python
 def height(root):
@@ -519,7 +500,7 @@ def height(root):
 
 ---
 
-# 14. Generic Tree Count Nodes
+# 13. Generic Tree Count Nodes
 
 ```python
 def countNodes(root):
@@ -535,17 +516,9 @@ def countNodes(root):
     return count
 ```
 
-Pattern:
-
-```text
-Current node
-+
-All child subtree counts
-```
-
 ---
 
-# 15. Generic Tree Sum
+# 14. Generic Tree Sum
 
 ```python
 def treeSum(root):
@@ -563,9 +536,9 @@ def treeSum(root):
 
 ---
 
-# 16. Generic Tree Search
+# 15. Generic Tree Search
 
-A Generic Tree has no ordering property, so search may require visiting every node.
+A Generic Tree has no ordering property, so search can require visiting every node.
 
 ```python
 def search(root, target):
@@ -593,7 +566,7 @@ Space: O(h)
 
 ---
 
-# 17. Generic Tree Recursive Pattern
+# 16. Generic Tree Recursive Pattern
 
 The most important Generic Tree template:
 
@@ -609,7 +582,7 @@ def dfs(node):
         dfs(child)
 ```
 
-When solving a problem, identify:
+When solving a problem, ask:
 
 ```text
 1. What should happen at the current node?
@@ -619,11 +592,11 @@ When solving a problem, identify:
 
 ---
 
-# 18. Binary Tree
+# 17. Binary Tree
 
 A **Binary Tree** is a tree where every node has at most two children.
 
-The children are specifically:
+The children are:
 
 ```text
 Left Child
@@ -652,7 +625,7 @@ but never more than 2.
 
 ---
 
-# 19. Binary Tree Node in Python
+# 18. Binary Tree Node in Python
 
 Standard representation:
 
@@ -665,7 +638,7 @@ class TreeNode:
         self.right = right
 ```
 
-Create a tree:
+Creating a tree:
 
 ```python
 root = TreeNode(1)
@@ -689,11 +662,7 @@ Result:
 
 ---
 
-# 20. Types of Binary Trees
-
-These are important for DSA and interviews.
-
----
+# 19. Types of Binary Trees
 
 ## Full Binary Tree
 
@@ -723,7 +692,7 @@ No node has exactly one child.
 
 All levels are completely filled except possibly the last.
 
-The last level is filled:
+The last level is filled from:
 
 ```text
 Left → Right
@@ -739,7 +708,7 @@ Example:
     4  5 6
 ```
 
-This concept becomes important when learning:
+This concept becomes important later when learning:
 
 ```text
 Heap
@@ -816,7 +785,7 @@ A skewed tree behaves similarly to a linked list.
 
 ---
 
-# 21. Binary Tree Traversals
+# 20. Binary Tree Traversals
 
 The four fundamental Binary Tree traversals are:
 
@@ -827,21 +796,13 @@ The four fundamental Binary Tree traversals are:
 4. Level Order
 ```
 
-First three:
+The first three are DFS.
 
-```text
-DFS
-```
-
-Last one:
-
-```text
-BFS
-```
+Level Order is BFS.
 
 ---
 
-# 22. Preorder Traversal
+# 21. Preorder Traversal
 
 Order:
 
@@ -865,7 +826,7 @@ Output:
 1 2 4 5 3
 ```
 
-Recursive:
+Recursive implementation:
 
 ```python
 def preorder(root):
@@ -881,7 +842,7 @@ def preorder(root):
 
 ---
 
-# 23. Inorder Traversal
+# 22. Inorder Traversal
 
 Order:
 
@@ -905,7 +866,7 @@ Output:
 4 2 5 1 3
 ```
 
-Recursive:
+Recursive implementation:
 
 ```python
 def inorder(root):
@@ -928,11 +889,11 @@ For a **Binary Search Tree**:
 Inorder Traversal = Sorted Order
 ```
 
-This becomes very important when learning BST.
+BST will be covered separately.
 
 ---
 
-# 24. Postorder Traversal
+# 23. Postorder Traversal
 
 Order:
 
@@ -956,7 +917,7 @@ Output:
 4 5 2 3 1
 ```
 
-Recursive:
+Recursive implementation:
 
 ```python
 def postorder(root):
@@ -972,7 +933,7 @@ def postorder(root):
 
 ### When is Postorder Useful?
 
-When the current node requires information from both children.
+Postorder is useful when the current node requires information from both children.
 
 Examples:
 
@@ -984,7 +945,7 @@ Examples:
 
 ---
 
-# 25. Level Order Traversal
+# 24. Level Order Traversal
 
 Level Order = BFS.
 
@@ -1000,7 +961,7 @@ Example:
 
 Output:
 
-```text
+```python
 [
     [1],
     [2, 3],
@@ -1044,48 +1005,7 @@ def levelOrder(root):
 
 ---
 
-# 26. Why `len(q)` Matters in BFS
-
-At the beginning of:
-
-```python
-for _ in range(len(q)):
-```
-
-the queue contains exactly the nodes of the current level.
-
-Example:
-
-```text
-        1          ← Level 0
-       / \
-      2   3        ← Level 1
-     / \
-    4   5          ← Level 2
-```
-
-Queue progression:
-
-```text
-[1]
-
-[2, 3]
-
-[4, 5]
-```
-
-This pattern is essential for:
-
-- Level Order
-- Zigzag Traversal
-- Right View
-- Left View
-- Minimum Depth
-- Level-based problems
-
----
-
-# 27. Recursive Binary Tree Template
+# 25. Recursive Binary Tree Template
 
 Most Binary Tree recursive problems can start with:
 
@@ -1111,7 +1031,7 @@ What should dfs(root) return?
 
 ---
 
-# 28. Three Questions for Tree Recursion
+# 26. Three Questions for Tree Recursion
 
 Whenever you see a recursive tree problem:
 
@@ -1123,7 +1043,7 @@ Usually:
 if root is None:
 ```
 
-### 2. What information do I get from children?
+### 2. What information do I get from the children?
 
 ```python
 left = dfs(root.left)
@@ -1140,7 +1060,7 @@ This is the foundation of most recursive Binary Tree problems.
 
 ---
 
-# 29. Maximum Depth / Height
+# 27. Maximum Depth / Height
 
 ```python
 def maxDepth(root):
@@ -1171,7 +1091,7 @@ Space: O(h)
 
 ---
 
-# 30. Minimum Depth
+# 28. Minimum Depth
 
 Minimum depth is the shortest path from root to a **leaf**.
 
@@ -1199,7 +1119,7 @@ def minDepth(root):
 
 ---
 
-# 31. Count Nodes
+# 29. Count Nodes
 
 ```python
 def countNodes(root):
@@ -1226,7 +1146,7 @@ Right subtree
 
 ---
 
-# 32. Sum of Nodes
+# 30. Sum of Nodes
 
 ```python
 def treeSum(root):
@@ -1243,7 +1163,7 @@ def treeSum(root):
 
 ---
 
-# 33. Maximum Value
+# 31. Maximum Value
 
 ```python
 def maxValue(root):
@@ -1259,7 +1179,7 @@ def maxValue(root):
 
 ---
 
-# 34. Search in Binary Tree
+# 32. Search in Binary Tree
 
 A normal Binary Tree has no ordering property.
 
@@ -1290,7 +1210,7 @@ Space: O(h)
 
 ---
 
-# 35. Same Binary Tree
+# 33. Same Binary Tree
 
 Two Binary Trees are the same if:
 
@@ -1318,7 +1238,7 @@ def isSameTree(p, q):
 
 ---
 
-# 36. Invert Binary Tree
+# 34. Invert Binary Tree
 
 Swap left and right children at every node.
 
@@ -1348,7 +1268,7 @@ Solve right
 
 ---
 
-# 37. Symmetric Binary Tree
+# 35. Symmetric Binary Tree
 
 A tree is symmetric if its left and right subtrees are mirror images.
 
@@ -1384,7 +1304,7 @@ left.right ↔ right.left
 
 ---
 
-# 38. Root-to-Leaf Path
+# 36. Root-to-Leaf Path
 
 Many tree problems require maintaining the current path.
 
@@ -1406,7 +1326,7 @@ def dfs(node, path):
     path.pop()
 ```
 
-This introduces the concept of:
+This introduces:
 
 ```text
 Backtracking
@@ -1414,9 +1334,9 @@ Backtracking
 
 ---
 
-# 39. Backtracking on Trees
+# 37. Backtracking on Trees
 
-The general pattern:
+General pattern:
 
 ```python
 path.append(node.val)
@@ -1439,7 +1359,7 @@ Explore
 Undo
 ```
 
-This pattern is important for:
+Common problems:
 
 - Root-to-leaf paths
 - Path Sum II
@@ -1448,7 +1368,7 @@ This pattern is important for:
 
 ---
 
-# 40. Path Sum
+# 38. Path Sum
 
 Check whether a root-to-leaf path has a target sum.
 
@@ -1472,7 +1392,7 @@ def hasPathSum(root, targetSum):
 
 ---
 
-# 41. Iterative Preorder
+# 39. Iterative Preorder
 
 Preorder:
 
@@ -1513,17 +1433,17 @@ Why push right first?
 Because the stack is LIFO.
 
 ```text
-Push: Right
-Push: Left
+Push Right
+Push Left
 
-Pop: Left
+Pop Left
 ```
 
 Therefore Left is processed before Right.
 
 ---
 
-# 42. Iterative Inorder
+# 40. Iterative Inorder
 
 Inorder:
 
@@ -1571,9 +1491,9 @@ Then process nodes while moving back up.
 
 ---
 
-# 43. Iterative Postorder
+# 41. Iterative Postorder
 
-One easy approach uses two stacks:
+One simple approach uses two stacks:
 
 ```python
 def postorder(root):
@@ -1616,7 +1536,7 @@ Left → Right → Root
 
 ---
 
-# 44. DFS vs BFS
+# 42. DFS vs BFS
 
 | DFS | BFS |
 |---|---|
@@ -1630,51 +1550,9 @@ Left → Right → Root
 
 ---
 
-# 45. Recursive DFS vs Iterative DFS
+# 43. Tree Traversal Complexity
 
-Recursive DFS uses the:
-
-```text
-Call Stack
-```
-
-Iterative DFS uses:
-
-```text
-Explicit Stack
-```
-
-Recursive:
-
-```python
-def dfs(root):
-
-    if root is None:
-        return
-
-    dfs(root.left)
-    dfs(root.right)
-```
-
-Iterative:
-
-```python
-stack = [root]
-
-while stack:
-
-    node = stack.pop()
-
-    # Process node
-```
-
-Both are DFS.
-
----
-
-# 46. Tree Traversal Complexity
-
-For all standard traversals:
+For standard traversals:
 
 ```text
 Time = O(n)
@@ -1718,9 +1596,9 @@ O(n)
 
 ---
 
-# 47. Bottom-Up Tree Recursion
+# 44. Bottom-Up Tree Recursion
 
-Many important tree problems are solved bottom-up.
+Many important tree problems are solved using bottom-up recursion.
 
 Concept:
 
@@ -1760,7 +1638,7 @@ Common problems:
 
 ---
 
-# 48. Top-Down Tree Recursion
+# 45. Top-Down Tree Recursion
 
 Sometimes information flows from parent to child.
 
@@ -1787,9 +1665,9 @@ Common uses:
 
 ---
 
-# 49. Global Answer Pattern
+# 46. Global Answer Pattern
 
-Sometimes the recursive function returns one thing, while the final answer is maintained separately.
+Sometimes the recursive function returns one thing while the final answer is maintained separately.
 
 Example:
 
@@ -1837,7 +1715,7 @@ This is a very common interview pattern.
 
 ---
 
-# 50. Binary Tree Diameter
+# 47. Binary Tree Diameter
 
 Diameter = longest path between two nodes.
 
@@ -1871,7 +1749,7 @@ Do not confuse the two.
 
 ---
 
-# 51. Balanced Binary Tree
+# 48. Balanced Binary Tree
 
 Common condition:
 
@@ -1911,17 +1789,15 @@ def isBalanced(root):
 
 Why `-1`?
 
-It means:
-
 ```text
-This subtree is unbalanced.
+-1 = subtree is unbalanced
 ```
 
 This avoids recalculating heights.
 
 ---
 
-# 52. Important Problem-Solving Patterns
+# 49. Important Tree Problem-Solving Patterns
 
 ## Pattern 1 — Simple DFS
 
@@ -2051,101 +1927,9 @@ Minimum Depth
 
 ---
 
-# 53. Common Interview Mistakes
+# 50. Practical Applications of Trees
 
-### Mistake 1 — Forgetting Base Case
-
-Always consider:
-
-```python
-if root is None:
-```
-
----
-
-### Mistake 2 — Confusing Height and Depth
-
-Remember:
-
-```text
-Depth → Root to Node
-Height → Node to Deepest Leaf
-```
-
----
-
-### Mistake 3 — Forgetting Both Subtrees
-
-For a normal Binary Tree:
-
-```python
-dfs(root.left)
-dfs(root.right)
-```
-
-may both be required.
-
----
-
-### Mistake 4 — Forgetting Backtracking
-
-If you do:
-
-```python
-path.append(...)
-```
-
-remember:
-
-```python
-path.pop()
-```
-
----
-
-### Mistake 5 — Recalculating Height
-
-Repeatedly calculating height for every node can result in:
-
-```text
-O(n²)
-```
-
-Instead calculate subtree information once.
-
----
-
-### Mistake 6 — Confusing BFS and DFS
-
-BFS:
-
-```python
-q.popleft()
-```
-
-DFS:
-
-```python
-stack.pop()
-```
-
----
-
-### Mistake 7 — Not Defining the Return Value
-
-Before writing recursive code, ask:
-
-```text
-What does dfs(node) return?
-```
-
-This is one of the most important tree problem-solving questions.
-
----
-
-# 54. Practical Applications of Trees
-
-Trees are widely used outside DSA problems.
+Trees are used heavily in real-world systems.
 
 ### File Systems
 
@@ -2184,8 +1968,6 @@ CEO
 
 ### Expression Trees
 
-Expressions can be represented as trees.
-
 Example:
 
 ```text
@@ -2202,11 +1984,9 @@ Represents:
 2 * 3 + 5
 ```
 
-These practical examples help understand why hierarchical data naturally maps to trees.
-
 ---
 
-# 55. Generic Tree vs Binary Tree
+# 51. Generic Tree vs Binary Tree
 
 | Feature | Generic Tree | Binary Tree |
 |---|---|---|
@@ -2215,17 +1995,15 @@ These practical examples help understand why hierarchical data naturally maps to
 | DFS | Preorder/Postorder | Preorder/Inorder/Postorder |
 | BFS | Yes | Yes |
 | Inorder | Not standard | Yes |
-| Common problems | Hierarchy, subtree | Recursion, paths, traversal |
+| Common problems | Hierarchies, subtrees | Recursion, paths, traversals |
 
 ---
 
-# 56. Must-Know Generic Tree Topics
-
-Before moving forward, you should know:
+# 52. Must-Know Generic Tree Topics
 
 - [ ] Tree terminology
 - [ ] Generic Tree representation
-- [ ] Generic Tree node implementation
+- [ ] Generic Tree Node
 - [ ] DFS
 - [ ] Preorder
 - [ ] Postorder
@@ -2235,12 +2013,12 @@ Before moving forward, you should know:
 - [ ] Count Nodes
 - [ ] Sum of Nodes
 - [ ] Search
-- [ ] Recursive tree pattern
-- [ ] Time and space complexity
+- [ ] Recursive Tree Pattern
+- [ ] Time and Space Complexity
 
 ---
 
-# 57. Must-Know Binary Tree Topics
+# 53. Must-Know Binary Tree Topics
 
 ### Fundamentals
 
@@ -2279,12 +2057,12 @@ Before moving forward, you should know:
 
 ### Problem-Solving Patterns
 
-- [ ] Bottom-up DFS
-- [ ] Top-down DFS
+- [ ] Bottom-Up DFS
+- [ ] Top-Down DFS
 - [ ] Backtracking
-- [ ] Global answer
-- [ ] Path problems
-- [ ] BFS by level
+- [ ] Global Answer
+- [ ] Path Problems
+- [ ] BFS by Level
 
 ### Interview Problems
 
@@ -2298,145 +2076,94 @@ Before moving forward, you should know:
 
 ---
 
-# 58. Interview Questions You Should Be Able to Answer
+# 54. Interview Questions You Should Be Able to Answer
 
 You should be able to explain:
 
-```text
 1. What is a Tree?
-
 2. What is a Binary Tree?
-
 3. Generic Tree vs Binary Tree?
-
 4. What are root, parent, child, leaf and sibling?
-
 5. What is depth?
-
 6. What is height?
-
 7. Full vs Complete vs Perfect Binary Tree?
-
 8. What is a balanced tree?
-
 9. What is a skewed tree?
-
 10. DFS vs BFS?
-
 11. Preorder vs Inorder vs Postorder?
-
-12. Why does inorder matter?
-
+12. Why is inorder important?
 13. How do you implement level-order traversal?
-
-14. Why do we use deque for BFS?
-
+14. Why do we use `deque` for BFS?
 15. What is the time complexity of tree traversal?
-
 16. What is the space complexity of recursive DFS?
-
 17. When should you use preorder?
-
 18. When should you use postorder?
-
 19. How do you solve tree problems using bottom-up recursion?
-
 20. How do you pass information from parent to child?
-
 21. How does backtracking work on trees?
-
 22. How do you calculate tree height?
-
 23. How do you find the diameter?
-
 24. How do you check whether a tree is balanced?
-
-25. What should a recursive DFS function return?
-```
+25. What should `dfs(node)` return?
 
 ---
 
-# 59. Problem-Solving Checklist
+# 55. Tree Problem-Solving Checklist
 
-When you get a Tree problem, go through this checklist:
+When you get a Tree problem:
 
 ```text
-Step 1:
+Step 1
 Identify the tree type.
-
         ↓
+Generic Tree / Binary Tree
 
-Generic Tree?
-Binary Tree?
-
-        ↓
-
-Step 2:
+Step 2
 Decide DFS or BFS.
-
         ↓
+DFS / BFS
 
-Step 3:
+Step 3
 If DFS:
-
-Preorder?
-Inorder?
-Postorder?
-
         ↓
+Preorder / Inorder / Postorder
 
-Step 4:
+Step 4
 Ask:
-
 Does the current node need information
 from its children?
-
         ↓
-
 YES → Bottom-Up DFS
 
-        ↓
-
-Step 5:
+Step 5
 Does the child need information
 from its parent?
-
         ↓
-
 YES → Top-Down DFS
 
-        ↓
-
-Step 6:
+Step 6
 Do I need to maintain a path?
-
         ↓
-
 YES → Backtracking
 
-        ↓
-
-Step 7:
+Step 7
 Does the problem depend on levels?
-
         ↓
-
 YES → BFS
 
-        ↓
-
-Step 8:
+Step 8
+Decide:
 What should dfs(node) return?
 
-        ↓
-
-Step 9:
-Calculate Time + Space Complexity
+Step 9
+Calculate:
+Time Complexity
+Space Complexity
 ```
 
 ---
 
-# 60. Core Templates to Memorize
+# 56. Core Templates to Memorize
 
 ## Generic Tree DFS
 
@@ -2451,8 +2178,6 @@ def dfs(node):
     for child in node.children:
         dfs(child)
 ```
-
----
 
 ## Generic Tree BFS
 
@@ -2476,8 +2201,6 @@ def bfs(root):
             q.append(child)
 ```
 
----
-
 ## Binary Tree DFS
 
 ```python
@@ -2493,8 +2216,6 @@ def dfs(root):
 
     return ...
 ```
-
----
 
 ## Binary Tree BFS
 
@@ -2523,8 +2244,6 @@ def bfs(root):
                 q.append(node.right)
 ```
 
----
-
 ## Binary Tree Backtracking
 
 ```python
@@ -2543,7 +2262,7 @@ def dfs(node, path):
 
 ---
 
-# 61. Recommended Learning Order
+# 57. Recommended Learning Order
 
 Follow this order:
 
@@ -2595,61 +2314,11 @@ Diameter
 Balanced Tree
 ```
 
-After these concepts are strong, move to:
+After Generic Trees and Binary Trees are strong, move to:
 
 ```text
-Binary Search Tree
+Binary Search Tree (BST)
 ```
-
----
-
-# 62. Final Takeaways
-
-The most important things to master are:
-
-```text
-Tree Structure
-      ↓
-TreeNode Representation
-      ↓
-DFS / BFS
-      ↓
-Preorder / Inorder / Postorder
-      ↓
-Level Order
-      ↓
-Recursion
-      ↓
-Bottom-Up
-      ↓
-Top-Down
-      ↓
-Backtracking
-      ↓
-Path Problems
-      ↓
-Tree Properties
-      ↓
-Diameter / Balanced Tree
-```
-
-The goal is **not** to memorize individual solutions.
-
-The key skill is to recognize the pattern:
-
-```text
-"What information does the current node
-need from its children?"
-```
-
-and:
-
-```text
-"What information does the child
-need from its parent?"
-```
-
-Once you can answer these questions, most Generic Tree and Binary Tree problems can be approached using a small number of reusable patterns.
 
 ---
 
@@ -2700,4 +2369,3 @@ Once you can answer these questions, most Generic Tree and Binary Tree problems 
 - [ ] Understand recursion space complexity
 - [ ] Recognize common tree problem patterns
 - [ ] Explain tree concepts in an interview
-````
