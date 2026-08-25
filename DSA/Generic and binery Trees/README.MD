@@ -21,7 +21,93 @@ Example:
 
 ---
 
-# 2. Creating a Binary Tree Node
+# 2. Tree Terminology
+
+These are the basic terms you should know for interviews and revision.
+
+Consider:
+
+```text
+        10
+       /  \
+     20    30
+    /  \
+   40   50
+```
+
+### Root
+
+The topmost node of the tree.
+
+```text
+Root = 10
+```
+
+### Parent
+
+A node that has another node directly below it.
+
+```text
+Parent of 20 = 10
+Parent of 40 = 20
+```
+
+### Child
+
+A node directly connected below another node.
+
+```text
+Children of 10 = 20, 30
+Children of 20 = 40, 50
+```
+
+### Leaf Node
+
+A node that has no children.
+
+```text
+Leaf Nodes = 40, 50, 30
+```
+
+### Sibling
+
+Nodes that have the same parent.
+
+```text
+20 and 30 are siblings.
+
+40 and 50 are siblings.
+```
+
+### Edge
+
+The connection between two nodes.
+
+For example:
+
+```text
+10 → 20
+10 → 30
+20 → 40
+20 → 50
+```
+
+Each connection represents one edge.
+
+### Quick Revision
+
+```text
+Root    → Topmost node
+Parent  → Node above
+Child   → Node below
+Leaf    → Node with no children
+Sibling → Same parent
+Edge    → Connection between two nodes
+```
+
+---
+
+# 3. Creating a Binary Tree Node
 
 In Python, we can represent a Binary Tree node using a class.
 
@@ -53,7 +139,7 @@ because the node does not have any children yet.
 
 ---
 
-# 3. Creating a Binary Tree
+# 4. Creating a Binary Tree
 
 ```python
 root = Tree(10)
@@ -89,7 +175,7 @@ root = 10
 
 ---
 
-# 4. Tree Traversal
+# 5. Tree Traversal
 
 **Traversal** means visiting every node of the tree in a particular order.
 
@@ -109,7 +195,7 @@ Level Order
 
 ---
 
-# 5. Preorder Traversal — NLR
+# 6. Preorder Traversal — NLR
 
 Preorder follows:
 
@@ -179,7 +265,7 @@ Go Right
 
 ---
 
-# 6. Inorder Traversal — LNR
+# 7. Inorder Traversal — LNR
 
 Inorder follows:
 
@@ -242,7 +328,7 @@ Go Right
 
 ---
 
-# 7. Postorder Traversal — LRN
+# 8. Postorder Traversal — LRN
 
 Postorder follows:
 
@@ -304,7 +390,7 @@ Process Node
 
 ---
 
-# 8. Quick Comparison of DFS Traversals
+# 9. Quick Comparison of DFS Traversals
 
 For:
 
@@ -332,7 +418,7 @@ Postorder → Node comes last
 
 ---
 
-# 9. Level Order Traversal
+# 10. Level Order Traversal
 
 Level Order Traversal visits nodes **level by level**.
 
@@ -358,7 +444,7 @@ Output:
 
 ---
 
-# 10. Why `deque`?
+# 11. Why `deque`?
 
 For Level Order Traversal, we need a **queue**.
 
@@ -389,7 +475,7 @@ First In → First Out
 
 ---
 
-# 11. Level Order Traversal Using `None`
+# 12. Level Order Traversal Using `None`
 
 We can use `None` as a marker to identify the end of each level.
 
@@ -444,7 +530,7 @@ Output:
 
 ---
 
-# 12. How Level Order Works
+# 13. How Level Order Works
 
 Initially:
 
@@ -481,7 +567,86 @@ So we print a new line and add another `None` if nodes are still present.
 
 ---
 
-# 13. Complete Code
+# 14. DFS vs BFS — Important Interview Distinction
+
+This is an important distinction to remember for interviews.
+
+### DFS — Depth First Search
+
+DFS goes as deep as possible before moving to the next branch.
+
+Binary Tree DFS traversals:
+
+```text
+Preorder
+Inorder
+Postorder
+```
+
+DFS can be implemented using:
+
+```text
+Recursion
+Stack
+```
+
+So:
+
+```text
+DFS
+├── Preorder
+├── Inorder
+└── Postorder
+```
+
+---
+
+### BFS — Breadth First Search
+
+BFS visits the tree level by level.
+
+For Binary Trees:
+
+```text
+Level Order Traversal
+```
+
+BFS uses a:
+
+```text
+Queue
+```
+
+In Python:
+
+```python
+from collections import deque
+```
+
+So:
+
+```text
+BFS
+└── Level Order
+```
+
+### Quick Interview Revision
+
+```text
+DFS → Depth First
+    → Preorder
+    → Inorder
+    → Postorder
+    → Recursion / Stack
+
+BFS → Breadth First
+    → Level Order
+    → Queue / deque
+```
+
+---
+
+# 15. Complete Code
 
 ```python
 from collections import deque
@@ -592,7 +757,7 @@ levelOrderTraversal(root)
 
 ---
 
-# 14. Traversal Summary
+# 16. Traversal Summary
 
 For this tree:
 
@@ -618,7 +783,7 @@ LevelOrder       → 10 / 20 30 / 40 50
 
 ---
 
-# 15. Complexity
+# 17. Complexity
 
 For all four traversals:
 
@@ -646,7 +811,7 @@ in the worst case because the queue can contain many nodes.
 
 ---
 
-# 16. Interview Points from Lecture 1
+# 18. Interview Points from Lecture 1
 
 You should be able to answer:
 
@@ -716,6 +881,7 @@ print after recursion   → Postorder
 
 # 🎯 Lecture 1 Checklist
 
+- [ ] Understand Tree terminology
 - [ ] Understand Binary Tree Node
 - [ ] Create a Binary Tree manually
 - [ ] Understand recursion on trees
@@ -725,6 +891,9 @@ print after recursion   → Postorder
 - [ ] Level Order — BFS
 - [ ] Understand `deque`
 - [ ] Understand `None` as a level marker
+- [ ] Understand DFS vs BFS
+- [ ] Know DFS traversals
+- [ ] Know BFS traversal
 - [ ] Know traversal time complexity
 - [ ] Know recursive DFS space complexity
 - [ ] Be able to write all four traversals without looking at code
