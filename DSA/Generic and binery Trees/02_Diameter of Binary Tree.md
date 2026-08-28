@@ -935,7 +935,7 @@ Space → O(h)
 Important:
 
 Height:
-Number of nodes
+Number of nodes 
 
 Diameter:
 Number of edges
