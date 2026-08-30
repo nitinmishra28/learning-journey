@@ -11,17 +11,13 @@ inorder
 
 construct the original binary tree.
 
-### Preorder Traversal
-
-Preorder follows:
+### Preorder
 
 ```text
 Root → Left → Right
 ```
 
-### Inorder Traversal
-
-Inorder follows:
+### Inorder
 
 ```text
 Left → Root → Right
@@ -43,32 +39,29 @@ The most important observation is:
 
 ```text
 Preorder tells us the ROOT.
-Inorder tells us where to split LEFT and RIGHT subtrees.
+Inorder tells us where to split LEFT and RIGHT.
 ```
 
 For every subtree:
 
 ```text
-1. First element of preorder = root
-2. Find root in inorder
-3. Elements left of root in inorder = left subtree
-4. Elements right of root in inorder = right subtree
-5. Recursively build both subtrees
+1. Take the current element from preorder as root.
+2. Find that root's position in inorder.
+3. Everything left of root → left subtree.
+4. Everything right of root → right subtree.
+5. Recursively build both subtrees.
 ```
 
 ---
 
 # Example
 
-Consider:
-
 ```text
 preorder = [3, 9, 20, 15, 7]
-
 inorder  = [9, 3, 15, 20, 7]
 ```
 
-The tree is:
+Tree:
 
 ```text
         3
@@ -82,28 +75,28 @@ The tree is:
 
 # Step 1: Find the Root
 
-Preorder is:
+Preorder:
 
 ```text
 [3, 9, 20, 15, 7]
 ```
 
-The first element is:
+Preorder is:
+
+```text
+Root → Left → Right
+```
+
+Therefore:
 
 ```text
 3
 ```
 
-Therefore:
+is the root.
 
 ```python
-root = TreeNode(preorder[0])
-```
-
-So:
-
-```text
-root = 3
+rootVal = preorder[preIndex]
 ```
 
 ---
@@ -116,488 +109,631 @@ Inorder:
 [9, 3, 15, 20, 7]
 ```
 
-Find:
-
-```text
-3
-```
-
-Its index is:
-
-```text
-1
-```
-
-So:
-
-```text
-        3
-       / \
-      9   15 20 7
-```
-
-More precisely:
-
-```text
-Left subtree:
-
-[9]
-
-Right subtree:
-
-[15, 20, 7]
-```
-
-Because everything before `3` belongs to the left subtree and everything after `3` belongs to the right subtree.
-
----
-
-# The Most Important Part
-
-Suppose:
-
-```text
-preorder = [3, 9, 20, 15, 7]
-inorder  = [9, 3, 15, 20, 7]
-```
-
 Root:
 
 ```text
 3
 ```
 
-Index of `3` in inorder:
+Its position is:
 
 ```text
 index = 1
-```
-
-Therefore:
-
-```text
-Left subtree has 1 node.
-Right subtree has 3 nodes.
-```
-
-Now we need to take exactly the same number of nodes from preorder.
-
----
-
-# Why `preorder[1:index+1]`?
-
-This is one of the most important things to understand.
-
-We already used:
-
-```text
-preorder[0]
-```
-
-as the root.
-
-So the left subtree starts from:
-
-```text
-preorder[1]
-```
-
-The left subtree has:
-
-```text
-index
-```
-
-number of nodes.
-
-Therefore we need:
-
-```python
-preorder[1:index+1]
-```
-
-Remember Python slicing excludes the ending index.
-
-For:
-
-```text
-index = 1
-```
-
-we get:
-
-```python
-preorder[1:2]
-```
-
-which gives:
-
-```text
-[9]
-```
-
----
-
-# Why `index + 1`?
-
-Because Python slicing is:
-
-```text
-[start : end]
-```
-
-where `end` is excluded.
-
-If:
-
-```text
-index = 3
-```
-
-and we need the first `3` elements after the root:
-
-```text
-preorder[1:4]
-```
-
-gives:
-
-```text
-index 1
-index 2
-index 3
 ```
 
 So:
 
-```python
-preorder[1:index+1]
+```text
+Left subtree:
+
+[9]
 ```
 
-contains exactly `index` elements.
+and:
+
+```text
+Right subtree:
+
+[15, 20, 7]
+```
+
+Because inorder is:
+
+```text
+Left → Root → Right
+```
 
 ---
 
-# Why `inorder[:index]`?
+# Important Rule
 
-The root is at:
+Remember this:
 
 ```text
-index
+PREORDER
+
+[ ROOT | LEFT | RIGHT ]
+
+INORDER
+
+[ LEFT | ROOT | RIGHT ]
 ```
-
-in inorder.
-
-Everything before it belongs to the left subtree.
 
 Therefore:
 
+```text
+preorder → tells ROOT
+
+inorder → tells LEFT and RIGHT
+```
+
+This is the entire logic of the problem.
+
+---
+
+# Why Do We Need `preIndex`?
+
+In the optimized solution we don't create new preorder arrays.
+
+Instead, we maintain:
+
 ```python
-inorder[:index]
+preIndex = 0
+```
+
+It points to the next root that needs to be created.
+
+Example:
+
+```text
+preorder = [3, 9, 20, 15, 7]
+```
+
+Initially:
+
+```text
+preIndex = 0
+```
+
+Take:
+
+```text
+preorder[0] = 3
+```
+
+Then:
+
+```text
+preIndex = 1
+```
+
+Now take:
+
+```text
+preorder[1] = 9
+```
+
+Then:
+
+```text
+preIndex = 2
+```
+
+Now:
+
+```text
+preorder[2] = 20
+```
+
+And so on.
+
+So `preIndex` simply moves through preorder:
+
+```text
+0 → 1 → 2 → 3 → 4
+```
+
+---
+
+# Why `nonlocal preIndex`?
+
+`solve()` is an inner function:
+
+```python
+preIndex = 0
+
+def solve(left, right):
+    nonlocal preIndex
+```
+
+All recursive calls need to modify the **same `preIndex`**.
+
+Without `nonlocal`, Python would treat:
+
+```python
+preIndex += 1
+```
+
+as trying to create a local variable inside `solve()`.
+
+With:
+
+```python
+nonlocal preIndex
+```
+
+all recursive calls share the same variable.
+
+Think:
+
+```text
+One preorder pointer
+        ↓
+All recursive calls use it
+```
+
+---
+
+# Why Do We Need `position`?
+
+We need to find the root's position in inorder.
+
+A simple approach would be:
+
+```python
+inorder.index(rootVal)
+```
+
+But `.index()` takes:
+
+```text
+O(n)
+```
+
+in the worst case.
+
+Instead, create a hashmap:
+
+```python
+position = {}
+```
+
+Store:
+
+```text
+value → index
 ```
 
 Example:
 
 ```text
 inorder = [9, 3, 15, 20, 7]
-             ↑
-           index 1
 ```
 
 Then:
 
-```python
-inorder[:1]
+```text
+position = {
+    9: 0,
+    3: 1,
+    15: 2,
+    20: 3,
+    7: 4
+}
 ```
 
-gives:
+Now:
+
+```python
+position[rootVal]
+```
+
+gives the index in:
 
 ```text
-[9]
+O(1)
 ```
 
 ---
 
-# Left Subtree
+# Why `left` and `right`?
 
-Therefore:
-
-```python
-root.left = self.buildTree(
-    preorder[1:index+1],
-    inorder[:index]
-)
-```
-
-For our example:
-
-```text
-preorder[1:2]
-= [9]
-
-inorder[:1]
-= [9]
-```
-
-So we recursively build:
-
-```text
-    9
-```
-
----
-
-# Right Subtree
-
-Everything after the root in inorder belongs to the right subtree:
+Instead of creating new inorder arrays like:
 
 ```python
+inorder[:index]
 inorder[index+1:]
 ```
 
-For:
+we simply maintain the current range:
+
+```text
+left ... right
+```
+
+For example:
 
 ```text
 inorder = [9, 3, 15, 20, 7]
-             ↑
-           index 1
 ```
 
-we get:
+Initially:
 
 ```text
-[15, 20, 7]
+left = 0
+right = 4
 ```
 
-The right subtree has `3` nodes.
-
-We already used:
+This means:
 
 ```text
-preorder[0]
+Use the complete inorder array.
 ```
 
-for the root.
-
-The next `index` elements belong to the left subtree.
-
-Therefore the right subtree starts from:
+If root `3` is at:
 
 ```text
-index + 1
+mid = 1
+```
+
+then:
+
+```text
+Left subtree:
+left → mid - 1
+
+Right subtree:
+mid + 1 → right
 ```
 
 So:
 
-```python
-preorder[index+1:]
-```
-
-gives:
-
 ```text
-[20, 15, 7]
-```
+Left:
+0 → 0
 
-Thus:
-
-```python
-root.right = self.buildTree(
-    preorder[index+1:],
-    inorder[index+1:]
-)
+Right:
+2 → 4
 ```
 
 ---
 
-# Why `preorder[index+1:]`?
+# Why `left > right`?
 
-This is another important point.
-
-Suppose:
-
-```text
-index = 1
-```
-
-Then:
+Base case:
 
 ```python
-preorder[index+1:]
+if left > right:
+    return None
 ```
 
-becomes:
+This means there are no elements left in the current subtree.
 
-```python
-preorder[2:]
-```
-
-giving:
+Example:
 
 ```text
-[20, 15, 7]
+left = 2
+right = 1
 ```
 
-Why start at `2`?
-
-Because:
+Since:
 
 ```text
-preorder[0] → root
-preorder[1] → left subtree
+2 > 1
 ```
+
+the range is empty.
 
 Therefore:
 
 ```text
-preorder[2:] → right subtree
+No subtree → None
 ```
 
 ---
 
-# Complete Partition
+# Optimized Code
 
-For:
+```python
+class Solution:
+    def buildTree(
+        self,
+        preorder: List[int],
+        inorder: List[int]
+    ) -> Optional[TreeNode]:
+
+        position = {}
+
+        # Store value → index in inorder
+        for i in range(len(inorder)):
+            position[inorder[i]] = i
+
+        # Pointer for preorder
+        preIndex = 0
+
+        def solve(left, right):
+            nonlocal preIndex
+
+            # No elements
+            if left > right:
+                return None
+
+            # Current root comes from preorder
+            rootVal = preorder[preIndex]
+            preIndex += 1
+
+            root = TreeNode(rootVal)
+
+            # Find root in inorder
+            mid = position[rootVal]
+
+            # Build left subtree
+            root.left = solve(left, mid - 1)
+
+            # Build right subtree
+            root.right = solve(mid + 1, right)
+
+            return root
+
+        return solve(0, len(inorder) - 1)
+```
+
+---
+
+# Dry Run
+
+Consider:
 
 ```text
 preorder = [3, 9, 20, 15, 7]
 inorder  = [9, 3, 15, 20, 7]
 ```
 
-Root:
+Initially:
 
 ```text
-3
+preIndex = 0
 ```
 
-Index:
+Call:
 
-```text
-1
+```python
+solve(0, 4)
 ```
-
-Partition:
-
-```text
-                3
-              /   \
-             /     \
-        Left         Right
-
-Preorder:
-[9]            [20,15,7]
-
-Inorder:
-[9]            [15,20,7]
-```
-
-Notice:
-
-```text
-Number of nodes in left preorder
-=
-Number of nodes in left inorder
-=
-1
-```
-
-and:
-
-```text
-Number of nodes in right preorder
-=
-Number of nodes in right inorder
-=
-3
-```
-
-This matching size is the key.
 
 ---
 
-# Recursive Tree Construction
-
-Now build the left subtree:
+## Call 1
 
 ```text
-preorder = [9]
-inorder  = [9]
+preIndex = 0
 ```
 
-Root:
+Take:
 
 ```text
-9
+preorder[0] = 3
 ```
-
-No elements remain.
 
 So:
 
 ```text
-left = None
-right = None
+root = 3
 ```
 
-Tree:
+Increment:
+
+```text
+preIndex = 1
+```
+
+Find `3`:
+
+```text
+position[3] = 1
+```
+
+So:
+
+```text
+left subtree  = inorder[0:0]
+right subtree = inorder[2:4]
+```
+
+Recursively:
+
+```python
+solve(0, 0)
+solve(2, 4)
+```
+
+---
+
+## Build Left Subtree
+
+Call:
+
+```python
+solve(0, 0)
+```
+
+`preIndex` is:
+
+```text
+1
+```
+
+Take:
+
+```text
+preorder[1] = 9
+```
+
+So:
+
+```text
+root = 9
+```
+
+Increment:
+
+```text
+preIndex = 2
+```
+
+Find:
+
+```text
+position[9] = 0
+```
+
+Left:
+
+```text
+solve(0, -1)
+```
+
+No elements:
+
+```text
+return None
+```
+
+Right:
+
+```text
+solve(1, 0)
+```
+
+Again:
+
+```text
+left > right
+```
+
+so:
+
+```text
+return None
+```
+
+Therefore:
 
 ```text
     9
 ```
 
+is complete.
+
 ---
 
-Now build the right subtree:
+## Build Right Subtree
+
+Now:
 
 ```text
-preorder = [20, 15, 7]
-inorder  = [15, 20, 7]
+preIndex = 2
 ```
 
-Root:
+Call:
 
-```text
-20
+```python
+solve(2, 4)
 ```
 
-Find `20` in inorder:
+Take:
 
 ```text
-[15, 20, 7]
-     ↑
+preorder[2] = 20
 ```
 
-Index:
+So:
 
 ```text
-1
+root = 20
+```
+
+Increment:
+
+```text
+preIndex = 3
+```
+
+Find:
+
+```text
+position[20] = 3
 ```
 
 Therefore:
 
 ```text
 Left:
-
-preorder = [15]
-inorder  = [15]
-```
+solve(2, 2)
 
 Right:
+solve(4, 4)
+```
+
+---
+
+## Build `20`'s Left
 
 ```text
-preorder = [7]
-inorder  = [7]
+preIndex = 3
+```
+
+Take:
+
+```text
+preorder[3] = 15
 ```
 
 So:
 
 ```text
-        20
-       /  \
-      15   7
+root = 15
 ```
 
-Finally:
+`15` is a leaf.
+
+Therefore:
+
+```text
+    15
+```
+
+---
+
+## Build `20`'s Right
+
+```text
+preIndex = 4
+```
+
+Take:
+
+```text
+preorder[4] = 7
+```
+
+So:
+
+```text
+root = 7
+```
+
+`7` is a leaf.
+
+Therefore:
+
+```text
+    7
+```
+
+---
+
+# Final Tree
 
 ```text
         3
@@ -609,483 +745,193 @@ Finally:
 
 ---
 
-# Code
+# The Most Important Part to Understand
 
-```python
-class Solution:
+The recursion is doing this:
 
-    def buildTree(
-        self,
-        preorder: List[int],
-        inorder: List[int]
-    ) -> Optional[TreeNode]:
+```text
+preorder tells us WHICH node to create.
 
-        # No elements → empty tree
-        if not preorder:
-            return None
+inorder tells us WHERE that node splits the tree.
+```
 
-        # First element of preorder is root
-        root = TreeNode(preorder[0])
+For every root:
 
-        # Find root position in inorder
-        index = inorder.index(preorder[0])
-
-        # Build left subtree
-        root.left = self.buildTree(
-            preorder[1:index + 1],
-            inorder[:index]
-        )
-
-        # Build right subtree
-        root.right = self.buildTree(
-            preorder[index + 1:],
-            inorder[index + 1:]
-        )
-
-        return root
+```text
+1. Take preorder[preIndex]
+2. Find it in inorder
+3. Build left side
+4. Build right side
 ```
 
 ---
 
-# Why Does Preorder Give the Root?
+# Why Left Subtree Is `solve(left, mid - 1)`?
 
-Preorder traversal is:
+In inorder:
+
+```text
+[ LEFT | ROOT | RIGHT ]
+```
+
+Root is at:
+
+```text
+mid
+```
+
+Therefore everything before `mid` is left subtree:
+
+```text
+left ... mid - 1
+```
+
+So:
+
+```python
+root.left = solve(left, mid - 1)
+```
+
+---
+
+# Why Right Subtree Is `solve(mid + 1, right)`?
+
+Everything after root belongs to the right subtree:
+
+```text
+mid + 1 ... right
+```
+
+So:
+
+```python
+root.right = solve(mid + 1, right)
+```
+
+We use:
+
+```text
+mid + 1
+```
+
+because `mid` itself is the root and must not be included again.
+
+---
+
+# Why Don't We Have a Separate Preorder Range?
+
+This is an important difference from the basic solution.
+
+In the basic solution we explicitly create:
+
+```python
+preorder[1:index+1]
+preorder[index+1:]
+```
+
+In the optimized solution we don't.
+
+We use:
+
+```python
+preIndex
+```
+
+to automatically consume preorder elements in the correct order.
+
+Because preorder is:
 
 ```text
 Root → Left → Right
 ```
 
-Therefore the first element of every preorder array/subarray is always:
+once we create the root, the next unused preorder element is automatically the root of the left subtree.
+
+After the left subtree is completely built, the next unused preorder element is automatically the root of the right subtree.
+
+Therefore one pointer is enough:
 
 ```text
-Root of that subtree
+preIndex
 ```
 
-So:
+---
+
+# Basic vs Optimized
+
+## Basic Version
+
+Uses:
 
 ```python
 root = TreeNode(preorder[0])
+
+index = inorder.index(preorder[0])
+
+root.left = self.buildTree(
+    preorder[1:index+1],
+    inorder[:index]
+)
+
+root.right = self.buildTree(
+    preorder[index+1:],
+    inorder[index+1:]
+)
 ```
 
----
-
-# Why Does Inorder Give the Boundary?
-
-Inorder traversal is:
+Problems:
 
 ```text
-Left → Root → Right
+inorder.index() → O(n)
+
+Slicing → creates new lists
 ```
 
-Once we find the root:
-
-```text
-        Root
-```
-
-everything:
-
-```text
-before root
-```
-
-belongs to the left subtree.
-
-Everything:
-
-```text
-after root
-```
-
-belongs to the right subtree.
-
-Therefore:
-
-```python
-inorder[:index]
-```
-
-is left.
-
-And:
-
-```python
-inorder[index+1:]
-```
-
-is right.
-
----
-
-# Base Case
-
-```python
-if not preorder:
-    return None
-```
-
-If there are no elements, there is no subtree to build.
-
-Therefore:
-
-```text
-Empty preorder
-→ Empty tree
-→ None
-```
-
----
-
-# Important Rule for Splitting Preorder
-
-This is the easiest way to remember it.
-
-If:
-
-```text
-root index in inorder = index
-```
-
-then:
-
-```text
-Left subtree size = index
-```
-
-Therefore:
-
-```text
-Left preorder:
-preorder[1:index+1]
-```
-
-And the remaining elements belong to the right subtree:
-
-```text
-Right preorder:
-preorder[index+1:]
-```
-
----
-
-# Visual Formula
-
-```text
-PREORDER
-
-[ ROOT | LEFT SUBTREE | RIGHT SUBTREE ]
-    0        index nodes
-
-             ↓
-
-INORDER
-
-[ LEFT SUBTREE | ROOT | RIGHT SUBTREE ]
-                   ↑
-                 index
-```
-
-Therefore:
-
-```text
-preorder[0]
-        ↓
-      ROOT
-
-preorder[1:index+1]
-        ↓
-   LEFT SUBTREE
-
-preorder[index+1:]
-        ↓
-  RIGHT SUBTREE
-```
-
-And:
-
-```text
-inorder[:index]
-        ↓
-   LEFT SUBTREE
-
-inorder[index+1:]
-        ↓
-  RIGHT SUBTREE
-```
-
----
-
-# Important Interview Point
-
-The two traversal arrays must have the same number of elements.
-
-Also, the standard problem assumes the tree has **unique node values**.
-
-Why?
-
-Because we use:
-
-```python
-inorder.index(preorder[0])
-```
-
-to find the root's position.
-
-If duplicate values existed, `.index()` would not uniquely identify which occurrence represents the root.
-
----
-
-# Complexity
-
-Your exact implementation uses:
-
-```python
-inorder.index(...)
-```
-
-and creates new slices:
-
-```python
-preorder[...]
-inorder[...]
-```
-
-Because of this, the practical worst-case time complexity can be:
+Worst-case:
 
 ```text
 Time → O(n²)
 ```
 
-especially for a skewed tree.
-
-The recursion stack uses:
-
-```text
-Space → O(h)
-```
-
-and the slicing also creates additional arrays, so the implementation has additional memory overhead.
-
 ---
 
-# Optimized Approach
+# Optimized Version
 
-The main problems with the current solution are:
+Uses:
 
 ```text
-1. inorder.index() → O(n)
-2. Slicing preorder → creates new list
-3. Slicing inorder → creates new list
+Hashmap
++
+preIndex
++
+inorder range
 ```
 
-We can optimize all of this.
-
-Use a hashmap:
+Instead of:
 
 ```python
-inorder_map[value] = index
+inorder.index(rootVal)
 ```
 
-Then finding the root's position becomes:
-
-```text
-O(1)
-```
-
-Instead of creating new arrays, use indexes:
-
-```text
-preorderStart
-preorderEnd
-inorderStart
-inorderEnd
-```
-
----
-
-# Optimized Code
+we use:
 
 ```python
-class Solution:
-
-    def buildTree(self, preorder, inorder):
-
-        # Map value → index in inorder
-        inorder_map = {
-            value: i
-            for i, value in enumerate(inorder)
-        }
-
-        def build(
-            preorderStart,
-            preorderEnd,
-            inorderStart,
-            inorderEnd
-        ):
-
-            # No elements
-            if preorderStart > preorderEnd:
-                return None
-
-            # First preorder element is root
-            rootValue = preorder[preorderStart]
-            root = TreeNode(rootValue)
-
-            # Find root in inorder in O(1)
-            rootIndex = inorder_map[rootValue]
-
-            # Number of nodes in left subtree
-            leftSize = rootIndex - inorderStart
-
-            # Build left subtree
-            root.left = build(
-                preorderStart + 1,
-                preorderStart + leftSize,
-                inorderStart,
-                rootIndex - 1
-            )
-
-            # Build right subtree
-            root.right = build(
-                preorderStart + leftSize + 1,
-                preorderEnd,
-                rootIndex + 1,
-                inorderEnd
-            )
-
-            return root
-
-        return build(
-            0,
-            len(preorder) - 1,
-            0,
-            len(inorder) - 1
-        )
+position[rootVal]
 ```
 
----
-
-# Why `leftSize`?
-
-This is the key to understanding the optimized solution.
-
-Suppose:
-
-```text
-inorder = [9, 3, 15, 20, 7]
-```
-
-Root:
-
-```text
-3
-```
-
-Root index:
-
-```text
-1
-```
-
-If the current inorder range starts at:
-
-```text
-0
-```
-
-then:
+Instead of:
 
 ```python
-leftSize = rootIndex - inorderStart
+inorder[:index]
+inorder[index+1:]
 ```
 
-becomes:
+we use:
 
 ```text
-leftSize = 1 - 0
-         = 1
+left
+right
 ```
-
-So the left subtree contains:
-
-```text
-1 node
-```
-
-We use that number to split preorder.
-
----
-
-# Optimized Preorder Split
-
-Suppose:
-
-```text
-preorder = [3, 9, 20, 15, 7]
-```
-
-Root is:
-
-```text
-3
-```
-
-Left subtree size:
-
-```text
-1
-```
-
-Therefore:
-
-```text
-Root:
-index 0
-
-Left subtree:
-index 1 → 1
-
-Right subtree:
-index 2 → 4
-```
-
-So:
-
-```text
-preorderStart + 1
-```
-
-to:
-
-```text
-preorderStart + leftSize
-```
-
-is the left subtree.
-
-And:
-
-```text
-preorderStart + leftSize + 1
-```
-
-starts the right subtree.
-
----
-
-# Why Optimized Version Is O(n)
-
-Each node is processed once.
-
-Finding its inorder position:
-
-```text
-O(1)
-```
-
-because of the hashmap.
-
-No slicing is performed.
 
 Therefore:
 
@@ -1093,19 +939,51 @@ Therefore:
 Time → O(n)
 ```
 
-The recursion stack requires:
+---
 
-```text
-Space → O(h)
-```
+# Complexity
 
-plus the hashmap:
+### Time
+
+Every node is created once:
 
 ```text
 O(n)
 ```
 
-So total auxiliary space is:
+Hashmap lookup:
+
+```text
+O(1)
+```
+
+Therefore:
+
+```text
+Time → O(n)
+```
+
+### Space
+
+Hashmap stores every node:
+
+```text
+O(n)
+```
+
+Recursion stack:
+
+```text
+O(h)
+```
+
+where:
+
+```text
+h = height of tree
+```
+
+Overall auxiliary space:
 
 ```text
 O(n)
@@ -1113,188 +991,258 @@ O(n)
 
 ---
 
-# Basic vs Optimized
+# Important Interview Points
 
-| Approach | Time | Space | Main Issue |
-|---|---:|---:|---|
-| Basic | `O(n²)` worst case | `O(n)` due to slicing/recursion | `.index()` + slicing |
-| Optimized | `O(n)` | `O(n)` | Hashmap + index ranges |
+### 1. Preorder gives root
+
+```text
+preorder[preIndex]
+```
+
+is the current root.
+
+### 2. Inorder gives the boundary
+
+```text
+position[rootVal]
+```
+
+tells us where left and right subtrees are separated.
+
+### 3. `preIndex` always moves forward
+
+```text
+preIndex += 1
+```
+
+We never move it backward.
+
+### 4. No slicing in optimized solution
+
+Use:
+
+```text
+left
+right
+```
+
+instead.
+
+### 5. Hashmap avoids repeated searching
+
+```text
+position[value] → index
+```
+
+gives `O(1)` lookup.
+
+### 6. Unique values are assumed
+
+The standard problem assumes node values are unique, which allows:
+
+```python
+position[rootVal]
+```
+
+to identify exactly one position.
 
 ---
 
 # Common Mistakes
 
-## 1. Using `preorder[1:index]`
+## Mistake 1: Taking `inorder[0]` as root
+
+Wrong.
+
+Root comes from:
+
+```text
+preorder
+```
+
+because preorder starts with root.
+
+---
+
+## Mistake 2: Including root in both subtrees
 
 Wrong:
 
 ```python
-preorder[1:index]
+solve(left, mid)
 ```
 
 Correct:
 
 ```python
-preorder[1:index+1]
+solve(left, mid - 1)
 ```
 
-because the ending index is excluded.
-
-The left subtree contains exactly `index` nodes.
-
----
-
-## 2. Using `preorder[index:]` for Right Subtree
-
-Wrong:
+and:
 
 ```python
-preorder[index:]
-```
-
-Correct:
-
-```python
-preorder[index+1:]
-```
-
-because:
-
-```text
-preorder[0] = root
-preorder[1:index+1] = left subtree
-preorder[index+1:] = right subtree
+solve(mid + 1, right)
 ```
 
 ---
 
-## 3. Mixing Up Preorder and Inorder
+## Mistake 3: Forgetting `preIndex += 1`
 
-Remember:
+After taking the current root:
 
-```text
-Preorder → tells ROOT
-
-Inorder → tells LEFT/RIGHT boundary
+```python
+rootVal = preorder[preIndex]
 ```
+
+we must move:
+
+```python
+preIndex += 1
+```
+
+Otherwise every recursive call would keep using the same root.
 
 ---
 
-## 4. Forgetting `index + 1` in Inorder Right Side
+## Mistake 4: Forgetting `nonlocal`
 
-Correct:
+Because `preIndex` belongs to the outer function:
 
 ```python
-inorder[index+1:]
+preIndex = 0
 ```
 
-because the root itself should not be included in either subtree.
+the nested `solve()` needs:
+
+```python
+nonlocal preIndex
+```
+
+to modify it.
 
 ---
 
 # Revision Cheat Sheet
 
 ```text
-Construct Binary Tree from Preorder + Inorder
+Construct Binary Tree
+from Preorder + Inorder
 
 Pattern:
-Binary Tree + Recursion + Divide & Conquer
+Recursion + Divide and Conquer
+
+--------------------------------------------------
 
 Preorder:
+
 Root → Left → Right
-
-Inorder:
-Left → Root → Right
-
---------------------------------------------------
-
-Most Important:
-
-preorder[0]
-→ ROOT
-
-Find root index in inorder.
-
-inorder[:index]
-→ LEFT SUBTREE
-
-inorder[index+1:]
-→ RIGHT SUBTREE
-
---------------------------------------------------
-
-Left subtree has `index` nodes.
 
 Therefore:
 
-Left preorder:
-preorder[1:index+1]
-
-Right preorder:
-preorder[index+1:]
+preorder[preIndex]
+        ↓
+      ROOT
 
 --------------------------------------------------
 
-Why index + 1?
+Inorder:
 
-Python slicing excludes the ending index.
+Left → Root → Right
 
-preorder[1:index+1]
-contains exactly `index` elements.
+Therefore:
 
---------------------------------------------------
+position[rootVal]
+        ↓
+      MID
 
-Basic Approach:
+Everything before MID:
+→ Left subtree
 
-inorder.index(root)
-+
-array slicing
-
-Worst-case:
-O(n²)
+Everything after MID:
+→ Right subtree
 
 --------------------------------------------------
 
-Optimized Approach:
+Important variables:
+
+position
+→ value → inorder index
+
+preIndex
+→ current root position in preorder
+
+left, right
+→ current inorder range
+
+--------------------------------------------------
+
+Recursive calls:
+
+Left:
+
+solve(left, mid - 1)
+
+Right:
+
+solve(mid + 1, right)
+
+--------------------------------------------------
+
+Base case:
+
+if left > right:
+    return None
+
+--------------------------------------------------
+
+Why preIndex?
+
+Preorder is already in:
+
+Root → Left → Right
+
+So one pointer can consume
+nodes in the correct order.
+
+--------------------------------------------------
+
+Why hashmap?
+
+inorder.index()
+→ O(n)
+
+position[value]
+→ O(1)
+
+--------------------------------------------------
+
+Why no slicing?
+
+Slicing creates new arrays.
 
 Use:
 
-value → inorder index
+left, right
 
-Hashmap gives:
-O(1) root lookup.
-
-Use index ranges instead of slicing.
-
-Time:
-O(n)
-
-Space:
-O(n)
+to represent the current range.
 
 --------------------------------------------------
 
-Key Formula:
+Complexity:
 
-leftSize = rootIndex - inorderStart
-
-Left preorder:
-preorderStart + 1
-to
-preorderStart + leftSize
-
-Right preorder starts at:
-preorderStart + leftSize + 1
+Time  → O(n)
+Space → O(n)
 
 --------------------------------------------------
 
-Interview Memory Trick:
+Memory Trick:
 
 Preorder tells:
-"WHO IS ROOT?"
+"WHO IS THE ROOT?"
 
 Inorder tells:
-"WHO IS LEFT AND WHO IS RIGHT?"
+"WHO IS ON THE LEFT
+ AND WHO IS ON THE RIGHT?"
 ```
 
 ---
@@ -1302,5 +1250,5 @@ Inorder tells:
 # One-Line Pattern
 
 ```text
-Take the first preorder element as the root, find it in inorder to split left/right subtrees, then recursively build both sides using the corresponding preorder elements.
+Use preorder to pick the root, use a hashmap to find that root in inorder, recursively build the left and right ranges, and use one shared preIndex to consume preorder.
 ```
