@@ -1221,5 +1221,5 @@ Root → Right → Left
 ### One-Line Pattern
 
 ```text
-Take the root from the end of postorder, find it in inorder, build the RIGHT subtree first because postorder is being processed backwards, then build the LEFT subtree.
+Take the root from the end of postorder, find it in inorder, build the RIGHT subtree first because postorder is being processed backwards, then build the LEFT subtree. 
 ```
