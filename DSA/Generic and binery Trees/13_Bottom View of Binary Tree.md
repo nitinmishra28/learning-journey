@@ -1197,7 +1197,7 @@ Replace
 
 ```text
 For Bottom View, assign every node a horizontal distance, use BFS, overwrite the value for every HD so the bottommost candidate remains, and sort the HDs to return the result from left to right.
-```
+``` 
 
 # Most Important Interview Points
 
