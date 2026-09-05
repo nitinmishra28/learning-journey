@@ -305,7 +305,7 @@ The overall backend knowledge I want to build through this course:
                  CONCURRENCY / PARALLELISM     
 ```
 
-This is the **overall mental map** I want to develop while completing the backend course.
+This is the **overall mental map** I want to develop while completing the backend course. 
 
 The individual lecture notes will go deeper into each part of this structure.
 
