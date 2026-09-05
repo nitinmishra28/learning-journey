@@ -302,7 +302,7 @@ The overall backend knowledge I want to build through this course:
                        SCALING
                            │
                            ↓
-                 CONCURRENCY / PARALLELISM  
+                 CONCURRENCY / PARALLELISM   
 ```
 
 This is the **overall mental map** I want to develop while completing the backend course.
