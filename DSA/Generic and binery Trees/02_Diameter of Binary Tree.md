@@ -140,10 +140,10 @@ Height of left subtree:
 2 → 4
 ```
 
-Number of edges:
+Height:
 
 ```text
-1
+2
 ```
 
 Height of right subtree:
@@ -152,7 +152,7 @@ Height of right subtree:
 3
 ```
 
-Number of edges:
+Height:
 
 ```text
 1
@@ -175,16 +175,22 @@ Edges:
 Total:
 
 ```text
-1 + 1 = 2
+3
 ```
 
-So:
+And:
 
 ```python
 left_height + right_height
 ```
 
-gives the diameter passing through the current node.
+gives:
+
+```text
+2 + 1 = 3
+```
+
+So the formula works.
 
 ---
 
@@ -204,7 +210,7 @@ def getHeight(self, root):
 
 This returns the height in terms of **number of nodes**.
 
-For example:
+For:
 
 ```text
     1
@@ -214,19 +220,13 @@ For example:
 3
 ```
 
-Height:
+height is:
 
 ```text
 3
 ```
 
-But when calculating diameter:
-
-```python
-left_height + right_height
-```
-
-we are effectively counting the edges on both sides of the current node.
+But diameter is measured in **edges**.
 
 ---
 
@@ -247,7 +247,7 @@ class Solution:
 
         return maxHeight + 1
 
-    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+    def diameterOfBinaryTree(self, root):
 
         if root is None:
             return 0
@@ -308,7 +308,7 @@ height(left)
 height(right)
 ```
 
-But while recursively calculating the diameter of node `2`, we again calculate heights of its subtrees.
+But while recursively calculating the diameter of node `2`, we again calculate the heights of its subtrees.
 
 So the same nodes can be visited multiple times.
 
@@ -318,9 +318,17 @@ Therefore, in the worst case:
 Time = O(n²)
 ```
 
+Space:
+
+```text
+O(h)
+```
+
+because of recursion.
+
 ---
 
-# Approach 2: Optimized O(n) Approach
+# Approach 2: Optimized O(n) — Global Diameter
 
 ## Main Idea
 
@@ -334,316 +342,172 @@ Diameter
 
 separately, calculate both during **one DFS traversal**.
 
-For every node, return:
+For every node:
 
 ```text
-height
+1. Get left subtree height
+2. Get right subtree height
+3. Calculate diameter through current node
+4. Update global diameter
+5. Return current subtree height
 ```
 
-And maintain a global:
-
-```text
-diameter
-```
+This is exactly what your second code does.
 
 ---
 
-# Key Observation
-
-At every node:
-
-```text
-left_height = height of left subtree
-right_height = height of right subtree
-```
-
-The diameter passing through this node is:
-
-```text
-left_height + right_height
-```
-
-So while calculating the height, we can also update the diameter.
-
----
-
-# Optimized Code
+# Your Approach
 
 ```python
 class Solution:
 
-    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+    D = 0
 
-        diameter = 0
+    def height(self, root):
 
-        def dfs(root):
+        if root is None:
+            return 0
 
-            nonlocal diameter
+        left = self.height(root.left)
+        right = self.height(root.right)
 
-            if root is None:
-                return 0
+        currD = left + right
 
-            left = dfs(root.left)
-            right = dfs(root.right)
+        self.D = max(currD, self.D)
 
-            # Diameter passing through current node
-            diameter = max(diameter, left + right)
+        return max(left, right) + 1
 
-            # Return height of current node
-            return max(left, right) + 1
+    def diameterOfBinaryTree(self, root):
 
-        dfs(root)
+        self.height(root)
 
-        return diameter
+        return self.D
 ```
 
 ---
 
-# How Optimized Approach Works
+# Important Idea: `D` Stores the Best Diameter
 
-For every node, DFS returns:
-
-```text
-Height of that subtree
-```
-
-At the same time:
+Here:
 
 ```python
-diameter = max(diameter, left + right)
+D = 0
 ```
 
-checks whether the path passing through the current node is the largest diameter found so far.
-
-So each node does only constant work:
+means:
 
 ```text
-1. Get left height
-2. Get right height
-3. Calculate diameter through current node
-4. Return height
+D = maximum diameter found so far
 ```
 
-No height is recalculated.
+At every node we calculate:
+
+```python
+currD = left + right
+```
+
+This represents:
+
+```text
+Diameter passing through the current node
+```
+
+Then:
+
+```python
+self.D = max(currD, self.D)
+```
+
+means:
+
+```text
+Keep the largest diameter found anywhere in the tree.
+```
 
 ---
 
-# Dry Run
+# Why Is `D` Needed?
 
-Consider:
+The diameter does **not necessarily pass through the root**.
+
+For example:
 
 ```text
         1
        / \
       2   3
-     / \
-    4   5
+     /
+    4
+   /
+  5
 ```
 
-### Node 4
+The longest path could be completely inside the left subtree.
 
-```text
-left = 0
-right = 0
+Therefore, we cannot simply calculate:
 
-diameter = max(0, 0 + 0)
-         = 0
-
-height = max(0, 0) + 1
-       = 1
+```python
+left_height + right_height
 ```
 
-Return:
+only at the root.
 
-```text
-1
+We calculate it at **every node**:
+
+```python
+currD = left + right
 ```
 
----
+and keep the maximum:
 
-### Node 5
-
-Same:
-
-```text
-height = 1
-diameter = 0
+```python
+self.D = max(self.D, currD)
 ```
 
 ---
 
-### Node 2
+# Why Does `height()` Return Height?
 
-Left height:
+This is very important.
 
-```text
-1
+The function:
+
+```python
+height(root)
 ```
 
-Right height:
+has two jobs.
 
-```text
-1
+### Job 1: Calculate Diameter
+
+```python
+currD = left + right
+self.D = max(self.D, currD)
 ```
 
-Diameter through `2`:
+### Job 2: Return Height to Parent
 
-```text
-1 + 1 = 2
+```python
+return max(left, right) + 1
 ```
+
+The parent needs the height of this subtree to calculate its own diameter.
 
 So:
 
 ```text
-diameter = 2
+height()
+   │
+   ├── Updates global diameter
+   │
+   └── Returns subtree height
 ```
 
-Height of node `2`:
-
-```text
-max(1, 1) + 1
-= 2
-```
-
-Return:
-
-```text
-2
-```
+This allows us to calculate everything in **one traversal**.
 
 ---
 
-### Node 3
-
-```text
-left = 0
-right = 0
-
-diameter = max(2, 0)
-         = 2
-
-height = 1
-```
-
----
-
-### Node 1
-
-Left height:
-
-```text
-2
-```
-
-Right height:
-
-```text
-1
-```
-
-Diameter through `1`:
-
-```text
-2 + 1 = 3
-```
-
-So:
-
-```text
-diameter = 3
-```
-
-Height:
-
-```text
-max(2, 1) + 1
-= 3
-```
-
-Final:
-
-```text
-Diameter = 3
-```
-
----
-
-# Why `nonlocal diameter`?
-
-Inside:
-
-```python
-def dfs(root):
-```
-
-we need to update the `diameter` variable created in:
-
-```python
-diameter = 0
-```
-
-The variable belongs to the outer function.
-
-So we use:
-
-```python
-nonlocal diameter
-```
-
-This allows `dfs()` to modify the outer `diameter`.
-
----
-
-# Why Does DFS Return Height Instead of Diameter?
-
-This is a very important interview concept.
-
-At a node, to calculate the diameter through that node, we need:
-
-```text
-left height
-right height
-```
-
-Therefore the recursive function must return:
-
-```text
-height
-```
-
-The diameter is simply updated separately:
-
-```python
-diameter = max(diameter, left + right)
-```
-
-So:
-
-```text
-Return value:
-Height
-
-Side effect:
-Update Diameter
-```
-
-This lets us calculate both in one traversal.
-
----
-
-# Why Is the Diameter `left + right`?
-
-Remember:
-
-```text
-height = number of nodes
-```
-
-but diameter is:
-
-```text
-number of edges
-```
+# Why `left + right`?
 
 Suppose:
 
@@ -660,74 +524,107 @@ left height  = 1
 right height = 1
 ```
 
-The path:
+The path is:
 
 ```text
 2 → 1 → 3
 ```
 
-has:
+Number of edges:
 
 ```text
-2 edges
+2
 ```
 
-And:
+Therefore:
 
-```text
+```python
 left + right
 = 1 + 1
 = 2
 ```
 
-So the formula works.
-
----
-
-# Important Interview Distinction
-
-### Height
-
-Usually measured as:
-
-```text
-Number of nodes
-```
-
 So:
 
 ```python
-height = max(left, right) + 1
+currD = left + right
 ```
 
-### Diameter
-
-Measured as:
-
-```text
-Number of edges
-```
-
-So:
-
-```python
-diameter = left + right
-```
-
-This distinction is important because many tree problems can define height/depth differently.
-
-For this LeetCode problem:
-
-```text
-Height → nodes
-Diameter → edges
-```
+gives the diameter passing through the current node.
 
 ---
 
-# Why the Diameter Does Not Have to Pass Through Root
+# Complete Optimized Code
 
-This is another important point.
+```python
+class Solution:
+
+    def height(self, root):
+
+        if root is None:
+            return 0
+
+        # Get left subtree height
+        left = self.height(root.left)
+
+        # Get right subtree height
+        right = self.height(root.right)
+
+        # Diameter passing through current node
+        currD = left + right
+
+        # Update maximum diameter
+        self.D = max(currD, self.D)
+
+        # Return height of current subtree
+        return max(left, right) + 1
+
+    def diameterOfBinaryTree(self, root):
+
+        # Reset diameter for this problem call
+        self.D = 0
+
+        # Calculate heights and diameter together
+        self.height(root)
+
+        return self.D
+```
+
+> **Important:** I recommend resetting `self.D` inside `diameterOfBinaryTree()` rather than keeping only `D = 0` at class level.
+
+---
+
+# Why Reset `self.D`?
+
+Your original code has:
+
+```python
+class Solution:
+    D = 0
+```
+
+This creates a class-level variable.
+
+A safer version is:
+
+```python
+def diameterOfBinaryTree(self, root):
+    self.D = 0
+    self.height(root)
+    return self.D
+```
+
+Now every call starts with:
+
+```text
+D = 0
+```
+
+This avoids carrying an old diameter value into another call.
+
+---
+
+# Dry Run
 
 Consider:
 
@@ -737,99 +634,380 @@ Consider:
       2   3
      / \
     4   5
-   /
-  6
 ```
 
-The longest path may be:
+---
+
+## Node 4
 
 ```text
-6 → 4 → 2 → 5
+left = 0
+right = 0
 ```
 
-It does not use the root `1`.
-
-That's why at every node we consider:
+Diameter through `4`:
 
 ```text
-Diameter in left subtree
-Diameter in right subtree
-Diameter through current node
+0 + 0 = 0
 ```
 
-In the optimized solution, this is handled by updating:
+So:
+
+```text
+D = 0
+```
+
+Height:
+
+```text
+max(0, 0) + 1 = 1
+```
+
+Return:
+
+```text
+1
+```
+
+---
+
+## Node 5
+
+Same:
+
+```text
+left = 0
+right = 0
+
+currD = 0
+height = 1
+```
+
+So:
+
+```text
+D = 0
+```
+
+---
+
+## Node 2
+
+Node `2` receives:
+
+```text
+left = 1
+right = 1
+```
+
+Diameter through `2`:
+
+```text
+currD = 1 + 1 = 2
+```
+
+Update:
+
+```text
+D = 2
+```
+
+Height:
+
+```text
+max(1, 1) + 1
+= 2
+```
+
+Return:
+
+```text
+2
+```
+
+---
+
+## Node 3
+
+Leaf:
+
+```text
+left = 0
+right = 0
+```
+
+So:
+
+```text
+currD = 0
+height = 1
+```
+
+`D` remains:
+
+```text
+2
+```
+
+---
+
+## Node 1
+
+Now:
+
+```text
+left = 2
+right = 1
+```
+
+Diameter through `1`:
+
+```text
+currD = 2 + 1
+      = 3
+```
+
+Update:
+
+```text
+D = max(3, 2)
+  = 3
+```
+
+Height:
+
+```text
+max(2, 1) + 1
+= 3
+```
+
+Final:
+
+```text
+D = 3
+```
+
+Therefore:
+
+```text
+Diameter = 3
+```
+
+---
+
+# Approach 3: Optimized DFS + `-1` Sentinel
+
+There is another way to write the optimized solution.
+
+Instead of using:
 
 ```python
-diameter = max(diameter, left + right)
+self.D
 ```
 
-at **every node**.
+we can use a local variable with `nonlocal`.
+
+```python
+class Solution:
+
+    def diameterOfBinaryTree(self, root):
+
+        diameter = 0
+
+        def dfs(root):
+
+            nonlocal diameter
+
+            if root is None:
+                return 0
+
+            left = dfs(root.left)
+            right = dfs(root.right)
+
+            diameter = max(diameter, left + right)
+
+            return max(left, right) + 1
+
+        dfs(root)
+
+        return diameter
+```
+
+This and your `self.D` approach have the same complexity.
+
+The difference is mainly how the global result is stored.
 
 ---
 
-# Complexity
+# `self.D` vs `nonlocal diameter`
 
-## Basic Approach
+### Your approach
 
-```text
-Time  → O(n²)
-Space → O(h)
+```python
+self.D = max(currD, self.D)
 ```
 
-Why `O(n²)`?
+`D` belongs to the object.
 
-Because heights are recalculated repeatedly.
+### Local variable approach
 
-Why `O(h)`?
+```python
+diameter = 0
+```
 
-Because recursion uses the call stack.
+and:
+
+```python
+nonlocal diameter
+```
+
+allows the nested `dfs()` function to modify it.
+
+Both work.
+
+For LeetCode, your `self.D` approach is perfectly valid.
 
 ---
 
-## Optimized Approach
-
-```text
-Time  → O(n)
-Space → O(h)
-```
+# Why Is the Optimized Approach O(n)?
 
 Every node is visited exactly once.
 
-The recursive call stack still uses:
+At every node:
 
 ```text
-O(h)
+Get left height
+Get right height
+Calculate current diameter
+Update maximum
+Return height
 ```
 
-where `h` is the height of the tree.
+All of these are `O(1)` work after the recursive calls.
+
+Therefore:
+
+```text
+Time = O(n)
+```
+
+---
+
+# Why Is Space O(h)?
+
+The solution uses recursion.
+
+The recursive calls are stored in the **call stack**.
+
+For example, in a skewed tree:
+
+```text
+1
+ \
+  2
+   \
+    3
+     \
+      4
+```
+
+the call stack can become:
+
+```text
+height(1)
+height(2)
+height(3)
+height(4)
+```
+
+So maximum recursion depth is:
+
+```text
+h
+```
+
+Therefore:
+
+```text
+Space = O(h)
+```
 
 For a balanced tree:
 
 ```text
-O(log n)
+h = O(log n)
 ```
 
 For a skewed tree:
 
 ```text
-O(n)
+h = O(n)
+```
+
+---
+
+# Basic vs Optimized
+
+| Approach | Idea | Time | Space |
+|---|---|---:|---:|
+| Basic | Recalculate heights repeatedly | O(n²) | O(h) |
+| Optimized | Height + diameter in one DFS | O(n) | O(h) |
+
+---
+
+# Important Interview Distinction
+
+### Height
+
+For this solution:
+
+```text
+Height = number of nodes
+```
+
+Formula:
+
+```python
+max(left, right) + 1
+```
+
+### Diameter
+
+For LeetCode:
+
+```text
+Diameter = number of edges
+```
+
+Formula:
+
+```python
+left + right
+```
+
+Remember:
+
+```text
+Height → returned to parent
+
+Diameter → maximum maintained while traversing
 ```
 
 ---
 
 # Common Mistakes
 
-## 1. Returning Diameter From DFS
+## 1. Returning Diameter Instead of Height
 
-Don't confuse the return value.
+The recursive function should return:
 
-The DFS should return:
-
-```text
-Height
+```python
+max(left, right) + 1
 ```
 
-because the parent needs the height to calculate its own diameter.
+because the parent needs the subtree's height.
+
+The diameter is maintained separately.
 
 ---
 
@@ -838,34 +1016,107 @@ because the parent needs the height to calculate its own diameter.
 Wrong:
 
 ```python
-diameter = max(left, right)
+currD = max(left, right)
 ```
 
 Correct:
 
 ```python
-diameter = left + right
+currD = left + right
 ```
 
-because a path through the current node uses both sides.
+A diameter passing through the current node uses **both sides**.
 
 ---
 
-## 3. Forgetting Diameter Can Be Inside a Subtree
+## 3. Checking Diameter Only at Root
 
-The answer does not have to pass through the root.
-
-We must check every node.
-
----
-
-## 4. Confusing Height and Diameter
-
-Remember:
+Wrong idea:
 
 ```text
-Height → information passed upward
-Diameter → global maximum maintained during DFS
+Calculate left height + right height only once at root.
+```
+
+The longest path might be inside a subtree.
+
+So:
+
+```python
+self.D = max(self.D, left + right)
+```
+
+must happen at every node.
+
+---
+
+## 4. Forgetting to Reset `self.D`
+
+Prefer:
+
+```python
+def diameterOfBinaryTree(self, root):
+    self.D = 0
+```
+
+before starting DFS.
+
+---
+
+## 5. Confusing Nodes and Edges
+
+For:
+
+```text
+2 → 1 → 3
+```
+
+there are:
+
+```text
+3 nodes
+2 edges
+```
+
+Therefore:
+
+```text
+Height = nodes
+Diameter = edges
+```
+
+---
+
+# Pattern Recognition
+
+When you see:
+
+> Find the longest path in a binary tree.
+
+Think:
+
+```text
+Binary Tree
+     ↓
+DFS
+     ↓
+Need subtree heights
+     ↓
+Diameter through node
+=
+left height + right height
+```
+
+Then ask:
+
+```text
+Am I recalculating heights?
+        ↓
+YES
+        ↓
+Optimize!
+        ↓
+Calculate height + diameter
+in the same DFS
 ```
 
 ---
@@ -880,8 +1131,8 @@ Binary Tree + DFS + Height
 
 Diameter can be:
 
-1. Completely inside left subtree
-2. Completely inside right subtree
+1. Inside left subtree
+2. Inside right subtree
 3. Passing through current node
 
 Through current node:
@@ -892,8 +1143,6 @@ diameter = left_height + right_height
 
 Basic Approach:
 
-For every node:
-
 option1 = diameter(left)
 option2 = diameter(right)
 option3 = height(left) + height(right)
@@ -901,7 +1150,7 @@ option3 = height(left) + height(right)
 answer = max(option1, option2, option3)
 
 Problem:
-Height is recalculated many times.
+Height is recalculated repeatedly.
 
 Time  → O(n²)
 Space → O(h)
@@ -912,47 +1161,67 @@ Optimized Approach:
 
 Use one DFS.
 
-DFS returns:
-Height
+At every node:
 
-DFS updates:
-Diameter
+left = height(left subtree)
+right = height(right subtree)
 
-Code idea:
+currD = left + right
 
-left = dfs(root.left)
-right = dfs(root.right)
-
-diameter = max(diameter, left + right)
+D = max(D, currD)
 
 return max(left, right) + 1
 
-Time  → O(n)
-Space → O(h)
+--------------------------------------------------
+
+Your Code's Important Idea:
+
+self.D
+    ↓
+Stores maximum diameter found so far.
+
+height()
+    ↓
+1. Calculates current diameter
+2. Updates self.D
+3. Returns height to parent
 
 --------------------------------------------------
 
-Important:
-
 Height:
-Number of nodes  
-
-Diameter:
-Number of edges
-
-Height formula:
 
 max(left, right) + 1
 
-Diameter formula:
+Height counts:
+Number of nodes
+
+Diameter:
 
 left + right
-```
 
----
+Diameter counts:
+Number of edges
+
+--------------------------------------------------
+
+Why O(n)?
+
+Every node is visited once.
+
+Why O(h) space?
+
+Recursion call stack stores
+the current root-to-leaf path.
+
+Balanced tree:
+O(log n)
+
+Skewed tree:
+O(n)
+```
 
 # One-Line Pattern
 
 ```text
-DFS returns subtree height, while at every node we use left_height + right_height to update the maximum diameter.
+DFS returns subtree height, while at every node we calculate left_height + right_height and maintain the maximum as the diameter.
 ```
