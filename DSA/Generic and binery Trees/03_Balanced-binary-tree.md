@@ -65,13 +65,29 @@ False
 Binary Tree + DFS + Height
 ```
 
+The important observation is:
+
+> To check whether a node is balanced, we need the height of its left and right subtrees.
+
+So this is naturally solved using **postorder DFS**:
+
+```text
+Left Subtree
+     ↓
+Right Subtree
+     ↓
+Current Node
+```
+
+The children calculate their heights first, and then the parent checks the balance condition.
+
 ---
 
 # Approach 1: Basic Recursive Approach
 
 ## Main Idea
 
-For every node, we need to check three things:
+For every node, we need to check:
 
 ```text
 1. Is the current node balanced?
@@ -86,7 +102,7 @@ left = self.getHeight(root.left)
 right = self.getHeight(root.right)
 ```
 
-Calculate the difference:
+Then calculate:
 
 ```python
 absDiff = abs(left - right)
@@ -98,54 +114,11 @@ The current node is balanced if:
 absDiff <= 1
 ```
 
-Then recursively check:
-
-```python
-leftTree = self.isBalanced(root.left)
-rightTree = self.isBalanced(root.right)
-```
-
-Finally:
-
-```python
-status and leftTree and rightTree
-```
-
-must be `True`.
-
----
-
-# Why Do We Need to Check Every Node?
-
-It is not enough to check only the root.
-
-Example:
-
-```text
-        1
-       / \
-      2   3
-     /
-    4
-   /
-  5
-```
-
-The root may look balanced, but the left subtree is not balanced.
-
-Therefore:
-
-```text
-Every node must satisfy:
-
-|left height - right height| <= 1
-```
+Then recursively check the left and right subtrees.
 
 ---
 
 # Height Function
-
-Your code uses a separate function:
 
 ```python
 def getHeight(self, root):
@@ -159,8 +132,6 @@ def getHeight(self, root):
     return max(left, right) + 1
 ```
 
-This calculates the height of a subtree.
-
 For:
 
 ```text
@@ -169,13 +140,13 @@ For:
   2   3
 ```
 
-the height is:
+height is:
 
 ```text
 2
 ```
 
-because height here is measured in number of nodes.
+because height is measured in number of nodes.
 
 ---
 
@@ -192,11 +163,9 @@ class Solution:
         left = self.getHeight(root.left)
         right = self.getHeight(root.right)
 
-        maxDigit = max(left, right)
+        return max(left, right) + 1
 
-        return maxDigit + 1
-
-    def isBalanced(self, root: Optional[TreeNode]) -> bool:
+    def isBalanced(self, root):
 
         if root is None:
             return True
@@ -238,9 +207,18 @@ isBalanced(root.right)
 
 The problem is that `getHeight()` repeatedly visits the same nodes.
 
-For example, when checking the root, we calculate the height of the entire subtree.
+For example:
 
-Then when checking a child, we calculate the height of that subtree again.
+```text
+At root:
+    calculate height of entire subtree
+
+Then at child:
+    calculate height of that subtree again
+
+Then at grandchild:
+    calculate height again
+```
 
 So the same nodes are visited multiple times.
 
@@ -250,65 +228,482 @@ In the worst case:
 Time → O(n²)
 ```
 
----
-
-# Approach 2: Optimized O(n)
-
-## Main Idea
-
-We can check **balance and height at the same time**.
-
-Instead of:
+Space:
 
 ```text
-Calculate height
+O(h)
+```
+
+because of the recursion call stack.
+
+---
+
+# Approach 2: Optimized DFS + Boolean Flag
+
+Instead of calculating height separately and repeatedly, we can calculate the height **once** for every node.
+
+Your approach uses:
+
+```python
+self.Balanced
+```
+
+to remember whether we have found an unbalanced node.
+
+The idea is:
+
+```text
+DFS calculates height
+        +
+DFS checks balance
         ↓
-Check balance
+self.Balanced = False
+if imbalance is found
 ```
 
-we do:
-
-```text
-Calculate height + Check balance
-```
-
-in a single DFS.
+So we don't need to return `-1`.
 
 ---
 
-# Key Idea
+# Main Idea
 
-For every node, the DFS returns:
+For every node:
 
 ```text
-Height of subtree
+1. Calculate left subtree height.
+2. Calculate right subtree height.
+3. Check the height difference.
+4. If difference > 1:
+       Balanced = False
+5. Return current subtree height.
 ```
 
-But if the subtree is unbalanced, we return:
+The important thing is:
+
+> Even though `height()` returns only the height, it also updates `self.Balanced` whenever it finds an imbalance.
+
+---
+
+# Your Code
+
+```python
+class Solution:
+
+    Balanced = True
+
+    def height(self, root):
+
+        if root is None:
+            return 0
+
+        left = self.height(root.left)
+        right = self.height(root.right)
+
+        if abs(left - right) > 1:
+            self.Balanced = False
+
+        return max(left, right) + 1
+
+    def isBalanced(self, root):
+
+        self.height(root)
+
+        return self.Balanced
+```
+
+---
+
+# How This Works
+
+Consider:
 
 ```text
--1
+        1
+       / \
+      2   3
+     / \
+    4   5
+```
+
+Start:
+
+```text
+Balanced = True
+```
+
+---
+
+## Node 4
+
+```text
+left = 0
+right = 0
+```
+
+Difference:
+
+```text
+0
+```
+
+Balanced.
+
+Return:
+
+```text
+height = 1
+```
+
+---
+
+## Node 5
+
+Same:
+
+```text
+left = 0
+right = 0
+```
+
+Return:
+
+```text
+height = 1
+```
+
+---
+
+## Node 2
+
+Now:
+
+```text
+left = 1
+right = 1
+```
+
+Difference:
+
+```text
+|1 - 1| = 0
+```
+
+Balanced.
+
+Return:
+
+```text
+max(1, 1) + 1 = 2
+```
+
+---
+
+## Node 3
+
+Leaf node:
+
+```text
+height = 1
+```
+
+---
+
+## Node 1
+
+Now:
+
+```text
+left = 2
+right = 1
+```
+
+Difference:
+
+```text
+|2 - 1| = 1
+```
+
+Still balanced.
+
+So:
+
+```text
+Balanced = True
+```
+
+Final answer:
+
+```text
+True
+```
+
+---
+
+# Dry Run: Unbalanced Tree
+
+Consider:
+
+```text
+        1
+       /
+      2
+     /
+    3
+```
+
+Initially:
+
+```text
+Balanced = True
+```
+
+### Node 3
+
+```text
+left = 0
+right = 0
+```
+
+Return:
+
+```text
+height = 1
+```
+
+### Node 2
+
+```text
+left = 1
+right = 0
+
+difference = 1
+```
+
+Still balanced.
+
+Return:
+
+```text
+height = 2
+```
+
+### Node 1
+
+```text
+left = 2
+right = 0
+
+difference = 2
+```
+
+Since:
+
+```text
+2 > 1
+```
+
+we execute:
+
+```python
+self.Balanced = False
 ```
 
 So:
 
 ```text
--1 = This subtree is not balanced
+Balanced = False
 ```
 
-This allows us to detect imbalance immediately.
+Final:
+
+```python
+return self.Balanced
+```
+
+Answer:
+
+```text
+False
+```
+
+---
+
+# Important: Why Don't We Stop Immediately?
+
+Suppose we find:
+
+```python
+self.Balanced = False
+```
+
+The recursive function still returns height.
+
+For example:
+
+```python
+if abs(left - right) > 1:
+    self.Balanced = False
+
+return max(left, right) + 1
+```
+
+Why?
+
+Because the purpose of `height()` is still to calculate the height needed by its parent.
+
+So it has two responsibilities:
+
+```text
+1. Calculate height
+2. Update Balanced if needed
+```
+
+Once:
+
+```text
+Balanced = False
+```
+
+it stays false.
+
+---
+
+# Important Improvement to Your Code
+
+Your code has:
+
+```python
+class Solution:
+    Balanced = True
+```
+
+This creates a **class-level variable**.
+
+A safer approach is to reset it inside `isBalanced()`:
+
+```python
+class Solution:
+
+    def height(self, root):
+
+        if root is None:
+            return 0
+
+        left = self.height(root.left)
+        right = self.height(root.right)
+
+        if abs(left - right) > 1:
+            self.Balanced = False
+
+        return max(left, right) + 1
+
+    def isBalanced(self, root):
+
+        self.Balanced = True
+
+        self.height(root)
+
+        return self.Balanced
+```
+
+The important line is:
+
+```python
+self.Balanced = True
+```
+
+inside `isBalanced()`.
+
+This ensures every new call starts with:
+
+```text
+Balanced = True
+```
+
+---
+
+# Why Is This Approach O(n)?
+
+Every node is visited exactly once.
+
+At every node we do constant work:
+
+```text
+1. Get left height
+2. Get right height
+3. Calculate difference
+4. Update flag if needed
+5. Return height
+```
+
+There is no repeated height calculation.
+
+Therefore:
+
+```text
+Time = O(n)
+```
+
+Space comes from recursion:
+
+```text
+Space = O(h)
+```
+
+where `h` is the height of the tree.
+
+---
+
+# Approach 3: Optimized DFS + `-1` Sentinel
+
+There is another optimized approach that combines:
+
+```text
+Height
++
+Balance Status
+```
+
+into a single return value.
+
+Instead of using:
+
+```python
+self.Balanced
+```
+
+we return:
+
+```text
+positive value → height
+-1              → unbalanced
+```
+
+So:
+
+```text
+-1
+```
+
+acts as a special signal.
 
 ---
 
 # Why Return `-1`?
 
-Normally height is:
+Normally, height is:
 
 ```text
 0, 1, 2, 3, ...
 ```
 
-So `-1` can be used as a special value meaning:
+Therefore we can safely use:
+
+```text
+-1
+```
+
+to mean:
 
 ```text
 This subtree is unbalanced.
@@ -324,28 +719,32 @@ Example:
     3
 ```
 
-When DFS reaches node `1`, its left subtree will eventually report:
+Node `1` eventually receives:
+
+```text
+left = -1
+```
+
+which means:
+
+```text
+The left subtree is already unbalanced.
+```
+
+So it immediately returns:
 
 ```text
 -1
 ```
-
-Then node `1` also returns:
-
-```text
--1
-```
-
-There is no need to calculate anything else.
 
 ---
 
-# Optimized Code
+# Optimized Code Using `-1`
 
 ```python
 class Solution:
 
-    def isBalanced(self, root: Optional[TreeNode]) -> bool:
+    def isBalanced(self, root):
 
         def dfs(root):
 
@@ -378,376 +777,169 @@ class Solution:
 
 ---
 
-# How Optimized Approach Works
+# Boolean Flag vs `-1` Sentinel
 
-At every node:
+Both approaches have:
 
-### Step 1
+```text
+Time  = O(n)
+Space = O(h)
+```
 
-Find left subtree height:
+But they handle the information differently.
+
+### Boolean Flag
+
+```text
+height() → returns height
+
+self.Balanced → stores whether tree is balanced
+```
+
+So information is stored in two places.
+
+### `-1` Sentinel
+
+```text
+dfs() → returns either:
+
+positive number → height
+-1              → unbalanced
+```
+
+So both pieces of information are combined into one return value.
+
+---
+
+# Which One Should I Prefer?
+
+For learning:
+
+```text
+Boolean Flag
+```
+
+is easier to understand initially.
+
+You can think:
+
+```text
+height()
+    ↓
+calculate height
+
+self.Balanced
+    ↓
+remember whether imbalance occurred
+```
+
+For interviews, the `-1` sentinel version is usually cleaner because:
+
+```text
+one return value
+    ↓
+height OR unbalanced
+```
+
+It also allows **early stopping**.
+
+For example:
 
 ```python
 left = dfs(root.left)
-```
 
-### Step 2
-
-If left subtree is already unbalanced:
-
-```python
 if left == -1:
     return -1
 ```
 
-Immediately stop.
-
-### Step 3
-
-Find right subtree height:
-
-```python
-right = dfs(root.right)
-```
-
-### Step 4
-
-If right subtree is unbalanced:
-
-```python
-if right == -1:
-    return -1
-```
-
-### Step 5
-
-Check current node:
-
-```python
-if abs(left - right) > 1:
-    return -1
-```
-
-### Step 6
-
-If everything is balanced, return height:
-
-```python
-return max(left, right) + 1
-```
+There is no need to process the right subtree once the left subtree is already unbalanced.
 
 ---
 
-# Important Concept
+# Important Interview Pattern
 
-The DFS has **two jobs**:
-
-```text
-1. Return height
-2. Detect imbalance
-```
-
-So the return value has two meanings:
+This is a very common tree pattern:
 
 ```text
-Positive value → Height of balanced subtree
-
--1 → Subtree is unbalanced
-```
-
-This is the main trick of the optimized solution.
-
----
-
-# Dry Run
-
-Consider:
-
-```text
-        1
-       / \
-      2   3
-     / \
-    4   5
-```
-
-### Node 4
-
-```text
-left = 0
-right = 0
-```
-
-Difference:
-
-```text
-0
-```
-
-Balanced.
-
-Return height:
-
-```text
-1
-```
-
----
-
-### Node 5
-
-Same:
-
-```text
-height = 1
-```
-
----
-
-### Node 2
-
-```text
-left = 1
-right = 1
-```
-
-Difference:
-
-```text
-|1 - 1| = 0
-```
-
-Balanced.
-
-Return:
-
-```text
-max(1, 1) + 1 = 2
-```
-
----
-
-### Node 3
-
-```text
-left = 0
-right = 0
-```
-
-Balanced.
-
-Return:
-
-```text
-1
-```
-
----
-
-### Node 1
-
-```text
-left = 2
-right = 1
-```
-
-Difference:
-
-```text
-|2 - 1| = 1
-```
-
-Balanced.
-
-Return:
-
-```text
-max(2, 1) + 1 = 3
-```
-
-Finally:
-
-```python
-dfs(root) != -1
-```
-
-gives:
-
-```text
-True
-```
-
----
-
-# Dry Run: Unbalanced Tree
-
-Consider:
-
-```text
-        1
-       /
-      2
-     /
-    3
-```
-
-### Node 3
-
-```text
-left = 0
-right = 0
-
-height = 1
-```
-
----
-
-### Node 2
-
-```text
-left = 1
-right = 0
-
-difference = 1
-```
-
-Balanced.
-
-Return:
-
-```text
-2
-```
-
----
-
-### Node 1
-
-```text
-left = 2
-right = 0
-
-difference = 2
-```
-
-Since:
-
-```text
-2 > 1
-```
-
-return:
-
-```text
--1
-```
-
-Finally:
-
-```python
-dfs(root) != -1
-```
-
-becomes:
-
-```text
-False
-```
-
----
-
-# Why Is Optimized Approach O(n)?
-
-Each node is visited only once.
-
-At each node we perform constant work:
-
-```text
-Get left height
-Get right height
-Check difference
-Calculate height
-```
-
-There is no repeated `getHeight()` calculation.
-
-Therefore:
-
-```text
-Time → O(n)
-```
-
----
-
-# Why Space Is O(h)
-
-The optimized solution uses recursion.
-
-The recursive calls are stored in the **call stack**.
-
-We only keep the current path from the root to the deepest node.
-
-Therefore:
-
-```text
-Space → O(h)
-```
-
-where:
-
-```text
-h = height of tree
-```
-
-For a balanced tree:
-
-```text
-h = O(log n)
-
-Space = O(log n)
-```
-
-For a skewed tree:
-
-```text
-h = O(n)
-
-Space = O(n)
-```
-
----
-
-# Basic vs Optimized
-
-| Approach | Idea | Time | Space |
-|---|---|---:|---:|
-| Basic | Calculate height separately | `O(n²)` | `O(h)` |
-| Optimized | Height + balance in one DFS | `O(n)` | `O(h)` |
-
----
-
-# Important Interview Point
-
-The optimized solution is a very common **Tree DFS pattern**:
-
-```text
-Child returns information
-        ↓
+Child returns useful information
+            ↓
 Parent uses that information
-        ↓
+            ↓
 Parent returns updated information
 ```
 
-Here:
+For Balanced Binary Tree:
 
 ```text
-Child returns:
-Height
-
-Special value:
--1 = Unbalanced
+Child
+  ↓
+returns height
+  ↓
+Parent calculates difference
+  ↓
+Parent returns height
 ```
 
-So the parent can immediately detect whether a subtree is invalid.
+Optimized version:
+
+```text
+Child
+  ↓
+height OR -1
+  ↓
+Parent
+```
+
+This pattern appears in many tree problems.
+
+---
+
+# Why Postorder DFS?
+
+We need:
+
+```text
+left height
+right height
+```
+
+before we can check:
+
+```text
+abs(left - right)
+```
+
+Therefore:
+
+```text
+Left
+ ↓
+Right
+ ↓
+Root
+```
+
+This is:
+
+```text
+Postorder DFS
+```
+
+Whenever the parent needs information from both children before making a decision, think:
+
+```text
+Postorder DFS
+```
+
+---
+
+# Complexity Comparison
+
+| Approach | Idea | Time | Space |
+|---|---|---:|---:|
+| Basic | Recalculate height at every node | O(n²) | O(h) |
+| Boolean Flag | Height + `self.Balanced` in one DFS | O(n) | O(h) |
+| `-1` Sentinel | Height + balance status in return value | O(n) | O(h) |
 
 ---
 
@@ -755,7 +947,7 @@ So the parent can immediately detect whether a subtree is invalid.
 
 ## 1. Checking Only the Root
 
-Wrong idea:
+Wrong:
 
 ```text
 Check height difference only at root.
@@ -763,13 +955,24 @@ Check height difference only at root.
 
 A subtree can be unbalanced even if the root looks balanced.
 
-You must check every node.
+The condition must hold for:
+
+```text
+EVERY NODE
+```
 
 ---
 
 ## 2. Recalculating Height
 
-Calling a separate `getHeight()` for every node causes repeated work.
+If you do:
+
+```python
+getHeight(root.left)
+getHeight(root.right)
+```
+
+at every node, you repeatedly visit the same nodes.
 
 This leads to:
 
@@ -777,34 +980,95 @@ This leads to:
 O(n²)
 ```
 
-The optimized solution calculates height and balance together.
-
 ---
 
 ## 3. Forgetting `+1`
 
-Height of current node:
+Height of current node is:
 
 ```python
-return max(left, right) + 1
+max(left, right) + 1
 ```
 
 The `+1` represents the current node.
 
 ---
 
-## 4. Confusing `-1` With Height
+## 4. Confusing Height With Balance
 
-In the optimized solution:
+Height answers:
 
 ```text
--1 does NOT mean height -1.
+How tall is this subtree?
 ```
 
-It is a special signal:
+Balance answers:
 
 ```text
--1 = subtree is unbalanced
+Is this subtree balanced?
+```
+
+The optimized approaches combine these two pieces of information.
+
+---
+
+## 5. Not Resetting `self.Balanced`
+
+If using:
+
+```python
+self.Balanced
+```
+
+initialize it inside:
+
+```python
+def isBalanced(self, root):
+    self.Balanced = True
+```
+
+This makes every call start fresh.
+
+---
+
+# Pattern Recognition
+
+When you see:
+
+> Check whether a binary tree is balanced.
+
+Think:
+
+```text
+Need left height
++
+Need right height
+        ↓
+Postorder DFS
+        ↓
+Check:
+abs(left - right) <= 1
+```
+
+For optimization:
+
+```text
+Can I calculate height
+and balance in the same DFS?
+        ↓
+YES
+        ↓
+O(n)
+```
+
+Two ways:
+
+```text
+Option 1:
+Height + Boolean Flag
+
+Option 2:
+Height OR -1
 ```
 
 ---
@@ -814,15 +1078,15 @@ It is a special signal:
 ```text
 Balanced Binary Tree
 
-Pattern:
-Binary Tree + DFS + Height
-
 Condition:
 
 abs(left_height - right_height) <= 1
 
-This condition must be true
-for EVERY node.
+This must be true for EVERY node.
+
+Pattern:
+
+Binary Tree + Postorder DFS + Height
 
 --------------------------------------------------
 
@@ -832,38 +1096,64 @@ For every node:
 
 1. Calculate left height.
 2. Calculate right height.
-3. Check difference.
-4. Recursively check left subtree.
-5. Recursively check right subtree.
+3. Check balance.
+4. Recursively check both subtrees.
 
 Problem:
-Height gets recalculated repeatedly.
+
+Height is calculated repeatedly.
 
 Time  → O(n²)
 Space → O(h)
 
 --------------------------------------------------
 
-Optimized Approach:
+Optimized Approach 1:
 
-One DFS calculates both:
+Height + Boolean Flag
 
-1. Height
-2. Balance
+self.Balanced = True
+
+At every node:
+
+left = height(left)
+right = height(right)
+
+if abs(left - right) > 1:
+    self.Balanced = False
+
+return max(left, right) + 1
+
+Time  → O(n)
+Space → O(h)
+
+Important:
+
+Set:
+
+self.Balanced = True
+
+inside isBalanced().
+
+--------------------------------------------------
+
+Optimized Approach 2:
+
+Height + -1 Sentinel
 
 DFS returns:
 
 positive value → subtree height
--1             → subtree is unbalanced
+-1             → subtree unbalanced
 
 At every node:
 
-left = dfs(root.left)
+left = dfs(left)
 
 if left == -1:
     return -1
 
-right = dfs(root.right)
+right = dfs(right)
 
 if right == -1:
     return -1
@@ -873,34 +1163,51 @@ if abs(left - right) > 1:
 
 return max(left, right) + 1
 
-Final:
-
-return dfs(root) != -1
+Time  → O(n)
+Space → O(h)
 
 --------------------------------------------------
 
-Why O(n)?
+Why Postorder?
 
-Every node is visited only once.
+Parent needs child heights first.
 
-Why O(h) space?
+Left → Right → Root
 
-Recursion call stack stores the
-current root-to-leaf path.
+--------------------------------------------------
 
-h = height of tree.
+Why O(h) Space?
+
+Recursion call stack stores
+the current root-to-leaf path.
 
 Balanced tree:
-O(log n)
+h = O(log n)
 
 Skewed tree:
-O(n)
+h = O(n)
 ```
-
----
 
 # One-Line Pattern
 
 ```text
-DFS returns subtree height, and if the height difference at any node exceeds 1, return -1 to propagate the imbalance upward.
+Balanced Tree → Postorder DFS → Get left/right heights → Check difference → Return height + balance information
+```
+
+# Interview Memory Trick
+
+```text
+Basic:
+"Height baar-baar nikal raha hai"
+        ↓
+O(n²)
+
+Optimized:
+"Height ek hi DFS me nikal do"
+        ↓
+O(n)
+
+Two ways:
+1. Height + Boolean Flag
+2. Height OR -1
 ```
