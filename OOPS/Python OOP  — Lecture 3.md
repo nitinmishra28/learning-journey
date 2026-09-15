@@ -2367,7 +2367,7 @@ Before moving forward, make sure you can explain:
           Neither self nor cls
                   │
                   ↓
-          Independent Utility         
+          Independent Utility          
 ```
 
 ### Final Rule to Remember
