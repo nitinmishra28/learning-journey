@@ -2370,6 +2370,7 @@ Before moving forward, make sure you can explain:
           Independent Utility            
 ```
 
+
 ### Final Rule to Remember
 
 ```text
