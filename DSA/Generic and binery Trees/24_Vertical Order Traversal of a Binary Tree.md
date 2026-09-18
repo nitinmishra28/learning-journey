@@ -1005,4 +1005,4 @@ Sort by value
 
 ### One-Line Pattern
 
-> **Vertical Traversal = Coordinate `(row, col)` + BFS + column grouping + sort `(row, value)`.**      
+> **Vertical Traversal = Coordinate `(row, col)` + BFS + column grouping + sort `(row, value)`.**       
