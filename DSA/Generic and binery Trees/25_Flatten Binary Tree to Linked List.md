@@ -1056,4 +1056,4 @@ Move forward
 
 ### One-Line Pattern
 
-> **Flatten = Preorder in-place pointer rewiring using the rightmost node of the left subtree as the predecessor.** 
+> **Flatten = Preorder in-place pointer rewiring using the rightmost node of the left subtree as the predecessor.**  
