@@ -1,4 +1,4 @@
-# 🌳 Binary Search Tree (BST) in Python — Lecture 2
+# 🌳 Binary Search Tree (BST) in Python 
 
 ## 1. What is a Binary Search Tree?
 
