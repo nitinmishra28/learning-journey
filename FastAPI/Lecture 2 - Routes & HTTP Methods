@@ -26,7 +26,7 @@ Response
 
 ---
 
-# 2. What is a Path?
+## 2. What is a Path?
 
 The part after the domain is called the **path**.
 
@@ -48,7 +48,7 @@ http://127.0.0.1:8000
  Path
 ```
 
-Another example:
+Examples:
 
 ```text
 /products
@@ -59,7 +59,7 @@ Another example:
 
 ---
 
-# 3. What is an HTTP Method?
+## 3. What is an HTTP Method?
 
 HTTP methods tell the server **what operation we want to perform**.
 
@@ -75,7 +75,7 @@ DELETE
 
 ---
 
-# 4. GET
+## 4. GET
 
 `GET` is generally used to **retrieve data**.
 
@@ -111,7 +111,7 @@ GET → Give me data
 
 ---
 
-# 5. POST
+## 5. POST
 
 `POST` is generally used to **create new data**.
 
@@ -141,9 +141,9 @@ We will learn how to receive data from the client using Pydantic models in a lat
 
 ---
 
-# 6. PUT
+## 6. PUT
 
-`PUT` is generally used to **update an existing resource**.
+`PUT` is generally used to **update or replace an existing resource**.
 
 Example:
 
@@ -169,7 +169,7 @@ PUT → Update/replace a resource
 
 ---
 
-# 7. PATCH
+## 7. PATCH
 
 `PATCH` is generally used for a **partial update**.
 
@@ -209,7 +209,7 @@ PATCH is commonly used.
 
 ---
 
-# 8. DELETE
+## 8. DELETE
 
 `DELETE` is used to **delete a resource**.
 
@@ -231,7 +231,7 @@ DELETE → Delete something
 
 ---
 
-# 9. FastAPI Path Operation Decorators
+## 9. FastAPI Path Operation Decorators
 
 FastAPI provides decorators for HTTP methods:
 
@@ -278,7 +278,7 @@ def delete_user():
 
 ---
 
-# 10. What is a Path Operation?
+## 10. What is a Path Operation?
 
 This is an important FastAPI term.
 
@@ -312,7 +312,7 @@ is the function that handles that operation.
 
 ---
 
-# 11. Why is it Called a Decorator?
+## 11. Why is it Called a Decorator?
 
 This:
 
@@ -344,7 +344,7 @@ get_users()
 
 ---
 
-# 12. Multiple Routes
+## 12. Multiple Routes
 
 A FastAPI application can have many routes.
 
@@ -385,7 +385,7 @@ GET /orders
 
 ---
 
-# 13. Same Path with Different HTTP Methods
+## 13. Same Path with Different HTTP Methods
 
 You can use the same path with different HTTP methods.
 
@@ -421,7 +421,7 @@ identifies the operation.
 
 ---
 
-# 14. REST API Example
+## 14. REST API Example
 
 Imagine a student management system.
 
@@ -468,7 +468,7 @@ The `{id}` part will be covered properly in the next lecture on **Path Parameter
 
 ---
 
-# 15. Complete Example
+## 15. Complete Example
 
 Create `main.py`:
 
@@ -534,16 +534,16 @@ You can test all the endpoints from Swagger UI.
 
 ---
 
-# 16. GET vs POST
+## 16. GET vs POST
 
 This is commonly asked in interviews.
 
-| GET                           | POST                     |
-| ----------------------------- | ------------------------ |
-| Retrieve data                 | Create data              |
-| Usually no request body       | Can contain request body |
-| Should not modify server data | Can modify server data   |
-| `/users`                      | `/users`                 |
+| GET | POST |
+|---|---|
+| Retrieve data | Create data |
+| Usually no request body | Can contain request body |
+| Should not modify server data | Can modify server data |
+| `/users` | `/users` |
 
 Example:
 
@@ -567,7 +567,7 @@ means:
 
 ---
 
-# 17. PUT vs PATCH
+## 17. PUT vs PATCH
 
 Another common interview question.
 
@@ -612,7 +612,7 @@ You may update only the required field.
 
 ---
 
-# 18. Idempotency — Interview Concept
+## 18. Idempotency — Interview Concept
 
 An operation is **idempotent** if repeating the same request produces the same intended final state.
 
@@ -644,7 +644,7 @@ may create multiple orders.
 
 ---
 
-# 19. Important HTTP Methods to Remember
+## 19. Important HTTP Methods to Remember
 
 ```text
 GET
@@ -670,7 +670,7 @@ Delete
 
 ---
 
-# 20. Common Mistakes
+## 20. Common Mistakes
 
 ### Mistake 1 — Forgetting the decorator
 
@@ -733,7 +733,7 @@ DELETE /users/{id}
 
 ---
 
-# 21. Interview Questions
+## 21. Interview Questions
 
 ### Q1. What is a path operation in FastAPI?
 
@@ -816,7 +816,7 @@ get_users()
 
 ---
 
-# 22. Quick Revision
+## 22. Quick Revision
 
 ```text
 Route
@@ -860,7 +860,7 @@ DELETE → Delete
 
 ---
 
-# 23. Practice
+## 23. Practice
 
 Create these endpoints for a **School Management API**:
 
@@ -894,11 +894,11 @@ Don't use a database or Pydantic yet.
 
 We will learn:
 
-* What are path parameters?
-* What are query parameters?
-* `/students/10`
-* `/students?class_name=10`
-* Difference between path and query parameters
-* Optional query parameters
-* Type conversion
-* Interview questions
+- What are path parameters?
+- What are query parameters?
+- `/students/10`
+- `/students?class_name=10`
+- Difference between path and query parameters
+- Optional query parameters
+- Type conversion
+- Interview questions
