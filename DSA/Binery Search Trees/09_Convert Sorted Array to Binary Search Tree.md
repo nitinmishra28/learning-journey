@@ -886,4 +886,4 @@ Left    Right
 Half     Half
 ```
 
-> **One-Line Pattern: Sorted Array to BST = Choose the middle element as root and recursively build the left and right halves.**
+> **One-Line Pattern: Sorted Array to BST = Choose the middle element as root and recursively build the left and right halves.** 
