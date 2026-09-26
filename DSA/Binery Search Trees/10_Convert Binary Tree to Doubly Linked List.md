@@ -4,13 +4,13 @@
 
 Given a Binary Tree, convert it into a **Doubly Linked List (DLL)**.
 
-The nodes of the DLL should follow the **inorder traversal** of the Binary Tree:
+The nodes in the DLL should follow the **inorder traversal** of the Binary Tree:
 
 ```text
 Left → Node → Right
 ```
 
-Each node should have:
+Each node's pointers become:
 
 ```text
 left  → previous node
@@ -26,7 +26,7 @@ Binary Tree:
        /  \
       5    20
      / \   / \
-    2   7 15  25
+    2   7 15 25
 ```
 
 Inorder traversal:
@@ -41,13 +41,17 @@ DLL:
 None ← 2 ⇄ 5 ⇄ 7 ⇄ 10 ⇄ 15 ⇄ 20 ⇄ 25 → None
 ```
 
-The first node:
+The first node is the:
 
 ```text
-2
+head
 ```
 
-is the `head` of the DLL.
+and the last node is the:
+
+```text
+tail
+```
 
 ---
 
@@ -69,16 +73,15 @@ Inorder:
 2 → 5 → 7 → 10 → 15 → 20 → 25
 ```
 
-Then:
+Then connect:
 
 ```text
-nodes[0].right = nodes[1]
-nodes[1].left  = nodes[0]
-
-nodes[1].right = nodes[2]
-nodes[2].left  = nodes[1]
-
-...
+2 ⇄ 5
+5 ⇄ 7
+7 ⇄ 10
+10 ⇄ 15
+15 ⇄ 20
+20 ⇄ 25
 ```
 
 ### Complexity
@@ -88,173 +91,77 @@ Time:  O(n)
 Space: O(n)
 ```
 
-The extra `O(n)` space is required for storing all nodes.
+The extra `O(n)` space comes from storing all nodes.
 
-But we can do this **in-place** without storing the nodes in an array.
+We can do the conversion **in-place** without using an array.
 
 ---
 
-# 3. Optimized Approach
+# 3. Optimized Approach 1 — Reverse Inorder Using `head`
 
-We use:
+The first optimized approach uses:
 
 ```text
-Reverse Inorder
+RNL
 
 Right → Node → Left
 ```
 
-Why?
-
-Normally inorder gives:
+Instead of normal inorder:
 
 ```text
+LNR
+
 Left → Node → Right
 ```
 
-which gives the DLL from:
+---
 
-```text
-Smallest → Largest
-```
+# 4. Why Reverse Inorder?
 
-But if we process:
-
-```text
-Right → Node → Left
-```
-
-we get:
+For a BST, reverse inorder gives:
 
 ```text
 Largest → Smallest
 ```
 
-This allows us to maintain a `head` pointer and connect nodes while moving backward.
+But this problem is a general Binary Tree problem where the required DLL order is inorder.
 
----
+The trick is that we process nodes in reverse order and keep adding the current node **before** the already processed nodes.
 
-# 4. Main Idea
-
-Consider:
+Example:
 
 ```text
-        10
-       /  \
-      5    20
-     / \   / \
-    2   7 15  25
-```
+Reverse Inorder:
 
-Reverse inorder:
-
-```text
 25 → 20 → 15 → 10 → 7 → 5 → 2
 ```
 
-We maintain:
+We build:
 
 ```text
-head
-```
+25
 
-`head` represents the already processed part of the DLL.
-
-Initially:
-
-```text
-head = None
-```
-
----
-
-## Process 25
-
-```text
-head = None
-```
-
-Set:
-
-```python
-root.right = head
-```
-
-So:
-
-```text
-25.right = None
-```
-
-Then:
-
-```python
-head = root
-```
-
-Now:
-
-```text
-head → 25
-```
-
----
-
-## Process 20
-
-At this point:
-
-```text
-head → 25
-```
-
-Set:
-
-```python
-root.right = head
-```
-
-So:
-
-```text
-20.right = 25
-```
-
-Then:
-
-```python
-head.left = root
-```
-
-So:
-
-```text
 20 ⇄ 25
+
+15 ⇄ 20 ⇄ 25
+
+10 ⇄ 15 ⇄ 20 ⇄ 25
+
+...
 ```
 
-Finally:
-
-```python
-head = root
-```
-
-Now:
+At the end:
 
 ```text
-head → 20
+2 ⇄ 5 ⇄ 7 ⇄ 10 ⇄ 15 ⇄ 20 ⇄ 25
 ```
 
-The processed DLL is:
-
-```text
-20 ⇄ 25
-```
-
-where `head` points to `20`.
+The `head` keeps moving toward the smaller nodes.
 
 ---
 
-# 5. Complete Code
+# 5. Complete Code — Approach 1
 
 ```python
 ''' Structure for tree and linked list
@@ -273,10 +180,11 @@ class Solution:
             return head
 
         # RNL
-        # R
+
+        # R - Right
         head = self.solve(root.right, head)
 
-        # Connect current node to already processed nodes
+        # Connect current node to already processed DLL
         root.right = head
 
         # Connect previous node back to current node
@@ -286,7 +194,7 @@ class Solution:
         # Current node becomes the new head
         head = root
 
-        # L
+        # L - Left
         head = self.solve(root.left, head)
 
         return head
@@ -302,9 +210,9 @@ class Solution:
 
 ---
 
-# 6. The Most Important Part — Why `head = self.solve(...)`?
+# 6. Most Important Concept — Why `head = self.solve(...)`?
 
-This is the part that can be confusing.
+This is the part that is easy to get stuck on.
 
 You might think:
 
@@ -314,13 +222,37 @@ self.solve(root.right, head)
 
 is enough.
 
-But it is **not** enough.
+But it is not.
 
-Why?
+The function:
 
-Because `solve()` returns an **updated `head`**.
+```python
+solve()
+```
 
-Example:
+returns an **updated `head`**.
+
+Therefore, we need to store that returned value:
+
+```python
+head = self.solve(root.right, head)
+```
+
+The same thing happens here:
+
+```python
+head = self.solve(root.left, head)
+```
+
+---
+
+# 7. One-Line Rule
+
+Remember:
+
+> **Function agar updated value return kar raha hai, aur tumhe woh updated value aage use karni hai, to usko variable mein assign karna padega.**
+
+In this problem:
 
 ```python
 head = self.solve(root.right, head)
@@ -329,44 +261,16 @@ head = self.solve(root.right, head)
 means:
 
 ```text
-Call solve()
-     ↓
-solve processes nodes
-     ↓
-solve returns NEW head
-     ↓
-store that returned head
+solve()
+   ↓
+process nodes
+   ↓
+return updated head
+   ↓
+store it in head
+   ↓
+use new head
 ```
-
-If you only write:
-
-```python
-self.solve(root.right, head)
-```
-
-you are ignoring the returned value.
-
----
-
-# 7. Your One-Line Rule
-
-Remember this:
-
-> **Function agar updated value return kar raha hai, aur tumhe woh updated value aage use karni hai, to usko variable mein assign karna padega.**
-
-Example:
-
-```python
-head = self.solve(root.right, head)
-```
-
-The function returns:
-
-```text
-updated head
-```
-
-Therefore we must store it.
 
 ---
 
@@ -380,41 +284,13 @@ self.solve(root.right, head)
 root.right = head
 ```
 
-The recursive call may have created a new head internally.
+The recursive function may have found a new head.
 
-But the caller's `head` variable is still pointing to the **old value**.
+But that returned value is ignored.
 
-Remember:
+The caller's `head` still contains the old value.
 
-```text
-Python variable
-      ↓
-reference to an object
-```
-
-When the recursive function does:
-
-```python
-head = root
-```
-
-it changes the local variable `head` inside that function call.
-
-It does **not automatically update the caller's local `head` variable**.
-
-Therefore:
-
-```python
-head = self.solve(...)
-```
-
-is necessary to receive the updated value.
-
----
-
-# 9. Simple Example of the Same Concept
-
-Consider:
+For example:
 
 ```python
 def change(x):
@@ -422,7 +298,7 @@ def change(x):
     return x
 ```
 
-Now:
+If we do:
 
 ```python
 x = 5
@@ -432,15 +308,13 @@ change(x)
 print(x)
 ```
 
-Output:
+we still get:
 
 ```text
 5
 ```
 
-Why?
-
-Because we ignored the returned value.
+because the returned value was ignored.
 
 But:
 
@@ -448,29 +322,23 @@ But:
 x = change(x)
 ```
 
-Now:
+gives:
 
 ```text
-x = 10
+10
 ```
 
-Same concept in our tree problem:
+Exactly the same idea applies here:
 
 ```python
-head = self.solve(root.right, head)
+head = self.solve(...)
 ```
-
-The recursive function gives us a new `head`.
-
-We must capture it.
 
 ---
 
-# 10. Why `head` Changes?
+# 9. Why Does `head` Keep Changing?
 
-This is the most important concept in this problem.
-
-Suppose:
+Consider:
 
 ```text
         10
@@ -484,7 +352,7 @@ Reverse inorder:
 20 → 10 → 5
 ```
 
-### Initially
+Initially:
 
 ```text
 head = None
@@ -494,13 +362,16 @@ head = None
 
 ```text
 20.right = None
+
 head = 20
 ```
 
 Now:
 
 ```text
-head → 20
+head
+ ↓
+20
 ```
 
 ### Process 10
@@ -515,7 +386,9 @@ head = 10
 Now:
 
 ```text
-head → 10 ⇄ 20
+head
+ ↓
+10 ⇄ 20
 ```
 
 ### Process 5
@@ -530,48 +403,51 @@ head = 5
 Now:
 
 ```text
-head → 5 ⇄ 10 ⇄ 20
+head
+ ↓
+5 ⇄ 10 ⇄ 20
 ```
 
-Therefore:
+So:
 
 ```text
 head
 ```
 
-keeps moving toward the left/smaller nodes.
+keeps moving backward.
 
-At the end:
-
-```text
-head = smallest node
-```
-
-which becomes the DLL head.
+At the end, `head` points to the smallest/inorder-first node.
 
 ---
 
-# 11. Why `root.right = head`?
+# 10. Pointer Logic
 
-Suppose the already processed part is:
+These three operations are the heart of Approach 1:
 
-```text
-head → 20 ⇄ 25
+```python
+root.right = head
+
+if head is not None:
+    head.left = root
+
+head = root
 ```
 
-Now current node is:
+Suppose:
+
+```text
+head
+ ↓
+20 ⇄ 25
+```
+
+and current node is:
 
 ```text
 15
 ```
 
-We want:
-
-```text
-15 ⇄ 20 ⇄ 25
-```
-
-So:
+### Step 1
 
 ```python
 root.right = head
@@ -583,31 +459,7 @@ creates:
 15 → 20
 ```
 
----
-
-# 12. Why `head.left = root`?
-
-We also need the reverse connection.
-
-After:
-
-```python
-root.right = head
-```
-
-we have:
-
-```text
-15 → 20
-```
-
-But we also need:
-
-```text
-20 → 15
-```
-
-So:
+### Step 2
 
 ```python
 head.left = root
@@ -619,50 +471,13 @@ creates:
 15 ⇄ 20
 ```
 
-Therefore these two lines work together:
-
-```python
-root.right = head
-
-if head is not None:
-    head.left = root
-```
-
----
-
-# 13. Why `head = root`?
-
-After connecting the current node:
-
-```text
-current ⇄ old head
-```
-
-the current node is now the **first node** of the processed DLL.
-
-Therefore:
+### Step 3
 
 ```python
 head = root
 ```
 
-Example:
-
-Before:
-
-```text
-head
- ↓
-20 ⇄ 25
-```
-
-Current node:
-
-```text
-15
-```
-
-After:
+moves the head:
 
 ```text
 head
@@ -670,168 +485,385 @@ head
 15 ⇄ 20 ⇄ 25
 ```
 
+---
+
+# 11. Optimized Approach 2 — Normal Inorder Using `head` and `tail`
+
+The second approach is more intuitive because it directly follows the required DLL order:
+
+```text
+LNR
+
+Left → Node → Right
+```
+
+Instead of only maintaining `head`, we maintain:
+
+```text
+head
+tail
+```
+
+Where:
+
+```text
+head = first node of DLL
+tail = last node processed so far
+```
+
+This makes connecting the current node very straightforward.
+
+---
+
+# 12. Main Idea of Approach 2
+
+Suppose inorder gives:
+
+```text
+2 → 5 → 7 → 10
+```
+
+When processing nodes:
+
+### First node
+
+```text
+2
+```
+
+There is no previous node.
+
+So:
+
+```text
+head = 2
+tail = 2
+```
+
+### Next node
+
+```text
+5
+```
+
+Connect:
+
+```text
+tail.right = root
+root.left = tail
+```
+
+So:
+
+```text
+2 ⇄ 5
+```
+
+Then:
+
+```text
+tail = root
+```
+
+Now:
+
+```text
+head = 2
+tail = 5
+```
+
+### Next node
+
+```text
+7
+```
+
+Connect:
+
+```text
+5 ⇄ 7
+```
+
+Then:
+
+```text
+tail = 7
+```
+
+Continue the same process.
+
+---
+
+# 13. Complete Code — Approach 2
+
+```python
+''' Structure for tree and linked list
+class Node:
+    def __init__(self, x):
+        self.data = x
+        self.left = None
+        self.right = None
+'''
+
+class Solution:
+
+    def solve(self, root, head, tail):
+
+        if root is None:
+            return head, tail
+
+        # LNR
+
+        # L - Left
+        head, tail = self.solve(root.left, head, tail)
+
+        # N - Node
+        if tail is not None:
+
+            # Connect previous node to current node
+            tail.right = root
+
+            # Connect current node back to previous node
+            root.left = tail
+
+            # Current node becomes the new tail
+            tail = root
+
+        else:
+
+            # First node of DLL
+            head = root
+            tail = root
+
+        # R - Right
+        head, tail = self.solve(root.right, head, tail)
+
+        return head, tail
+
+    def treeToDLL(self, root):
+
+        head = None
+        tail = None
+
+        head, tail = self.solve(root, head, tail)
+
+        return head
+```
+
+---
+
+# 14. Why Do We Need Both `head` and `tail`?
+
+This is the main difference between the two approaches.
+
+### Approach 1
+
+Uses:
+
+```text
+head
+```
+
+and processes:
+
+```text
+Right → Node → Left
+```
+
+### Approach 2
+
+Uses:
+
+```text
+head + tail
+```
+
+and processes:
+
+```text
+Left → Node → Right
+```
+
+With normal inorder, we naturally encounter nodes from:
+
+```text
+first → last
+```
+
+So we need `tail` to know where to attach the current node.
+
+---
+
+# 15. Understanding `tail`
+
+Suppose:
+
+```text
+head
+ ↓
+2 ⇄ 5 ⇄ 7
+         ↑
+        tail
+```
+
+Now current node is:
+
+```text
+10
+```
+
+`tail` tells us:
+
+```text
+7 is the previous node
+```
+
 So:
 
 ```python
-head = root
+tail.right = root
 ```
 
-moves the head backward.
-
----
-
-# 14. Why Process Right First?
-
-This is the key trick.
-
-We use:
+creates:
 
 ```text
-R → N → L
+7 → 10
 ```
 
-instead of:
-
-```text
-L → N → R
-```
-
-Because reverse inorder gives:
-
-```text
-Largest → Smallest
-```
-
-Example:
-
-```text
-        10
-       /  \
-      5    20
-```
-
-Reverse inorder:
-
-```text
-20 → 10 → 5
-```
-
-We can keep attaching the newly visited smaller node in front:
-
-```text
-20
-
-10 ⇄ 20
-
-5 ⇄ 10 ⇄ 20
-```
-
-At the end:
-
-```text
-head = 5
-```
-
-which is exactly the DLL head.
-
----
-
-# 15. Why `head` Is Returned?
-
-At every recursive call:
+and:
 
 ```python
-return head
+root.left = tail
 ```
 
-returns the **latest head** to the caller.
-
-This is necessary because `head` changes during recursion.
-
-For example:
+creates:
 
 ```text
-solve(20)
-    returns 20
-
-solve(10)
-    returns 10
-
-solve(5)
-    returns 5
+10 → 7
 ```
 
-The returned value keeps propagating back.
+Together:
+
+```text
+7 ⇄ 10
+```
+
+Then:
+
+```python
+tail = root
+```
+
+moves the tail:
+
+```text
+head
+ ↓
+2 ⇄ 5 ⇄ 7 ⇄ 10
+             ↑
+            tail
+```
+
+---
+
+# 16. Why Do We Return `head, tail`?
+
+This is another important recursion concept.
+
+The recursive function can update both:
+
+```text
+head
+tail
+```
+
+Therefore it returns both:
+
+```python
+return head, tail
+```
+
+When calling recursively:
+
+```python
+head, tail = self.solve(root.left, head, tail)
+```
+
+we capture both updated values.
+
+Same for the right subtree:
+
+```python
+head, tail = self.solve(root.right, head, tail)
+```
+
+---
+
+# 17. The Same Rule Applies Here
+
+The same rule from Approach 1 applies to both variables:
+
+> **If the recursive function returns updated state, store the returned state.**
 
 Therefore:
 
 ```python
-head = self.solve(root.right, head)
+head, tail = self.solve(...)
 ```
 
-and:
+is necessary.
+
+If we write only:
 
 ```python
-head = self.solve(root.left, head)
+self.solve(...)
 ```
 
-are both important.
+we ignore the updated `head` and `tail`.
 
 ---
 
-# 16. The Two Most Important Assignments
+# 18. Why Is `tail` Initially `None`?
 
-These two lines are easy to miss:
-
-```python
-head = self.solve(root.right, head)
-```
-
-and:
-
-```python
-head = self.solve(root.left, head)
-```
-
-Why?
-
-Because:
+Initially the DLL is empty:
 
 ```text
-solve()
+head = None
+tail = None
 ```
 
-returns an updated `head`.
+When we reach the first node during inorder:
+
+```python
+if tail is not None:
+```
+
+is false.
 
 So:
 
-```text
-Function returns updated value
-            ↓
-Store it
-            ↓
-Use updated value further
+```python
+head = root
+tail = root
 ```
 
-### Rule
+Both point to the first node.
+
+Example:
 
 ```text
-If a recursive function returns updated state:
-
-    variable = recursive_call(...)
+head
+ ↓
+2
+ ↑
+tail
 ```
 
-not:
-
-```text
-recursive_call(...)
-```
-
-if you need that returned state.
+After that, every new node can be attached after `tail`.
 
 ---
 
-# 17. Dry Run
+# 19. Dry Run — Approach 2
 
 Tree:
 
@@ -840,138 +872,298 @@ Tree:
        /  \
       5    20
      / \   / \
-    2   7 15  25
+    2   7 15 25
 ```
 
-Reverse inorder:
+Inorder:
 
 ```text
-25 → 20 → 15 → 10 → 7 → 5 → 2
+2 → 5 → 7 → 10 → 15 → 20 → 25
 ```
 
-### Step 1 — 25
+### Process 2
+
+First node:
 
 ```text
-head = 25
+head = 2
+tail = 2
 ```
 
 ```text
-25
+2
 ```
 
----
-
-### Step 2 — 20
+### Process 5
 
 ```text
-20.right = 25
-25.left = 20
-
-head = 20
+tail.right = 5
+5.left = tail
+tail = 5
 ```
+
+```text
+2 ⇄ 5
+```
+
+### Process 7
+
+```text
+5 ⇄ 7
+```
+
+Now:
+
+```text
+head
+ ↓
+2 ⇄ 5 ⇄ 7
+         ↑
+        tail
+```
+
+### Process 10
+
+```text
+7 ⇄ 10
+```
+
+### Process 15
+
+```text
+10 ⇄ 15
+```
+
+### Process 20
+
+```text
+15 ⇄ 20
+```
+
+### Process 25
 
 ```text
 20 ⇄ 25
 ```
 
----
-
-### Step 3 — 15
-
-```text
-15.right = 20
-20.left = 15
-
-head = 15
-```
-
-```text
-15 ⇄ 20 ⇄ 25
-```
-
----
-
-### Step 4 — 10
-
-```text
-10.right = 15
-15.left = 10
-
-head = 10
-```
-
-```text
-10 ⇄ 15 ⇄ 20 ⇄ 25
-```
-
----
-
-### Step 5 — 7
-
-```text
-7.right = 10
-10.left = 7
-
-head = 7
-```
-
-```text
-7 ⇄ 10 ⇄ 15 ⇄ 20 ⇄ 25
-```
-
----
-
-### Step 6 — 5
-
-```text
-5.right = 7
-7.left = 5
-
-head = 5
-```
-
-```text
-5 ⇄ 7 ⇄ 10 ⇄ 15 ⇄ 20 ⇄ 25
-```
-
----
-
-### Step 7 — 2
-
-```text
-2.right = 5
-5.left = 2
-
-head = 2
-```
-
-Final DLL:
-
-```text
-None ← 2 ⇄ 5 ⇄ 7 ⇄ 10 ⇄ 15 ⇄ 20 ⇄ 25 → None
-```
-
 Final:
 
 ```text
-head = 2
+head
+ ↓
+2 ⇄ 5 ⇄ 7 ⇄ 10 ⇄ 15 ⇄ 20 ⇄ 25
+                                      ↑
+                                     tail
 ```
 
 ---
 
-# 18. Complexity
+# 20. Approach 1 vs Approach 2
 
-Every node is visited exactly once.
+| Feature | Approach 1 | Approach 2 |
+|---|---|---|
+| Traversal | RNL | LNR |
+| Order processed | Largest → Smallest | Smallest → Largest |
+| Variables | `head` | `head`, `tail` |
+| Main connection | Insert before head | Insert after tail |
+| Extra array | No | No |
+| Time | O(n) | O(n) |
+| Space | O(h) | O(h) |
+| Easiness | Slightly tricky | More intuitive |
 
-Therefore:
+---
+
+# 21. Which Pointer Should You Remember?
+
+For **Approach 1**:
+
+```text
+RNL
+
+head = already processed DLL
+
+root.right = head
+head.left = root
+head = root
+```
+
+Think:
+
+```text
+Insert current node BEFORE head
+```
+
+---
+
+For **Approach 2**:
+
+```text
+LNR
+
+tail = last processed node
+
+tail.right = root
+root.left = tail
+tail = root
+```
+
+Think:
+
+```text
+Insert current node AFTER tail
+```
+
+---
+
+# 22. Why Both Approaches Are O(1) Extra Pointer Space
+
+We are not creating a new linked-list node.
+
+We reuse the existing tree nodes.
+
+The pointers:
+
+```text
+left
+right
+```
+
+are repurposed:
+
+```text
+left  → previous
+right → next
+```
+
+So no extra `Node` objects or array are required.
+
+Only recursion stack space is used.
+
+```text
+Space = O(h)
+```
+
+---
+
+# 23. Common Mistakes
+
+## 1. Ignoring the returned `head`
+
+Wrong:
+
+```python
+self.solve(root.right, head)
+```
+
+Correct:
+
+```python
+head = self.solve(root.right, head)
+```
+
+---
+
+## 2. Ignoring returned `head, tail`
+
+Wrong:
+
+```python
+self.solve(root.left, head, tail)
+```
+
+Correct:
+
+```python
+head, tail = self.solve(root.left, head, tail)
+```
+
+---
+
+## 3. Forgetting the reverse pointer
+
+Wrong:
+
+```python
+tail.right = root
+```
+
+This only creates:
+
+```text
+tail → root
+```
+
+For a DLL we also need:
+
+```python
+root.left = tail
+```
+
+giving:
+
+```text
+tail ⇄ root
+```
+
+---
+
+## 4. Forgetting to update `tail`
+
+After adding a node:
+
+```python
+tail = root
+```
+
+must be done.
+
+Otherwise `tail` keeps pointing to the old node.
+
+---
+
+## 5. Mixing the traversal logic
+
+Approach 1:
+
+```text
+RNL
+```
+
+uses:
+
+```text
+head
+```
+
+Approach 2:
+
+```text
+LNR
+```
+
+uses:
+
+```text
+head + tail
+```
+
+Don't mix the pointer logic between the two approaches.
+
+---
+
+# 24. Complexity
+
+For both optimized approaches:
+
+Every tree node is visited exactly once.
 
 ```text
 Time = O(n)
 ```
 
-No extra array/list is used.
+No array or extra linked-list nodes are created.
 
-The only extra space is the recursion stack:
+Recursion stack:
 
 ```text
 Space = O(h)
@@ -993,122 +1185,7 @@ O(h) = O(n)
 
 ---
 
-# 19. Common Mistakes
-
-## 1. Forgetting to store the returned head
-
-Wrong:
-
-```python
-self.solve(root.right, head)
-```
-
-Correct:
-
-```python
-head = self.solve(root.right, head)
-```
-
-Because `solve()` returns the updated `head`.
-
----
-
-## 2. Forgetting the second assignment
-
-Wrong:
-
-```python
-self.solve(root.left, head)
-return head
-```
-
-Correct:
-
-```python
-head = self.solve(root.left, head)
-return head
-```
-
-Again, the recursive call can return a new head.
-
----
-
-## 3. Using normal inorder without changing the logic
-
-Normal inorder:
-
-```text
-L → N → R
-```
-
-can also be used, but then the pointer logic is usually written differently.
-
-This particular solution is designed around:
-
-```text
-R → N → L
-```
-
----
-
-## 4. Forgetting `head.left = root`
-
-If we only write:
-
-```python
-root.right = head
-```
-
-we create only:
-
-```text
-root → head
-```
-
-not a proper doubly linked connection.
-
-We need:
-
-```python
-head.left = root
-```
-
-to create:
-
-```text
-root ⇄ head
-```
-
----
-
-## 5. Not checking `head is not None`
-
-Initially:
-
-```text
-head = None
-```
-
-For the largest node:
-
-```python
-head.left = root
-```
-
-would cause an error.
-
-Therefore:
-
-```python
-if head is not None:
-    head.left = root
-```
-
-is necessary.
-
----
-
-# 20. Pattern Recognition
+# 25. Pattern Recognition
 
 When you see:
 
@@ -1120,84 +1197,175 @@ Convert to DLL
 Inorder order required
 ```
 
-Think:
+think of two patterns.
+
+### Pattern 1
 
 ```text
+RNL
+ ↓
 Reverse Inorder
-      ↓
-Right → Node → Left
-      ↓
+ ↓
 Maintain head
-      ↓
-Connect current node with head
-      ↓
-Current node becomes new head
+ ↓
+Insert current before head
 ```
 
-Core pointer operations:
+### Pattern 2
 
-```python
-root.right = head
-
-if head is not None:
-    head.left = root
-
-head = root
+```text
+LNR
+ ↓
+Normal Inorder
+ ↓
+Maintain head + tail
+ ↓
+Insert current after tail
 ```
 
 ---
 
-# 21. Revision Cheat Sheet
+# 26. Revision Cheat Sheet
+
+## Approach 1 — Reverse Inorder
+
+```text
+R → N → L
+
+head = None
+
+Process right
+
+root.right = head
+
+if head:
+    head.left = root
+
+head = root
+
+Process left
+
+return head
+```
+
+Core idea:
+
+```text
+Insert current node BEFORE head
+```
+
+---
+
+## Approach 2 — Normal Inorder
+
+```text
+L → N → R
+
+head = None
+tail = None
+
+Process left
+
+if tail:
+    tail.right = root
+    root.left = tail
+    tail = root
+else:
+    head = root
+    tail = root
+
+Process right
+
+return head, tail
+```
+
+Core idea:
+
+```text
+Insert current node AFTER tail
+```
+
+---
+
+# 27. Most Important Recursion Rule
+
+```text
+If a recursive function returns updated state
+and you need that state:
+
+    variable = recursive_call(...)
+```
+
+For one returned value:
+
+```python
+head = self.solve(root.right, head)
+```
+
+For two returned values:
+
+```python
+head, tail = self.solve(root.left, head, tail)
+```
+
+If you don't store the returned value:
+
+```python
+self.solve(...)
+```
+
+you may lose the updated state.
+
+---
+
+# 28. Final Revision
 
 ```text
 Tree → DLL
 
-Traversal:
-R → N → L
+No new nodes.
+Reuse tree nodes.
 
-Why?
-Process largest → smallest.
-
-Maintain:
-head = already processed DLL head
-
-For every node:
-
-1. Process right subtree
-   head = solve(root.right, head)
-
-2. Connect current node:
-   root.right = head
-
-3. Connect backward:
-   if head:
-       head.left = root
-
-4. Current becomes new head:
-   head = root
-
-5. Process left subtree:
-   head = solve(root.left, head)
-
-6. Return:
-   return head
+DLL:
+left  = previous
+right = next
 ```
 
-### Most Important Rule
+### Approach 1
 
 ```text
-If recursive function returns updated value:
+RNL
+Right → Node → Left
 
-    head = self.solve(...)
+Maintain:
+head
 
-Don't ignore the returned value.
+Connect:
+root.right = head
+head.left = root
+head = root
 ```
 
-### Complexity
+### Approach 2
+
+```text
+LNR
+Left → Node → Right
+
+Maintain:
+head + tail
+
+Connect:
+tail.right = root
+root.left = tail
+tail = root
+```
+
+Both:
 
 ```text
 Time  = O(n)
 Space = O(h)
 ```
 
-> **One-Line Pattern: Tree to DLL = Reverse Inorder (RNL) + Maintain `head` + Connect `current ⇄ head` + Return the updated `head`.**
+> **One-Line Pattern: Tree to DLL = Inorder-based traversal + reuse `left/right` pointers + maintain the current DLL boundary (`head` or `head/tail`).**
