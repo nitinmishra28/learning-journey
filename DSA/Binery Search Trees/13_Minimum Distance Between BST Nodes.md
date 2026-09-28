@@ -947,4 +947,4 @@ Always between adjacent values
 Current - Previous
 ```
 
-> **One-Line Pattern: Minimum Difference in BST = Inorder Traversal + Previous Value + Minimum of Adjacent Differences.**  
+> **One-Line Pattern: Minimum Difference in BST = Inorder Traversal + Previous Value + Minimum of Adjacent Differences.**   
