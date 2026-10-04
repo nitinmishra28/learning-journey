@@ -1125,7 +1125,7 @@ return -1
 Brute Force:
 Store complete inorder array
 O(n) space    
-
+ 
 Optimized:
 Track only prev and curr
 O(h) recursion space
