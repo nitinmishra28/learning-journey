@@ -805,7 +805,7 @@ else:
 ### Complexity
 
 ```text
-Time  = O(n) worst case
+Time  = O(n) worst case 
 Space = O(h)
 ```
 
