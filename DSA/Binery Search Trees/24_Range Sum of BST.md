@@ -811,6 +811,6 @@ Space = O(h)
 
 ---
 
-# One-Line Pattern  
+# One-Line Pattern   
 
 > **Range Sum in BST = Check the Range + Use BST Property to Prune the Impossible Subtree.**
