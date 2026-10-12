@@ -1,10 +1,10 @@
 # FastAPI — Lecture 4: Request Body & Pydantic Models
 
-## 1. What is a Request Body?
+## 1. What Is a Request Body?
 
 A **request body** is data sent by the client to the backend inside an HTTP request.
 
-For example, when creating a student, the frontend may send:
+Example:
 
 ```json
 {
@@ -14,7 +14,7 @@ For example, when creating a student, the frontend may send:
 }
 ```
 
-This data is called the **request body**.
+This data is called the request body.
 
 Typical flow:
 
@@ -27,14 +27,12 @@ JSON Request Body
       ↓
 FastAPI
       ↓
-Validate Data
+Pydantic Validation
       ↓
 Business Logic
 ```
 
----
-
-# 2. When Do We Use a Request Body?
+## 2. When Do We Use a Request Body?
 
 Request bodies are commonly used when we need to:
 
@@ -48,7 +46,7 @@ Example:
 POST /students
 ```
 
-The client can send:
+Request body:
 
 ```json
 {
@@ -60,7 +58,7 @@ The client can send:
 
 ---
 
-# 3. What is Pydantic?
+## 3. What Is Pydantic?
 
 **Pydantic** is a Python library used for:
 
@@ -69,9 +67,7 @@ The client can send:
 - Data serialization
 - Defining data schemas
 
-FastAPI uses Pydantic heavily for handling request and response data.
-
-Simple idea:
+FastAPI uses Pydantic to validate and process structured request data.
 
 ```text
 Client Data
@@ -80,12 +76,12 @@ Pydantic Model
      ↓
 Validation
      ↓
-FastAPI
+FastAPI Endpoint
 ```
 
 ---
 
-# 4. Why Do We Need Pydantic?
+## 4. Why Do We Need Pydantic?
 
 Suppose our API expects:
 
@@ -105,33 +101,23 @@ But the client sends:
 }
 ```
 
-There is a problem.
+We expect `age` to be an integer, but the client sends an invalid value.
 
-We expect:
+Pydantic validates incoming data against the model and reports validation errors when the data cannot be validated.
 
-```text
-age → integer
-```
-
-but received:
-
-```text
-age → string
-```
-
-Pydantic helps FastAPI validate this data.
+This prevents invalid data from reaching the endpoint function.
 
 ---
 
-# 5. Creating a Pydantic Model
+## 5. Creating a Pydantic Model
 
-In modern Pydantic:
+Import `BaseModel`:
 
 ```python
 from pydantic import BaseModel
 ```
 
-Then create a model:
+Create a model:
 
 ```python
 class Student(BaseModel):
@@ -145,14 +131,16 @@ This defines the expected structure of a student.
 ```text
 Student
 │
-├── name → str
-├── age → int
+├── name       → str
+├── age        → int
 └── class_name → str
 ```
 
+Fields without default values are required.
+
 ---
 
-# 6. Using Pydantic with FastAPI
+## 6. Using Pydantic with FastAPI
 
 ```python
 from fastapi import FastAPI
@@ -176,7 +164,7 @@ def create_student(student: Student):
     }
 ```
 
-Now send:
+Request:
 
 ```json
 {
@@ -196,62 +184,13 @@ Response:
 }
 ```
 
----
-
-# 7. How FastAPI Understands the Request Body
-
-Look at:
-
-```python
-def create_student(student: Student):
-```
-
-FastAPI sees:
-
-```text
-student: Student
-       ↓
-Pydantic model
-       ↓
-Request body
-```
-
-Because `Student` is a Pydantic model, FastAPI expects JSON data matching that model.
+Because `Student` is a Pydantic model, FastAPI understands that `student` should come from the request body.
 
 ---
 
-# 8. Request Body Flow
+## 7. Accessing Model Fields
 
-For:
-
-```python
-@app.post("/students")
-def create_student(student: Student):
-```
-
-The flow is:
-
-```text
-Client
-  ↓
-POST /students
-  ↓
-JSON Body
-  ↓
-FastAPI
-  ↓
-Pydantic Validation
-  ↓
-Student Object
-  ↓
-Function
-```
-
----
-
-# 9. Accessing Model Fields
-
-Suppose:
+Consider:
 
 ```python
 class Student(BaseModel):
@@ -259,7 +198,7 @@ class Student(BaseModel):
     age: int
 ```
 
-Then:
+Inside the endpoint, access the fields using dot notation:
 
 ```python
 @app.post("/students")
@@ -270,20 +209,20 @@ def create_student(student: Student):
     }
 ```
 
-We access fields using:
+Here:
 
 ```python
 student.name
 student.age
 ```
 
+access the values of the Pydantic model instance.
+
 ---
 
-# 10. Required Fields
+## 8. Required Fields
 
-By default, fields without a default value are required.
-
-Example:
+Fields without default values are required.
 
 ```python
 class Student(BaseModel):
@@ -291,7 +230,7 @@ class Student(BaseModel):
     age: int
 ```
 
-The client must send:
+Valid request:
 
 ```json
 {
@@ -300,7 +239,7 @@ The client must send:
 }
 ```
 
-If the client sends:
+Invalid request because `age` is missing:
 
 ```json
 {
@@ -308,19 +247,13 @@ If the client sends:
 }
 ```
 
-the request fails validation because:
-
-```text
-age
-↓
-Required
-```
+FastAPI returns a request validation error before executing the endpoint function.
 
 ---
 
-# 11. Optional Fields
+## 9. Optional Fields and Default Values
 
-We can make a field optional.
+A field can accept `None` and have a default value.
 
 ```python
 class Student(BaseModel):
@@ -329,7 +262,7 @@ class Student(BaseModel):
     phone: str | None = None
 ```
 
-Now:
+Both requests are valid:
 
 ```json
 {
@@ -337,10 +270,6 @@ Now:
     "age": 25
 }
 ```
-
-is valid.
-
-And this is also valid:
 
 ```json
 {
@@ -350,23 +279,135 @@ And this is also valid:
 }
 ```
 
-The important part is:
+The declaration:
 
 ```python
 phone: str | None = None
 ```
 
+means:
+
+- The field can contain a string or `None`.
+- The field is not required because it has a default value.
+
+### Important Difference
+
+```python
+phone: str | None
+```
+
+The field is required, but its value may be `None`.
+
+```python
+phone: str | None = None
+```
+
+The field is optional because it has a default value.
+
 ---
 
-# 12. Default Values
+## 10. What Is `Field()` in Pydantic?
 
-We can provide a default value.
+`Field()` allows us to configure a model field.
+
+We can use it to define:
+
+- Default values
+- Minimum and maximum values
+- Minimum and maximum string lengths
+- Numeric constraints
+- Descriptions
+- Examples
+- Aliases
+- Other field-related metadata
+
+Import it:
+
+```python
+from pydantic import BaseModel, Field
+```
+
+### Basic Example
+
+```python
+class Student(BaseModel):
+    name: str = Field(min_length=3, max_length=50)
+    age: int = Field(gt=0, le=100)
+```
+
+Here:
+
+```python
+name: str = Field(min_length=3, max_length=50)
+```
+
+means the name must contain between 3 and 50 characters.
+
+```python
+age: int = Field(gt=0, le=100)
+```
+
+means:
+
+- `gt=0` → Greater than 0.
+- `le=100` → Less than or equal to 100.
+
+Invalid values cause validation errors.
+
+---
+
+## 11. Common `Field()` Constraints
+
+| Constraint | Meaning |
+|---|---|
+| `gt` | Greater than |
+| `ge` | Greater than or equal to |
+| `lt` | Less than |
+| `le` | Less than or equal to |
+| `min_length` | Minimum string or collection length |
+| `max_length` | Maximum string or collection length |
+| `default` | Default value |
+| `description` | Describes the field |
+| `examples` | Provides example values |
+| `alias` | Defines an alternative field name for validation/serialization |
+
+Example:
+
+```python
+from pydantic import BaseModel, Field
+
+
+class Product(BaseModel):
+    name: str = Field(
+        min_length=3,
+        max_length=100,
+        description="Name of the product"
+    )
+
+    price: float = Field(
+        gt=0,
+        description="Product price must be positive"
+    )
+
+    quantity: int = Field(
+        ge=0,
+        description="Available quantity"
+    )
+```
+
+This model validates the product fields according to the specified constraints.
+
+---
+
+## 12. `Field()` with Default Values
+
+We can provide a default value through `Field()`.
 
 ```python
 class Student(BaseModel):
     name: str
     age: int
-    active: bool = True
+    active: bool = Field(default=True)
 ```
 
 If the client sends:
@@ -378,53 +419,127 @@ If the client sends:
 }
 ```
 
-then:
+Pydantic uses:
 
 ```text
-active
-  ↓
-True
+active = True
 ```
 
-will be used.
+You can also write:
+
+```python
+active: bool = True
+```
+
+For a simple default value, both approaches are valid.
+
+Use `Field()` when you also need constraints or additional field metadata.
 
 ---
 
-# 13. Type Validation
+## 13. `Field()` with Lists
 
-Suppose:
+`Field()` can also validate the length of a list.
 
 ```python
 class Student(BaseModel):
     name: str
-    age: int
+    subjects: list[str] = Field(min_length=1, max_length=5)
 ```
 
-Valid:
+Valid request:
 
 ```json
 {
     "name": "Nitin",
+    "subjects": ["Python", "FastAPI"]
+}
+```
+
+Invalid request:
+
+```json
+{
+    "name": "Nitin",
+    "subjects": []
+}
+```
+
+The list must contain at least one and at most five items.
+
+---
+
+## 14. What Is `model_config`?
+
+In Pydantic v2, `model_config` is used to configure the behavior of a model.
+
+It is defined inside the model class.
+
+Example:
+
+```python
+from pydantic import BaseModel, ConfigDict
+
+
+class Student(BaseModel):
+    model_config = ConfigDict(
+        str_strip_whitespace=True
+    )
+
+    name: str
+    age: int
+```
+
+Here:
+
+```python
+str_strip_whitespace=True
+```
+
+tells Pydantic to remove leading and trailing whitespace from string values.
+
+For example:
+
+```json
+{
+    "name": "  Nitin  ",
     "age": 25
 }
 ```
 
-Invalid:
+The validated name becomes:
 
-```json
-{
-    "name": "Nitin",
-    "age": "abc"
-}
+```text
+"Nitin"
 ```
 
-Pydantic validates the data before the function processes it.
+`ConfigDict` is the recommended way to configure models in Pydantic v2.
 
 ---
 
-# 14. Automatic Validation Error
+## 15. Common `model_config` Options
 
-Suppose the API expects:
+### A. `str_strip_whitespace`
+
+Removes leading and trailing whitespace from strings.
+
+```python
+model_config = ConfigDict(
+    str_strip_whitespace=True
+)
+```
+
+Example:
+
+```text
+"  Nitin  " → "Nitin"
+```
+
+### B. `extra`
+
+Controls how extra fields are handled.
+
+Suppose the model is:
 
 ```python
 class Student(BaseModel):
@@ -436,174 +551,302 @@ But the client sends:
 
 ```json
 {
-    "name": "Nitin"
-}
-```
-
-FastAPI returns a validation error because `age` is missing.
-
-Similarly:
-
-```json
-{
     "name": "Nitin",
-    "age": "abc"
+    "age": 25,
+    "city": "Bhopal"
 }
 ```
 
-will fail because `age` should be an integer.
+The `city` field is not defined in the model.
 
-This prevents invalid data from reaching our application logic.
+By default, Pydantic v2 generally ignores extra fields.
+
+You can change this behavior.
+
+#### `extra="ignore"`
+
+```python
+class Student(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    name: str
+    age: int
+```
+
+The extra `city` field is ignored.
+
+#### `extra="forbid"`
+
+```python
+class Student(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    age: int
+```
+
+Now the request fails validation because `city` is not allowed.
+
+#### `extra="allow"`
+
+```python
+class Student(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    name: str
+    age: int
+```
+
+Extra fields are allowed and retained on the model instance.
+
+**Practical recommendation:** Use `extra="forbid"` for request schemas when unexpected fields should be rejected. Keep the default behavior when that strictness is not required.
+
+### C. `str_min_length`
+
+Sets a minimum length for string fields.
+
+```python
+class Student(BaseModel):
+    model_config = ConfigDict(str_min_length=2)
+
+    name: str
+```
+
+Strings shorter than two characters fail validation.
+
+You can still use `Field()` when you need a different constraint for an individual field.
+
+### D. `validate_assignment`
+
+Validates values when an existing model instance is modified.
+
+```python
+class Student(BaseModel):
+    model_config = ConfigDict(validate_assignment=True)
+
+    name: str
+    age: int
+```
+
+Example:
+
+```python
+student = Student(name="Nitin", age=25)
+
+student.age = "invalid"
+```
+
+With assignment validation enabled, the assignment raises a validation error.
+
+Without this setting, ordinary assignment to an existing Pydantic model is not automatically validated by default.
+
+### E. `str_to_lower`
+
+Converts string values to lowercase.
+
+```python
+class Student(BaseModel):
+    model_config = ConfigDict(str_to_lower=True)
+
+    name: str
+```
+
+Example:
+
+```text
+"NITIN" → "nitin"
+```
+
+Use this only when lowercase conversion is appropriate for your data.
 
 ---
 
-# 15. Request Body vs Query Parameter
+## 16. `Field()` vs `model_config`
 
-This is an important interview concept.
+This is an important distinction.
 
-### Query Parameter
+### `Field()`
 
-```text
-GET /students?class_id=10
-```
+Configures an individual field.
 
-Data:
-
-```text
-class_id=10
-```
-
-### Request Body
-
-```text
-POST /students
-```
-
-Body:
-
-```json
-{
-    "name": "Nitin",
-    "age": 25
-}
-```
-
-Simple difference:
-
-```text
-Query Parameter
-        ↓
-URL
-
-Request Body
-        ↓
-HTTP Request Body
-```
-
----
-
-# 16. Request Body vs Path Parameter
-
-Path parameter:
-
-```text
-GET /students/10
+```python
+class Student(BaseModel):
+    name: str = Field(min_length=3, max_length=50)
+    age: int = Field(gt=0)
 ```
 
 Here:
 
-```text
-10
-↓
-Path Parameter
+- `name` has its own length constraints.
+- `age` must be greater than zero.
+
+### `model_config`
+
+Configures the behavior of the entire model.
+
+```python
+class Student(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+        str_strip_whitespace=True
+    )
+
+    name: str
+    age: int
 ```
 
-Request body:
+Here:
+
+- Extra fields are rejected.
+- Leading and trailing whitespace is removed from strings.
+
+Remember:
 
 ```text
-POST /students
-```
+Field()
+   ↓
+Individual field configuration
 
-with:
-
-```json
-{
-    "name": "Nitin",
-    "age": 25
-}
-```
-
-Here the JSON is the:
-
-```text
-Request Body
+model_config
+   ↓
+Model-level configuration
 ```
 
 ---
 
-# 17. Complete Student Example
+## 17. Using `Field()` and `model_config` Together
+
+Example:
 
 ```python
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 app = FastAPI()
 
 
 class Student(BaseModel):
-    name: str
-    age: int
-    class_name: str
-    phone: str | None = None
+    model_config = ConfigDict(
+        extra="forbid",
+        str_strip_whitespace=True
+    )
+
+    name: str = Field(
+        min_length=3,
+        max_length=50,
+        description="Student's full name"
+    )
+
+    age: int = Field(
+        gt=0,
+        le=100,
+        description="Student's age"
+    )
+
+    phone: str | None = Field(
+        default=None,
+        min_length=10,
+        max_length=15
+    )
 
 
 @app.post("/students")
 def create_student(student: Student):
     return {
-        "message": "Student created",
-        "student": {
-            "name": student.name,
-            "age": student.age,
-            "class_name": student.class_name,
-            "phone": student.phone
-        }
+        "name": student.name,
+        "age": student.age,
+        "phone": student.phone
     }
 ```
 
-Request:
+Valid request:
 
 ```json
 {
     "name": "Nitin",
     "age": 25,
-    "class_name": "10",
     "phone": "9876543210"
 }
 ```
 
-Response:
+Invalid request:
 
 ```json
 {
-    "message": "Student created",
-    "student": {
-        "name": "Nitin",
-        "age": 25,
-        "class_name": "10",
-        "phone": "9876543210"
-    }
+    "name": "AB",
+    "age": -5,
+    "city": "Bhopal"
 }
 ```
 
+The second request fails because:
+
+- The name is shorter than the minimum length.
+- The age is not greater than zero.
+- The extra `city` field is forbidden.
+
+FastAPI returns a validation error without executing the endpoint function.
+
 ---
 
-# 18. Nested Pydantic Models
+## 18. What Is `model_dump()`?
 
-Pydantic models can contain other Pydantic models.
+`model_dump()` converts a Pydantic model instance into a Python dictionary.
 
 Example:
 
 ```python
+from pydantic import BaseModel
+
+
+class Student(BaseModel):
+    name: str
+    age: int
+
+
+student = Student(
+    name="Nitin",
+    age=25
+)
+
+print(student.model_dump())
+```
+
+Output:
+
+```python
+{
+    "name": "Nitin",
+    "age": 25
+}
+```
+
+This is useful when you need to work with model data as a dictionary.
+
+### Excluding Unset Fields
+
+```python
+student = Student(name="Nitin", age=25)
+
+print(student.model_dump(exclude_unset=True))
+```
+
+`exclude_unset=True` excludes fields that were not explicitly provided when the model was created.
+
+This is useful for partial-update logic.
+
+**Important:** `model_dump()` is a Pydantic v2 method. In Pydantic v1, the corresponding method was commonly `.dict()`.
+
+---
+
+## 19. Nested Pydantic Models
+
+A Pydantic model can contain another Pydantic model.
+
+```python
+from pydantic import BaseModel
+
+
 class Address(BaseModel):
     city: str
     state: str
@@ -628,44 +871,92 @@ Request:
 }
 ```
 
-FastAPI/Pydantic validates the nested structure as well.
+Pydantic validates the nested address structure as well.
 
 ---
 
-# 19. Multiple Request Body Fields
+## 20. Create and Update Models
 
-A Pydantic model can contain many fields.
+Different operations may need different schemas.
 
-Example:
+### Create Model
 
 ```python
-class Student(BaseModel):
+class StudentCreate(BaseModel):
     name: str
     age: int
-    email: str
     class_name: str
-    section: str
-    active: bool
 ```
 
-Request:
+These fields are required.
+
+### Update Model
+
+```python
+class StudentUpdate(BaseModel):
+    name: str | None = None
+    age: int | None = None
+    class_name: str | None = None
+```
+
+These fields can be omitted, allowing partial updates.
+
+For example:
+
+```json
+{
+    "age": 26
+}
+```
+
+To identify which fields were provided, use:
+
+```python
+student_update.model_dump(exclude_unset=True)
+```
+
+Output:
+
+```python
+{
+    "age": 26
+}
+```
+
+**Important:** `str | None = None` allows `None` as a value. If your update API must distinguish omitted fields from explicitly supplied `null` values, `exclude_unset=True` helps preserve that distinction.
+
+---
+
+## 21. Request Body vs Query Parameter
+
+### Query Parameter
+
+```text
+GET /students?class_id=10
+```
+
+Used for filtering, searching, and pagination.
+
+### Request Body
+
+```text
+POST /students
+```
+
+Request body:
 
 ```json
 {
     "name": "Nitin",
-    "age": 25,
-    "email": "nitin@example.com",
-    "class_name": "10",
-    "section": "A",
-    "active": true
+    "age": 25
 }
 ```
 
+Used to send structured data to the API.
+
 ---
 
-# 20. Pydantic Model is Not the Database Model
-
-This is important.
+## 22. Pydantic Model vs Database Model
 
 A Pydantic model:
 
@@ -677,78 +968,29 @@ class Student(BaseModel):
 
 is mainly used for:
 
+- Validation
+- Serialization
+- Request and response schemas
+
+It does not automatically create a database table.
+
+Database models are a separate concept, commonly handled using SQLAlchemy.
+
 ```text
-Validation
-Serialization
-Request/Response schema
+Pydantic
+   ↓
+API Data Validation / Serialization
+
+SQLAlchemy
+   ↓
+Database ORM / Database Operations
 ```
-
-It does **not automatically create a database table**.
-
-Database models are a separate concept and will be covered later with SQLAlchemy.
 
 ---
 
-# 21. Pydantic Model Naming
+## 23. Automatic API Documentation
 
-Use meaningful names.
-
-Good:
-
-```python
-class StudentCreate(BaseModel):
-    name: str
-    age: int
-```
-
-```python
-class StudentResponse(BaseModel):
-    id: int
-    name: str
-```
-
-Avoid unclear names:
-
-```python
-class Data(BaseModel):
-    ...
-```
-
-As projects become larger, meaningful names become important.
-
----
-
-# 22. Create and Update Models
-
-In real APIs, different operations may need different schemas.
-
-For example:
-
-```python
-class StudentCreate(BaseModel):
-    name: str
-    age: int
-    class_name: str
-```
-
-For updating:
-
-```python
-class StudentUpdate(BaseModel):
-    name: str | None = None
-    age: int | None = None
-    class_name: str | None = None
-```
-
-This allows partial updates.
-
-We will study response models and better schema design in upcoming lectures.
-
----
-
-# 23. Automatic Swagger Documentation
-
-One major benefit of using Pydantic models is that FastAPI automatically uses them in API documentation.
+FastAPI automatically uses Pydantic models and field metadata to generate API documentation.
 
 Run:
 
@@ -762,273 +1004,191 @@ Open:
 http://127.0.0.1:8000/docs
 ```
 
-You will see the request body schema.
+You can inspect:
 
-For example:
-
-```text
-Student
-├── name
-├── age
-├── class_name
-└── phone
-```
-
-Swagger lets you test the API directly.
+- Request body fields
+- Field types
+- Required fields
+- Constraints
+- Descriptions
+- Example values, when provided
 
 ---
 
-# 24. Common Mistakes
+## 24. Common Mistakes
 
-### Mistake 1 — Not Using a Pydantic Model
-
-You could manually process dictionaries, but for structured API input, Pydantic models are the standard approach.
-
-Prefer:
+### Mistake 1 — Confusing Optional and Nullable
 
 ```python
-class Student(BaseModel):
-    name: str
-    age: int
+phone: str | None
 ```
 
----
-
-### Mistake 2 — Confusing Model and Object
-
-This:
+The field is required but accepts `None`.
 
 ```python
-class Student(BaseModel):
-    name: str
-    age: int
+phone: str | None = None
 ```
 
-is the **model definition**.
+The field is optional and accepts `None`.
 
-This:
+### Mistake 2 — Using `Field()` for Model-Wide Configuration
+
+Use `Field()` for field-level constraints.
+
+Use `model_config` for model-level behavior.
+
+### Mistake 3 — Using Pydantic v1 Configuration in Pydantic v2
+
+Modern Pydantic v2 uses:
 
 ```python
-student: Student
+model_config = ConfigDict(extra="forbid")
 ```
 
-means the function receives a `Student` object.
+Older Pydantic v1 examples commonly use an inner `Config` class.
+
+For new projects, prefer Pydantic v2 syntax.
+
+### Mistake 4 — Assuming Type Hints Always Mean Strict Types
+
+Pydantic may coerce compatible input values by default.
+
+For example, a numeric string may be converted to an integer when valid.
+
+If strict type validation is required, learn Pydantic's strict types and strict validation options.
+
+### Mistake 5 — Making Every Field Optional
+
+Avoid making every field optional without a reason.
+
+Required fields should remain required when the API needs them.
 
 ---
 
-### Mistake 3 — Making Everything Optional
-
-Avoid:
-
-```python
-class Student(BaseModel):
-    name: str | None = None
-    age: int | None = None
-    email: str | None = None
-```
-
-unless those fields are actually optional.
-
-Required fields should remain required.
-
----
-
-### Mistake 4 — Putting Database Logic Inside the Pydantic Model
-
-Don't mix responsibilities.
-
-```text
-Pydantic
-   ↓
-Validation / Schema
-
-SQLAlchemy
-   ↓
-Database ORM / Database operations
-```
-
-Keep these responsibilities separate.
-
----
-
-# 25. Interview Questions
+## 25. Interview Questions
 
 ### Q1. What is Pydantic?
 
-Pydantic is a Python library used for data validation, parsing, and serialization. FastAPI uses Pydantic models for structured request and response data.
+Pydantic is a Python library used for data validation, parsing, serialization, and defining data schemas.
 
----
+### Q2. What is `Field()`?
 
-### Q2. Why does FastAPI use Pydantic?
+`Field()` configures individual Pydantic model fields, including constraints, defaults, descriptions, and aliases.
 
-Pydantic allows FastAPI to validate incoming data based on Python type definitions.
+### Q3. What is `model_config`?
 
-Example:
-
-```python
-class Student(BaseModel):
-    name: str
-    age: int
-```
-
-FastAPI can automatically validate the request against this schema.
-
----
-
-### Q3. How do you define a request body in FastAPI?
-
-Using a Pydantic model.
-
-```python
-class Student(BaseModel):
-    name: str
-    age: int
-
-
-@app.post("/students")
-def create_student(student: Student):
-    return student
-```
-
----
-
-### Q4. What happens if required data is missing?
-
-FastAPI returns a validation error before the endpoint function processes the request.
-
----
-
-### Q5. What is the difference between Pydantic and SQLAlchemy?
-
-```text
-Pydantic
-   ↓
-Validation / Serialization / API Schema
-
-SQLAlchemy
-   ↓
-Database ORM / Database Interaction
-```
-
-They solve different problems.
-
----
-
-### Q6. Can Pydantic models be nested?
-
-Yes.
-
-```python
-class Address(BaseModel):
-    city: str
-
-
-class Student(BaseModel):
-    name: str
-    address: Address
-```
-
----
-
-### Q7. What is the difference between a request body and query parameter?
-
-Request body:
-
-```text
-POST /students
-
-{
-    "name": "Nitin",
-    "age": 25
-}
-```
-
-Query parameter:
-
-```text
-GET /students?class_id=10
-```
-
----
-
-# 26. Quick Revision
-
-Remember:
-
-```text
-Pydantic
-    ↓
-Define Data Structure
-    ↓
-Validate Data
-    ↓
-FastAPI Processes Request
-```
+`model_config` defines model-wide configuration in Pydantic v2.
 
 Example:
 
 ```python
-from pydantic import BaseModel
-
-
-class Student(BaseModel):
-    name: str
-    age: int
+model_config = ConfigDict(extra="forbid")
 ```
 
-Use it:
+### Q4. What is the difference between `Field()` and `model_config`?
+
+`Field()` configures individual fields, while `model_config` configures the model's overall behavior.
+
+### Q5. What does `extra="forbid"` do?
+
+It rejects input containing fields that are not defined in the model.
+
+### Q6. What does `validate_assignment=True` do?
+
+It enables validation when values are assigned to fields on an existing model instance.
+
+### Q7. What is `model_dump()`?
+
+It converts a Pydantic model instance into a Python dictionary.
+
+### Q8. What is the difference between Pydantic v1 and v2 configuration?
+
+Pydantic v2 uses `model_config = ConfigDict(...)` for model configuration. Pydantic v1 commonly used an inner `Config` class.
+
+### Q9. Does a Pydantic model create a database table?
+
+No. A Pydantic model defines and validates data structures; database tables are managed separately.
+
+### Q10. Can Pydantic models be nested?
+
+Yes. One Pydantic model can contain another Pydantic model as a field.
+
+---
+
+## 26. Quick Revision
+
+```text
+BaseModel
+    ↓
+Defines a Pydantic model
+
+Field()
+    ↓
+Configures an individual field
+
+model_config
+    ↓
+Configures model-wide behavior
+
+ConfigDict
+    ↓
+Defines Pydantic v2 configuration
+
+model_dump()
+    ↓
+Converts a model instance into a dictionary
+```
+
+Important examples:
 
 ```python
-@app.post("/students")
-def create_student(student: Student):
-    return student
+name: str = Field(min_length=3, max_length=50)
 ```
 
-Request:
-
-```json
-{
-    "name": "Nitin",
-    "age": 25
-}
+```python
+age: int = Field(gt=0, le=100)
 ```
 
----
+```python
+model_config = ConfigDict(extra="forbid")
+```
 
-## Most Important Points
+```python
+model_config = ConfigDict(validate_assignment=True)
+```
 
-```text
-1. Request body contains data sent by the client.
-
-2. Pydantic models define the expected structure.
-
-3. FastAPI validates the request using the model.
-
-4. Required fields must be provided.
-
-5. Optional fields can have None/default values.
-
-6. Pydantic models are API schemas, not database tables.
-
-7. Nested Pydantic models are supported.
-
-8. FastAPI automatically generates request-body documentation.
+```python
+student.model_dump(exclude_unset=True)
 ```
 
 ---
 
-# 27. Practice
+## 27. Practice
 
-Create a Pydantic model for a teacher:
+Create a Pydantic model for a teacher.
 
-```text
-Teacher
-├── name
-├── age
-├── email
-├── subject
-└── experience
+Requirements:
+
+- `name`: string, minimum 3 characters
+- `age`: integer, greater than 18
+- `email`: string
+- `subject`: string
+- `experience`: integer, greater than or equal to 0
+- Reject extra fields
+
+Use:
+
+```python
+Field()
 ```
+
+for field-level constraints and:
+
+```python
+model_config = ConfigDict(extra="forbid")
+```
+
+for model-wide configuration.
 
 Create:
 
@@ -1036,65 +1196,36 @@ Create:
 POST /teachers
 ```
 
-Request:
-
-```json
-{
-    "name": "Rahul",
-    "age": 30,
-    "email": "rahul@example.com",
-    "subject": "Mathematics",
-    "experience": 5
-}
-```
-
-Return the received teacher data.
-
----
+Return the validated teacher data.
 
 ### Extra Practice
 
-Create a nested model:
+Create a `StudentUpdate` model with optional fields.
 
-```text
-Student
-├── name
-├── age
-└── address
-      ├── city
-      └── state
+Test:
+
+```python
+student_update.model_dump(exclude_unset=True)
 ```
 
-Request:
+with different input combinations.
 
-```json
-{
-    "name": "Nitin",
-    "age": 25,
-    "address": {
-        "city": "Bhopal",
-        "state": "Madhya Pradesh"
-    }
-}
-```
-
-Don't use a database yet.
+Do not use a database yet.
 
 ---
 
 ## Next Lecture
-       
+
 ### Lecture 5 — Response Models & Status Codes
 
-We will learn:
+Topics:
 
-- What is a response model?
-- Why response models are needed
+- Response models
 - `response_model`
-- Controlling API response data
-- Response validation
+- Response validation and serialization
+- Request model vs response model
+- Filtering sensitive fields
 - HTTP status codes
 - `status_code`
-- `201`, `200`, `204`, `400`, `401`, `403`, `404`, `422`, `500`
-- Request model vs response model
+- Common API status codes
 - Interview questions
