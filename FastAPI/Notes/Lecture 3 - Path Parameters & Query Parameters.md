@@ -1,35 +1,10 @@
 # FastAPI — Lecture 3: Path Parameters & Query Parameters
 
-## 1. What are Parameters?
+My personal notes for learning **Path Parameters, Query Parameters, and Data Validation in FastAPI**.
 
-Parameters are values that we send to an API to tell it **which data we want** or **how we want the API to behave**.
+## 1. What Are Parameters?
 
-For example:
-
-```text
-GET /students/10
-```
-
-Here:
-
-```text
-10
-↓
-Parameter
-```
-
-We mainly use two types in FastAPI:
-
-```text
-Path Parameters
-Query Parameters
-```
-
----
-
-# 2. Path Parameters
-
-A **path parameter** is a value that is part of the URL path.
+Parameters are values sent to an API to specify which data we want or how we want the API to behave.
 
 Example:
 
@@ -37,45 +12,44 @@ Example:
 GET /students/10
 ```
 
-Here:
+Here, `10` identifies a particular student.
 
-```text
-/students/10
-          ↑
-      Path Parameter
-```
+FastAPI commonly uses two types of parameters:
 
-Usually, path parameters are used when we want to identify a **specific resource**.
+- **Path Parameters** — values included in the URL path.
+- **Query Parameters** — values provided after `?` in the URL.
+
+---
+
+## 2. Path Parameters
+
+A path parameter is a value included directly in the URL path.
 
 Examples:
 
 ```text
-/students/10
-/users/25
-/products/100
-/orders/500
+GET /students/10
+GET /users/25
+GET /products/100
 ```
 
----
+Path parameters are generally used to identify a specific resource.
 
-# 3. Creating a Path Parameter
-
-FastAPI uses `{}` to define a path parameter.
+### Creating a Path Parameter
 
 ```python
 from fastapi import FastAPI
 
 app = FastAPI()
 
-
 @app.get("/students/{student_id}")
-def get_student(student_id):
+async def get_student(student_id):
     return {
         "student_id": student_id
     }
 ```
 
-Now if we call:
+Request:
 
 ```text
 GET /students/10
@@ -89,62 +63,29 @@ Response:
 }
 ```
 
----
-
-# 4. How FastAPI Understands It
-
-This route:
-
-```python
-@app.get("/students/{student_id}")
-def get_student(student_id):
-```
-
-means:
-
-```text
-/students/{student_id}
-          ↓
-     Dynamic value
-          ↓
-        10
-
-/students/10
-```
-
-FastAPI takes:
-
-```text
-10
-```
-
-and passes it to:
-
-```python
-student_id
-```
+Without a type hint, the value is treated as a string.
 
 ---
 
-# 5. Path Parameter with Type
+## 3. Path Parameters With Types
 
-We should normally specify the expected type.
+We should specify the expected data type of a parameter.
 
 ```python
 @app.get("/students/{student_id}")
-def get_student(student_id: int):
+async def get_student(student_id: int):
     return {
         "student_id": student_id
     }
 ```
 
-Now:
+Request:
 
 ```text
 GET /students/10
 ```
 
-produces:
+Response:
 
 ```json
 {
@@ -152,75 +93,27 @@ produces:
 }
 ```
 
-Notice:
+FastAPI converts the URL value into an integer.
 
-```text
-"10"
-```
-
-became:
-
-```text
-10
-```
-
-because we specified:
-
-```python
-student_id: int
-```
-
-FastAPI uses the type information for validation and conversion.
-
----
-
-# 6. Automatic Validation
-
-Suppose we have:
-
-```python
-@app.get("/students/{student_id}")
-def get_student(student_id: int):
-    return {
-        "student_id": student_id
-    }
-```
-
-Valid:
-
-```text
-GET /students/10
-```
-
-Invalid:
+If we send:
 
 ```text
 GET /students/abc
 ```
 
-Because:
+FastAPI returns a validation error because `"abc"` cannot be converted into an integer.
 
-```text
-abc
-↓
-Cannot be converted to int
-```
-
-FastAPI returns a validation error.
-
-This is one of the advantages of using type hints with FastAPI.
+**Remember:** Type hints provide type conversion and validation, but they do not enforce every business rule. For example, `int` alone allows negative numbers.
 
 ---
 
-# 7. Multiple Path Parameters
+## 4. Multiple Path Parameters
 
-We can have multiple path parameters.
-
-Example:
+We can define multiple path parameters in one endpoint.
 
 ```python
 @app.get("/schools/{school_id}/students/{student_id}")
-def get_student(school_id: int, student_id: int):
+async def get_student(school_id: int, student_id: int):
     return {
         "school_id": school_id,
         "student_id": student_id
@@ -242,65 +135,35 @@ Response:
 }
 ```
 
----
-
-# 8. Real-World Example
-
-For a school management system:
-
-```text
-GET /students/101
-```
-
-could mean:
-
-> Get student whose ID is 101.
-
-Another example:
-
-```text
-GET /schools/5/students/101
-```
-
-could mean:
-
-> Get student 101 from school 5.
+FastAPI matches each URL value to its corresponding function parameter.
 
 ---
 
-# 9. Query Parameters
+## 5. Query Parameters
 
-A **query parameter** is a value added after `?` in the URL.
+A query parameter is a value added after `?` in the URL.
 
 Example:
 
 ```text
-GET /students?class_name=10
+GET /students?class_id=10
 ```
 
 Here:
 
-```text
-/students
-     ?
-class_name=10
-```
+- `/students` is the path.
+- `class_id` is the query parameter.
+- `10` is its value.
 
-`class_name` is a query parameter.
+Query parameters are commonly used for filtering, searching, sorting, and pagination.
 
----
-
-# 10. Creating a Query Parameter
-
-In FastAPI, if a function parameter is not part of the path, FastAPI treats it as a query parameter.
-
-Example:
+### Creating a Query Parameter
 
 ```python
 @app.get("/students")
-def get_students(class_name: str):
+async def get_students(class_name: str):
     return {
-        "class": class_name
+        "class_name": class_name
     }
 ```
 
@@ -314,19 +177,19 @@ Response:
 
 ```json
 {
-    "class": "10"
+    "class_name": "10"
 }
 ```
 
+A simple function parameter that is not part of the route path is generally interpreted as a query parameter, unless it is otherwise declared, such as a request body or dependency.
+
 ---
 
-# 11. Query Parameter with Type
-
-We can specify the type.
+## 6. Query Parameters With Types
 
 ```python
 @app.get("/students")
-def get_students(class_id: int):
+async def get_students(class_id: int):
     return {
         "class_id": class_id
     }
@@ -346,18 +209,17 @@ Response:
 }
 ```
 
+FastAPI converts the query parameter into an integer.
+
+If a required parameter is missing or its value cannot be converted to the specified type, FastAPI returns a validation error.
+
 ---
 
-# 12. Multiple Query Parameters
-
-We can have multiple query parameters.
+## 7. Multiple Query Parameters
 
 ```python
 @app.get("/students")
-def get_students(
-    class_id: int,
-    section: str
-):
+async def get_students(class_id: int, section: str):
     return {
         "class_id": class_id,
         "section": section
@@ -379,43 +241,26 @@ Response:
 }
 ```
 
-Query parameters are separated using:
-
-```text
-&
-```
-
-Example:
-
-```text
-?class_id=10&section=A
-```
+Query parameters are separated using `&`.
 
 ---
 
-# 13. Optional Query Parameters
+## 8. Optional Query Parameters
 
-A query parameter can be optional.
-
-Example:
+A query parameter can be optional if we provide a default value.
 
 ```python
 @app.get("/students")
-def get_students(class_name: str | None = None):
+async def get_students(class_name: str | None = None):
     return {
         "class_name": class_name
     }
 ```
 
-Now both requests are valid:
+Both requests are valid:
 
 ```text
 GET /students
-```
-
-and:
-
-```text
 GET /students?class_name=10
 ```
 
@@ -435,15 +280,28 @@ With the parameter:
 }
 ```
 
----
+**Important:**
 
-# 14. Default Values
+- `str | None` means the type can be a string or `None`.
+- `= None` supplies a default value and makes the parameter optional.
 
-We can provide a default value.
+A parameter can also have a default value without accepting `None` explicitly:
 
 ```python
 @app.get("/students")
-def get_students(limit: int = 10):
+async def get_students(limit: int = 10):
+    return {"limit": limit}
+```
+
+---
+
+## 9. Default Values
+
+We can define default values for query parameters.
+
+```python
+@app.get("/students")
+async def get_students(limit: int = 10):
     return {
         "limit": limit
     }
@@ -477,194 +335,273 @@ Response:
 }
 ```
 
----
-
-# 15. Path Parameter vs Query Parameter
-
-This is a very important interview topic.
-
-### Path Parameter
-
-```text
-GET /students/10
-```
-
-Used to identify a specific resource.
-
-```text
-10
-↓
-student_id
-```
-
-### Query Parameter
-
-```text
-GET /students?class_id=10
-```
-
-Used to filter, search, sort, paginate, or control the response.
-
-```text
-class_id=10
-↓
-Filter
-```
+The supplied query parameter overrides the default value.
 
 ---
 
-# 16. Main Difference
+## 10. Path Parameter Validation Using `Path()`
 
-| Path Parameter | Query Parameter |
-|---|---|
-| Part of URL path | Comes after `?` |
-| Usually identifies a resource | Usually filters/modifies the request |
-| Generally required | Can be optional |
-| `/students/10` | `/students?class_id=10` |
-| Uses `{}` in route | Defined as function parameter |
+Type hints validate the data type, but sometimes we need additional constraints.
 
----
+For example, a book ID should be a positive integer.
 
-# 17. Real-World Example
+FastAPI provides `Path()` to declare metadata and validation constraints for path parameters.
 
-Suppose we have:
-
-```text
-GET /students/101
-```
-
-This means:
-
-> Get student 101.
-
-Here `101` is a **path parameter**.
-
-Now:
-
-```text
-GET /students?class_id=10
-```
-
-means:
-
-> Get students belonging to class 10.
-
-Here `class_id` is a **query parameter**.
-
-We can combine both:
-
-```text
-GET /schools/5/students?class_id=10
-```
-
-Here:
-
-```text
-5
-↓
-Path parameter
-
-class_id=10
-↓
-Query parameter
-```
-
----
-
-# 18. Path + Query Parameter Together
-
-Example:
+### Example
 
 ```python
-@app.get("/schools/{school_id}/students")
-def get_students(
-    school_id: int,
-    class_id: int | None = None
+from fastapi import FastAPI, Path
+
+app = FastAPI()
+
+@app.get("/books/{book_id}")
+async def read_book(
+    book_id: int = Path(gt=0)
 ):
     return {
-        "school_id": school_id,
-        "class_id": class_id
+        "book_id": book_id
     }
 ```
 
-Request:
+### Understanding the Code
+
+- `book_id: int` means the value must be an integer.
+- `Path()` declares path parameter constraints.
+- `gt=0` means the value must be **greater than zero**.
+
+### Valid Requests
 
 ```text
-GET /schools/5/students?class_id=10
+GET /books/1
+GET /books/10
+GET /books/100
 ```
 
-Response:
-
-```json
-{
-    "school_id": 5,
-    "class_id": 10
-}
-```
-
-FastAPI automatically understands:
+### Invalid Requests
 
 ```text
-school_id
-↓
-Path parameter
-
-class_id
-↓
-Query parameter
+GET /books/0
+GET /books/-5
+GET /books/abc
 ```
+
+These requests fail validation because the value is either not an integer or does not satisfy the positive-value constraint.
+
+FastAPI automatically returns a validation error, normally with HTTP status code `422 Unprocessable Entity`.
+
+### Common `Path()` Constraints
+
+| Constraint | Meaning |
+|---|---|
+| `gt=0` | Greater than zero |
+| `ge=1` | Greater than or equal to one |
+| `lt=100` | Less than 100 |
+| `le=100` | Less than or equal to 100 |
+| `min_length=3` | Minimum string length of 3 |
+| `max_length=20` | Maximum string length of 20 |
+| `description="Book ID"` | Adds a description to the API documentation |
+
+`gt`, `ge`, `lt`, and `le` are numeric constraints. String length constraints apply to string parameters.
+
+### Example With Multiple Constraints
+
+```python
+@app.get("/books/{book_id}")
+async def read_book(
+    book_id: int = Path(
+        gt=0,
+        le=1000,
+        description="Unique ID of the book"
+    )
+):
+    return {
+        "book_id": book_id
+    }
+```
+
+Here, `book_id` must be greater than `0` and less than or equal to `1000`.
 
 ---
 
-# 19. Query Parameters for Filtering
+## 11. Query Parameter Validation Using `Query()`
 
-Query parameters are commonly used for filtering.
+FastAPI provides `Query()` to apply validation constraints to query parameters.
 
-Example:
+For example, we want to allow a page limit between `1` and `100`.
+
+```python
+from fastapi import Query
+
+@app.get("/students")
+async def get_students(
+    limit: int = Query(
+        default=10,
+        gt=0,
+        le=100
+    )
+):
+    return {
+        "limit": limit
+    }
+```
+
+### Understanding the Code
+
+- `default=10` means the default limit is `10`.
+- `gt=0` means the value must be greater than zero.
+- `le=100` means the value must be less than or equal to `100`.
+
+### Valid Requests
+
+```text
+GET /students
+GET /students?limit=1
+GET /students?limit=50
+GET /students?limit=100
+```
+
+### Invalid Requests
+
+```text
+GET /students?limit=0
+GET /students?limit=-5
+GET /students?limit=101
+GET /students?limit=abc
+```
+
+These requests fail validation.
+
+### Common `Query()` Constraints
+
+| Constraint | Meaning |
+|---|---|
+| `gt=0` | Greater than zero |
+| `ge=1` | Greater than or equal to one |
+| `lt=100` | Less than 100 |
+| `le=100` | Less than or equal to 100 |
+| `min_length=3` | Minimum string length of 3 |
+| `max_length=50` | Maximum string length of 50 |
+| `pattern="..."` | String must match a regular expression |
+| `description="..."` | Adds a description to API documentation |
+
+**Note:** `Path()` and `Query()` do not replace type hints. Use the type hint to specify the expected type and the constraints to define acceptable values.
+
+---
+
+## 12. String Validation
+
+We can validate the length and format of string parameters.
+
+For example, suppose a student section must contain between one and five characters.
 
 ```python
 @app.get("/students")
-def get_students(
-    class_id: int | None = None,
-    section: str | None = None
+async def get_students(
+    section: str = Query(
+        min_length=1,
+        max_length=5
+    )
 ):
     return {
-        "class_id": class_id,
         "section": section
     }
 ```
 
-Possible requests:
-
-```text
-GET /students
-```
-
-```text
-GET /students?class_id=10
-```
+Valid requests:
 
 ```text
 GET /students?section=A
+GET /students?section=AB
 ```
+
+An invalid request:
 
 ```text
-GET /students?class_id=10&section=A
+GET /students?section=TOOLONG
 ```
 
----
+The last request fails because the value exceeds the maximum length.
 
-# 20. Query Parameters for Pagination
+### Using a Pattern
 
-Pagination is a common real-world use case.
-
-Example:
+Suppose we want a section containing exactly one uppercase English letter.
 
 ```python
 @app.get("/students")
-def get_students(
-    page: int = 1,
-    limit: int = 10
+async def get_students(
+    section: str = Query(
+        min_length=1,
+        max_length=1,
+        pattern="^[A-Z]$"
+    )
+):
+    return {
+        "section": section
+    }
+```
+
+Valid:
+
+```text
+GET /students?section=A
+GET /students?section=B
+```
+
+Invalid:
+
+```text
+GET /students?section=AB
+GET /students?section=a
+GET /students?section=1
+```
+
+The pattern `^[A-Z]$` allows exactly one uppercase English letter.
+
+---
+
+## 13. Optional Parameters With Validation
+
+A query parameter can be optional and still have validation constraints.
+
+```python
+@app.get("/students")
+async def get_students(
+    class_id: int | None = Query(
+        default=None,
+        gt=0
+    )
+):
+    return {
+        "class_id": class_id
+    }
+```
+
+Valid requests:
+
+```text
+GET /students
+GET /students?class_id=10
+```
+
+Invalid request:
+
+```text
+GET /students?class_id=0
+```
+
+The parameter is optional, but if supplied, it must be greater than zero.
+
+---
+
+## 14. Pagination With Validation
+
+Pagination is a common real-world use case for query parameters.
+
+```python
+@app.get("/students")
+async def get_students(
+    page: int = Query(default=1, ge=1),
+    limit: int = Query(default=10, ge=1, le=100)
 ):
     return {
         "page": page,
@@ -687,20 +624,39 @@ Response:
 }
 ```
 
-Later, when we build database APIs, these parameters will be used to fetch a specific portion of records.
+Here:
+
+- `page` must be at least `1`.
+- `limit` must be between `1` and `100`.
+- Both parameters have default values.
+
+Invalid examples:
+
+```text
+GET /students?page=0
+GET /students?page=-1
+GET /students?limit=0
+GET /students?limit=500
+```
+
+In a real application, these values can control how many records are fetched from the database.
 
 ---
 
-# 21. Type Conversion
+## 15. Path and Query Parameters Together
 
-FastAPI automatically converts values according to the type hint.
-
-Example:
+We can use both parameter types in the same endpoint.
 
 ```python
-@app.get("/students")
-def get_students(limit: int):
+@app.get("/schools/{school_id}/students")
+async def get_students(
+    school_id: int = Path(gt=0),
+    class_id: int | None = Query(default=None, gt=0),
+    limit: int = Query(default=10, ge=1, le=100)
+):
     return {
+        "school_id": school_id,
+        "class_id": class_id,
         "limit": limit
     }
 ```
@@ -708,406 +664,323 @@ def get_students(limit: int):
 Request:
 
 ```text
-GET /students?limit=20
-```
-
-FastAPI converts:
-
-```text
-"20"
- ↓
-20
-```
-
-because:
-
-```python
-limit: int
-```
-
----
-
-# 22. Boolean Query Parameters
-
-FastAPI can also convert boolean values.
-
-Example:
-
-```python
-@app.get("/students")
-def get_students(active: bool = True):
-    return {
-        "active": active
-    }
-```
-
-Request:
-
-```text
-GET /students?active=false
+GET /schools/5/students?class_id=10&limit=20
 ```
 
 Response:
 
 ```json
 {
-    "active": false
+    "school_id": 5,
+    "class_id": 10,
+    "limit": 20
 }
 ```
 
+In this example:
+
+- `school_id` is a path parameter and must be positive.
+- `class_id` is an optional query parameter and must be positive if provided.
+- `limit` is a query parameter between `1` and `100`.
+
 ---
 
-# 23. Complete Example
+## 16. How Does FastAPI Validate Parameters?
+
+FastAPI uses Python type hints and parameter declarations to validate incoming values.
+
+For example:
 
 ```python
-from fastapi import FastAPI
-
-app = FastAPI()
-
-
-@app.get("/students/{student_id}")
-def get_student(student_id: int):
+@app.get("/books/{book_id}")
+async def read_book(book_id: int = Path(gt=0)):
     return {
-        "student_id": student_id
-    }
-
-
-@app.get("/students")
-def get_students(
-    class_id: int | None = None,
-    section: str | None = None,
-    page: int = 1,
-    limit: int = 10
-):
-    return {
-        "class_id": class_id,
-        "section": section,
-        "page": page,
-        "limit": limit
+        "book_id": book_id
     }
 ```
+
+When a request arrives, FastAPI checks:
+
+1. Is `book_id` present in the URL?
+2. Can the value be converted to an integer?
+3. Does the value satisfy `gt=0`?
+4. If validation succeeds, execute the endpoint function.
+5. If validation fails, return an error response.
+
+FastAPI generally returns HTTP `422 Unprocessable Entity` for invalid request parameters.
+
+The error response includes details about the invalid input.
+
+**Important:** FastAPI handles request validation automatically. You do not need to write manual `if` conditions for every basic parameter constraint.
+
+---
+
+## 17. Path Parameter vs Query Parameter
+
+| Path Parameter | Query Parameter |
+|---|---|
+| Part of the URL path | Comes after `?` |
+| Usually identifies a resource | Usually filters or modifies a request |
+| Generally required by the route | Can be optional or required |
+| Uses `{}` in the route | Declared as a function parameter |
+| Can use `Path()` for constraints | Can use `Query()` for constraints |
 
 Examples:
 
 ```text
-GET /students/101
+GET /students/10
 ```
+
+Here, `10` is a path parameter.
 
 ```text
 GET /students?class_id=10
 ```
 
-```text
-GET /students?class_id=10&section=A
-```
-
-```text
-GET /students?page=2&limit=20
-```
+Here, `class_id` is a query parameter.
 
 ---
 
-# 24. Important FastAPI Concept
+## 18. Type Hints vs `Path()` vs `Query()`
 
-FastAPI determines whether a parameter is a path parameter or query parameter based on the route.
+These three concepts serve different purposes.
+
+| Feature | Purpose |
+|---|---|
+| `book_id: int` | Specifies the expected type |
+| `Path(gt=0)` | Adds constraints to a path parameter |
+| `Query(gt=0)` | Adds constraints to a query parameter |
 
 Example:
 
 ```python
-@app.get("/students/{student_id}")
-def get_student(student_id: int):
+@app.get("/books/{book_id}")
+async def read_book(
+    book_id: int = Path(gt=0)
+):
+    return {
+        "book_id": book_id
+    }
 ```
 
-Because `student_id` appears in:
+Read it as:
 
-```text
-/students/{student_id}
-```
-
-FastAPI knows it is a **path parameter**.
-
-Now:
-
-```python
-@app.get("/students")
-def get_students(class_id: int):
-```
-
-Because `class_id` does not appear in the path, FastAPI treats it as a **query parameter**.
+- `book_id` is the parameter name.
+- `int` is the expected type.
+- `Path(gt=0)` declares a constraint for the path parameter.
 
 ---
 
-# 25. Common Mistakes
+## 19. Common Mistakes
 
-### Mistake 1 — Forgetting `{}` for Path Parameters
+### Mistake 1: Forgetting `{}` in the Path
 
-Wrong:
+Incorrect:
 
 ```python
 @app.get("/students/student_id")
-def get_student(student_id: int):
-    ...
+async def get_student(student_id: int):
+    return {"student_id": student_id}
 ```
 
-This creates a fixed path:
-
-```text
-/students/student_id
-```
+This creates the fixed URL `/students/student_id`.
 
 Correct:
 
 ```python
 @app.get("/students/{student_id}")
-def get_student(student_id: int):
-    ...
+async def get_student(student_id: int):
+    return {"student_id": student_id}
 ```
 
-Now:
-
-```text
-/students/10
-```
-
-works.
-
----
-
-### Mistake 2 — Making Everything a Path Parameter
-
-Don't create:
-
-```text
-/students/10/class/5/section/A/page/2
-```
-
-when these values are really filters or pagination options.
-
-Prefer:
-
-```text
-/students/10
-```
-
-for identifying a specific student.
-
-And:
-
-```text
-/students?class_id=5&section=A&page=2
-```
-
-for filtering/pagination.
-
----
-
-### Mistake 3 — Forgetting Optional Defaults
-
-This:
+### Mistake 2: Assuming `int` Rejects Negative Values
 
 ```python
-def get_students(class_id: int):
+@app.get("/books/{book_id}")
+async def read_book(book_id: int):
+    return {"book_id": book_id}
 ```
 
-makes `class_id` required.
+The type hint `int` does not reject negative integers.
 
-If it should be optional:
+Use:
 
 ```python
-def get_students(class_id: int | None = None):
+@app.get("/books/{book_id}")
+async def read_book(book_id: int = Path(gt=0)):
+    return {"book_id": book_id}
 ```
+
+### Mistake 3: Forgetting That a Parameter Is Required
+
+```python
+@app.get("/students")
+async def get_students(class_id: int):
+    return {"class_id": class_id}
+```
+
+The client must supply `class_id`.
+
+To make it optional:
+
+```python
+@app.get("/students")
+async def get_students(class_id: int | None = None):
+    return {"class_id": class_id}
+```
+
+### Mistake 4: Using the Wrong Constraint
+
+- `gt=0`: greater than zero.
+- `ge=0`: greater than or equal to zero.
+- `lt=100`: less than 100.
+- `le=100`: less than or equal to 100.
+
+For example, `le=100` allows `100`, but `lt=100` does not.
+
+### Mistake 5: Confusing `Path()` and `Query()`
+
+Use `Path()` for values embedded in the URL path.
+
+Use `Query()` for values provided through the query string.
 
 ---
 
-# 26. Interview Questions
+## 20. Interview Questions
 
 ### Q1. What is a path parameter?
 
-A value embedded directly in the URL path and commonly used to identify a specific resource.
+A value embedded directly in the URL path, commonly used to identify a resource.
 
-Example:
-
-```text
-/students/10
-```
-
----
+Example: `/students/10`
 
 ### Q2. What is a query parameter?
 
-A parameter provided after `?` in the URL.
+A value supplied after `?` in a URL, commonly used for filtering, searching, and pagination.
 
-Example:
+Example: `/students?class_id=10`
 
-```text
-/students?class_id=10
-```
+### Q3. How does FastAPI validate path parameters?
 
----
-
-### Q3. What is the difference between path and query parameters?
-
-```text
-Path:
-GET /students/10
-
-Query:
-GET /students?class_id=10
-```
-
-Path parameters are part of the URL path, while query parameters are added after `?`.
-
----
-
-### Q4. How does FastAPI know a parameter is a path parameter?
-
-The parameter appears inside the route path.
-
-Example:
+FastAPI uses type hints and constraints declared through `Path()`.
 
 ```python
-@app.get("/students/{student_id}")
-def get_student(student_id: int):
+book_id: int = Path(gt=0)
 ```
 
----
+This requires a positive integer.
 
-### Q5. How does FastAPI know a parameter is a query parameter?
+### Q4. What is the purpose of `Query()`?
 
-If a function parameter is not included in the path, FastAPI treats it as a query parameter.
-
-Example:
+`Query()` declares metadata and validation constraints for query parameters.
 
 ```python
-@app.get("/students")
-def get_students(class_id: int):
+limit: int = Query(default=10, ge=1, le=100)
 ```
 
-Here `class_id` is a query parameter.
+This gives `limit` a default value of `10` and restricts it to `1` through `100`.
 
----
+### Q5. What is the difference between `gt` and `ge`?
 
-### Q6. Can path and query parameters be used together?
+- `gt`: greater than.
+- `ge`: greater than or equal to.
 
-Yes.
+For example, `gt=0` rejects `0`, whereas `ge=0` accepts it.
 
-Example:
+### Q6. What happens when parameter validation fails?
 
-```text
-GET /schools/5/students?class_id=10
-```
+FastAPI normally returns HTTP `422 Unprocessable Entity` with details about the validation failure.
 
-Here:
+### Q7. Can optional query parameters have constraints?
 
-```text
-5
-↓
-Path parameter
-
-class_id=10
-↓
-Query parameter
-```
-
----
-
-### Q7. Can query parameters be optional?
-
-Yes.
+Yes. For example:
 
 ```python
-@app.get("/students")
-def get_students(class_id: int | None = None):
-    ...
+class_id: int | None = Query(default=None, gt=0)
 ```
+
+The parameter can be omitted, but if supplied, it must be greater than zero.
+
+### Q8. Can path parameters have default values?
+
+A path parameter is required because it is part of the route. Use `Path()` to declare its metadata and constraints rather than making it optional.
+
+### Q9. Does `int` alone guarantee a positive value?
+
+No. It validates the integer type, not whether the value is positive. Use a constraint such as `Path(gt=0)` or `Query(gt=0)` when needed.
+
+### Q10. Does FastAPI automatically document parameter constraints?
+
+Yes. FastAPI uses parameter declarations and type information to generate OpenAPI documentation, which is displayed in Swagger UI.
 
 ---
 
-# 27. Quick Revision
+## 21. Quick Revision
 
 ```text
 PATH PARAMETER
-        ↓
-Part of URL
-        ↓
-Usually identifies a resource
+    |
+    +-- Included in the URL path
+    +-- Commonly identifies a resource
+    +-- Use Path() for constraints
+    |
+    +-- Example:
+        /books/10
+        book_id: int = Path(gt=0)
 
-/students/10
-          ↑
-       student_id
-```
 
-```text
 QUERY PARAMETER
-        ↓
-Comes after ?
-        ↓
-Usually used for filtering/search/pagination
-
-/students?class_id=10
-          ↑
-      query parameter
+    |
+    +-- Included after ?
+    +-- Commonly used for filtering and pagination
+    +-- Use Query() for constraints
+    |
+    +-- Example:
+        /students?limit=20
+        limit: int = Query(default=10, ge=1, le=100)
 ```
 
 Remember:
 
-```text
-/students/10
-        ↓
-Path Parameter
-
-
-/students?class_id=10
-          ↓
-Query Parameter
-```
+- Type hints specify expected data types.
+- `Path()` validates path parameters.
+- `Query()` validates query parameters.
+- FastAPI performs request validation automatically.
+- Invalid request parameters normally produce HTTP `422`.
 
 ---
 
-# 28. Practice
+## 22. Practice
 
-Create these APIs:
+Implement the following endpoints without using a database or Pydantic request-body models yet.
 
-### 1. Get a specific teacher
+### Practice 1: Get a Specific Teacher
+
+Create:
 
 ```text
 GET /teachers/{teacher_id}
 ```
 
-Expected:
+Requirements:
 
-```text
-GET /teachers/10
-```
+- `teacher_id` must be an integer.
+- `teacher_id` must be greater than zero.
 
-Return:
+### Practice 2: Filter Students
 
-```json
-{
-    "teacher_id": 10
-}
-```
-
----
-
-### 2. Filter students
+Create:
 
 ```text
 GET /students?class_id=10&section=A
 ```
 
-Return:
+Requirements:
 
-```json
-{
-    "class_id": 10,
-    "section": "A"
-}
-```
+- `class_id` is an optional positive integer.
+- `section` is an optional string.
 
----
-
-### 3. Pagination
+### Practice 3: Validate Pagination
 
 Create:
 
@@ -1115,35 +988,51 @@ Create:
 GET /students?page=2&limit=20
 ```
 
-Return:
+Requirements:
 
-```json
-{
-    "page": 2,
-    "limit": 20
-}
-```
+- `page` defaults to `1` and must be at least `1`.
+- `limit` defaults to `10` and must be between `1` and `100`.
 
----
-
-### 4. Combine Path + Query
+### Practice 4: Validate a Book ID
 
 Create:
 
 ```text
-GET /schools/5/students?class_id=10
+GET /books/{book_id}
 ```
 
-Return:
+Requirements:
 
-```json
-{
-    "school_id": 5,
-    "class_id": 10
-}
+- `book_id` must be greater than `0`.
+- `book_id` must not exceed `1000`.
+- Return the validated `book_id`.
+
+### Practice 5: Validate a Section
+
+Create:
+
+```text
+GET /students?section=A
 ```
 
-Don't use a database or Pydantic yet.
+Requirements:
+
+- `section` must be exactly one uppercase English letter.
+- Use `Query()` with an appropriate pattern.
+
+### Practice 6: Combine Path and Query Parameters
+
+Create:
+
+```text
+GET /schools/5/students?class_id=10&limit=20
+```
+
+Requirements:
+
+- `school_id` must be positive.
+- `class_id` is optional and must be positive if provided.
+- `limit` must be between `1` and `100`.
 
 ---
 
@@ -1151,14 +1040,16 @@ Don't use a database or Pydantic yet.
 
 ### Lecture 4 — Request Body & Pydantic Models
 
-We will learn:
+Topics:
 
 - What is a request body?
-- Why do APIs need request bodies?
-- Pydantic models
-- Creating request schemas
-- Sending JSON data
-- Automatic validation
-- Required vs optional fields
-- Nested models
-- Interview questions
+- Why APIs need request bodies.
+- Pydantic models.
+- Creating request schemas.
+- Sending JSON data.
+- Automatic request-body validation.
+- Required and optional fields.
+- `Field()` and `model_config`.
+- Nested models.
+- Create and update schemas.
+- Interview questions.
