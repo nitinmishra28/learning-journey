@@ -316,4 +316,4 @@ Both approaches may simulate the same number of moves, but the heap makes the gr
 - **Time:** `O(a + b + c)` upper bound for the simulation.
 - **Space:** `O(1)` because the heap contains at most three elements.
 
-> **One-Line Pattern:** Maximum Score From Removing Stones = Greedy + Max Heap + Repeatedly Remove One Stone from the Two Largest Non-Empty Piles.    
+> **One-Line Pattern:** Maximum Score From Removing Stones = Greedy + Max Heap + Repeatedly Remove One Stone from the Two Largest Non-Empty Piles.     
