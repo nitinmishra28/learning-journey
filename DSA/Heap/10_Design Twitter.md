@@ -346,3 +346,237 @@ class Twitter:
     def follow(self, followerId: int, followeeId: int) -> None:
 
         # A user cannot follow themselves
+        if followerId != followeeId:
+            self.following[followerId].add(followeeId)
+
+    def unfollow(self, followerId: int, followeeId: int) -> None:
+
+        # discard() safely does nothing if followeeId is absent
+        self.following[followerId].discard(followeeId)
+```
+
+---
+
+## 6. Dry Run
+
+Suppose the following tweets exist:
+
+```text
+User 1:
+(1, 101), (4, 102)
+
+User 2:
+(2, 201), (5, 202)
+
+User 3:
+(3, 301), (6, 302)
+```
+
+User `1` follows users `2` and `3`.
+
+We want the news feed for user `1`.
+
+### Step 1: Initialize the heap
+
+Take the newest tweet from each user:
+
+```text
+User 1 -> (4, 102)
+User 2 -> (5, 202)
+User 3 -> (6, 302)
+```
+
+After inserting negative timestamps, the logical priority order is:
+
+```text
+(-6, 302, 3, 1)  <- newest
+(-5, 202, 2, 1)
+(-4, 102, 1, 1)
+```
+
+The heap array itself is not necessarily fully sorted; the root is the highest-priority entry.
+
+### Step 2: Pop the newest tweet
+
+Pop user `3`'s tweet `302`.
+
+```python
+result = [302]
+```
+
+Move backward in user `3`'s list and insert tweet `301`, timestamp `3`.
+
+### Step 3: Continue merging
+
+The next newest tweet is `202`, timestamp `5`.
+
+```python
+result = [302, 202]
+```
+
+Then tweet `102`, timestamp `4`:
+
+```python
+result = [302, 202, 102]
+```
+
+Then tweet `301`, timestamp `3`:
+
+```python
+result = [302, 202, 102, 301]
+```
+
+Continue popping the newest available tweet and inserting its predecessor until 10 tweets are collected or the heap becomes empty.
+
+The final feed is ordered from newest to oldest:
+
+```python
+[302, 202, 102, 301, 201, 101]
+```
+
+---
+
+## 7. Why Store the Index in the Heap?
+
+The index tells us which tweet to read next from the same user's history.
+
+For example:
+
+```python
+self.tweets[1] = [
+    (1, 101),
+    (4, 102),
+    (7, 103)
+]
+```
+
+Initially:
+
+```python
+index = 2
+```
+
+We insert tweet `103` into the heap.
+
+After popping it:
+
+```python
+index -= 1  # 1
+```
+
+We insert tweet `102`.
+
+After popping that:
+
+```python
+index -= 1  # 0
+```
+
+We insert tweet `101`.
+
+After that, the index becomes `-1`, so no earlier tweet exists.
+
+Without the index, we would not know where to continue in that user's tweet history.
+
+**Remember:** The index is not a timestamp. It is the position of a tweet in that particular user's list.
+
+---
+
+## 8. Complexity Analysis
+
+Let:
+- `F` = number of users followed by the requesting user.
+- `U = F + 1` = number of relevant users, including the requesting user.
+- `L = min(10, T)` where `T` is the total number of relevant tweets available.
+
+### `postTweet()`
+
+Appending a tweet to a user's list takes amortized `O(1)` time.
+
+- **Time:** `O(1)` amortized
+- **Extra space:** `O(1)` per operation, excluding stored tweet history
+
+### `follow()` and `unfollow()`
+
+Set insertion and removal are `O(1)` on average.
+
+- **Time:** `O(1)` average per operation
+
+### `getNewsFeed()`
+
+- Initialize the heap with up to `U` newest tweets: `O(U log U)`.
+- Pop up to `L` tweets, with at most one replacement push per pop: `O(L log U)`.
+
+**Total time:**
+
+`O(U log U + L log U)`
+
+Since `L` is at most `10`, this can be written as:
+
+`O(U log U + 10 log U)`
+
+**Auxiliary space:** `O(U)` for the heap, plus `O(L)` for the result list. Since `L <= 10`, the result uses at most 10 entries.
+
+---
+
+## 9. Common Mistakes
+
+1. **Using positive timestamps in a Min Heap:** That would return the oldest tweet first. Use `-time`.
+2. **Including only followed users:** Always include the requesting user's own ID.
+3. **Pushing every tweet into the heap:** Only insert the newest available tweet from each user, then add that user's previous tweet after popping.
+4. **Forgetting the index:** You need it to move backward through the user's tweet list.
+5. **Not limiting the feed to 10 tweets:** Use `len(result) < 10`.
+6. **Reinserting an invalid index:** Check `index >= 0` before accessing the tweet list.
+7. **Using `remove()` for unfollow:** `discard()` is safer because it doesn't raise an error if the relationship doesn't exist.
+8. **Allowing self-follow:** Prevent it by checking `followerId != followeeId`.
+
+---
+
+## 10. Brute Force vs Optimized Approach
+
+| Feature | Brute Force | Heap + K-Way Merge |
+|---|---|---|
+| Gather tweets | All relevant tweets | Newest tweet per user |
+| Ordering | Sort all tweets | Heap selects newest |
+| Feed retrieval | `O(T log T)` | `O(U log U + L log U)` |
+| Extra retrieval space | `O(T)` | `O(U + L)` |
+| Stops after 10 tweets | After sorting | As soon as 10 are collected |
+
+The heap approach avoids sorting every tweet and stops once the required feed is complete.
+
+---
+
+## 11. Pattern Recognition
+
+Recognize **Heap + K-Way Merge** when:
+
+- Multiple users each have a sorted list of items.
+- You need the globally newest or smallest items across those lists.
+- You only need the first `k` results rather than the entire merged list.
+
+The approach is the same general pattern used in Merge K Sorted Lists:
+
+1. Put one current candidate from every list into the heap.
+2. Pop the best candidate.
+3. Advance only the list that supplied it.
+4. Insert its next candidate.
+5. Repeat until enough results are collected.
+
+---
+
+## 12. Revision Cheat Sheet
+
+- **Global timestamp:** Establishes posting order across users.
+- **Tweets:** Store `(timestamp, tweetId)` in chronological order.
+- **Following:** Use a set for each follower.
+- **Heap entry:** `(-time, tweetId, uid, index)`.
+- **Negative timestamp:** Makes the newest tweet pop first.
+- **Index:** Locates the previous tweet in the same user's history.
+- **One tweet per user:** Keeps the heap small.
+- **Stop condition:** Heap empty or 10 tweets collected.
+- **`postTweet()`:** `O(1)` amortized.
+- **`follow()` / `unfollow()`:** `O(1)` average.
+- **`getNewsFeed()`:** `O(U log U + L log U)`, where `L <= 10`.
+- **Heap space:** `O(U)`.
+
+> **One-Line Pattern:** Design Twitter = Global Timestamp + Per-User Sorted Tweet Lists + Max Heap + K-Way Merge to Retrieve the 10 Newest Tweets.
