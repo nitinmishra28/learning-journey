@@ -396,6 +396,6 @@ For **K largest elements**, use a Min Heap of size `k`.
 - **Python Trick:** Negate squared distances to simulate a Max Heap.
 - **Key Operation:** `heapq.heappushpop()`.
 - **Time Complexity:** `O(n log k)`.
-- **Auxiliary Space:** `O(k)`.
+- **Auxiliary Space:** `O(k)`. 
 
 > **One-Line Pattern:** K Closest Points = Max Heap of Size K + Negative Squared Distances + Remove the Farthest Point Whenever a New Candidate Arrives.
