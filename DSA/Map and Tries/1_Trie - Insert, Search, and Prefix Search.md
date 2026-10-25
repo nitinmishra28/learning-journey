@@ -1,72 +1,41 @@
-# Trie - Insert, Search, and Prefix Search
+# Trie - Insert, Search, Prefix Search, Autocomplete, and Longest Common Prefix
 
-## 1. Problem Statement
-
-Implement a **Trie (Prefix Tree)** that supports three operations:
-
-1. `insert(word)` — Insert a word into the Trie.
-2. `search(word)` — Check whether a complete word exists in the Trie.
-3. `startsWith(prefix)` — Check whether any word starts with the given prefix.
-
-### Example
-
-```python
-trie = Trie()
-
-trie.insert("apple")
-
-print(trie.search("apple"))    # True
-print(trie.search("app"))      # False
-print(trie.startsWith("app"))  # True
-
-trie.insert("app")
-
-print(trie.search("app"))      # True
-```
-
-**Important distinction:**
-- `search("app")` returns `False` if `"app"` is only a prefix of another word and has not been inserted as a complete word.
-- `startsWith("app")` returns `True` if the prefix exists in the Trie, even if it is not a complete word.
-
----
-
-## 2. What Is a Trie?
+## 1. What Is a Trie?
 
 A **Trie**, also called a **Prefix Tree**, is a tree-like data structure used to store strings character by character.
 
-For example, if we insert `"cat"`, `"car"`, and `"care"`, the Trie shares the common prefix `"ca"`.
+It is useful for:
+- Inserting words.
+- Searching for complete words.
+- Checking whether a prefix exists.
+- Finding autocomplete suggestions.
+- Solving longest common prefix problems.
+- Implementing dictionaries and search suggestions.
+
+### Example
+
+If we insert `"cat"`, `"car"`, and `"care"`, the Trie shares the common prefix `"ca"`.
 
 ```text
-          root
-           |
-           c
-           |
-           a
-          / \
-         t   r
-        (end) |
-              e
-             (end)
+root
+ |
+ c
+ |
+ a
+ / \
+t   r
+    |
+    e
 ```
 
-The diagram is simplified. The actual Trie also stores information indicating which nodes mark the end of a complete word.
-
-### Why Use a Trie?
-
-- Efficient prefix searching.
-- Avoids storing repeated prefixes separately.
-- Useful for autocomplete and dictionary problems.
-- Can search words by traversing their characters.
+Each node stores its child nodes and whether a complete word ends there.
 
 ---
 
-## 3. Understanding the TrieNode Structure
-
-In this implementation, every `Trie` object represents a node.
+## 2. Trie Node Structure
 
 ```python
-class Trie:
-
+class TrieNode:
     def __init__(self):
         self.children = {}
         self.is_end = False
@@ -78,21 +47,19 @@ class Trie:
 self.children = {}
 ```
 
-A dictionary that stores the child nodes of the current node.
+A dictionary that stores child nodes.
 
-- Key: a character.
-- Value: the Trie node corresponding to that character.
+- Key: character.
+- Value: TrieNode object.
 
 For example:
 
 ```python
 {
-    "a": Trie(),
-    "b": Trie()
+    "a": TrieNode(),
+    "b": TrieNode()
 }
 ```
-
-This means the current node has two children: `"a"` and `"b"`.
 
 ### `is_end`
 
@@ -100,70 +67,15 @@ This means the current node has two children: `"a"` and `"b"`.
 self.is_end = False
 ```
 
-Indicates whether the current node represents the end of a complete word.
+Indicates whether a complete word ends at the current node.
 
-Consider inserting `"apple"`:
+For example, if `"app"` and `"apple"` are inserted, the node for the second `"p"` has `is_end = True`, and the path continues toward `"apple"`.
 
-```text
-root → a → p → p → l → e
-                              |
-                         is_end = True
-```
-
-The final `"e"` node has `is_end = True`.
-
-If `"app"` has not been inserted separately, the second `"p"` node has `is_end = False`.
-
-**Key idea:** A character path can exist without representing a complete word.
+**Important:** A prefix can exist without being a complete word.
 
 ---
 
-## 4. Complete Code
-
-```python
-class Trie:
-
-    def __init__(self):
-        self.children = {}
-        self.is_end = False
-
-    def insert(self, word: str) -> None:
-        node = self
-
-        for char in word:
-            if char not in node.children:
-                node.children[char] = Trie()
-
-            node = node.children[char]
-
-        node.is_end = True
-
-    def search(self, word: str) -> bool:
-        node = self
-
-        for char in word:
-            if char not in node.children:
-                return False
-
-            node = node.children[char]
-
-        return node.is_end
-
-    def startsWith(self, prefix: str) -> bool:
-        node = self
-
-        for char in prefix:
-            if char not in node.children:
-                return False
-
-            node = node.children[char]
-
-        return True
-```
-
----
-
-## 5. Understanding `insert(word)`
+## 3. Operation 1: Insert a Word
 
 ### Code
 
@@ -173,107 +85,41 @@ def insert(self, word: str) -> None:
 
     for char in word:
         if char not in node.children:
-            node.children[char] = Trie()
+            node.children[char] = TrieNode()
 
         node = node.children[char]
 
     node.is_end = True
 ```
 
-### Step-by-step explanation
+### Explanation
 
-**Step 1: Start from the root**
+1. Start from the root.
+2. Traverse every character in the word.
+3. Create a new node if the character does not exist.
+4. Move to the corresponding child node.
+5. Mark the final node as the end of a word.
 
-```python
-node = self
-```
+### Dry Run
 
-`self` represents the root Trie node when the operation is called on the main Trie object.
-
-We use `node` to traverse the Trie without losing the root reference.
-
-**Step 2: Traverse each character**
-
-```python
-for char in word:
-```
-
-If the word is `"cat"`, the loop processes:
+Insert `"cat"`.
 
 ```text
-c → a → t
+root → c → a → t
+                 |
+            is_end = True
 ```
 
-**Step 3: Create a node if it does not exist**
+If we insert `"car"` afterward, the nodes for `"c"` and `"a"` are reused.
 
-```python
-if char not in node.children:
-    node.children[char] = Trie()
-```
+### Complexity
 
-If the current character is missing, create a new Trie node for it.
-
-If it already exists, reuse that node. This is how common prefixes are shared.
-
-**Step 4: Move to the child node**
-
-```python
-node = node.children[char]
-```
-
-Move the pointer to the node representing the current character.
-
-**Step 5: Mark the end of the word**
-
-```python
-node.is_end = True
-```
-
-After processing all characters, mark the last node as the end of a complete word.
-
-### Dry Run: Insert `"cat"`
-
-Initially:
-
-```text
-root
-```
-
-Process `"c"`:
-
-```text
-root
-  |
-  c
-```
-
-Process `"a"`:
-
-```text
-root
-  |
-  c
-  |
-  a
-```
-
-Process `"t"` and mark its node as the end:
-
-```text
-root
-  |
-  c
-  |
-  a
-  |
-  t  ← is_end = True
-```
-
-The word `"cat"` is now stored.
+- Time: `O(L)`, where `L` is the word length.
+- Additional space: `O(L)` in the worst case for a single insertion.
 
 ---
 
-## 6. Understanding `search(word)`
+## 4. Operation 2: Search a Complete Word
 
 ### Code
 
@@ -290,88 +136,33 @@ def search(self, word: str) -> bool:
     return node.is_end
 ```
 
-### Step-by-step explanation
+### Explanation
 
-**Step 1:** Start from the root.
+The method traverses each character.
 
-```python
-node = self
-```
+- If a character is missing, return `False`.
+- If all characters exist, check `node.is_end`.
 
-**Step 2:** Traverse each character.
+### Example
 
-```python
-for char in word:
-```
-
-**Step 3:** If any character is missing, the word does not exist.
+Suppose only `"apple"` has been inserted.
 
 ```python
-if char not in node.children:
-    return False
+search("apple")  # True
+search("app")    # False
+search("bat")    # False
 ```
 
-**Step 4:** Move to the next node.
+`"app"` is a valid prefix, but it is not a complete word unless it has also been inserted.
 
-```python
-node = node.children[char]
-```
+### Complexity
 
-**Step 5:** After traversing every character, check whether the last node marks the end of a word.
-
-```python
-return node.is_end
-```
-
-This final line is the most important part of `search()`.
-
-### Dry Run
-
-Suppose `"apple"` has been inserted.
-
-**Case 1: `search("apple")`**
-
-Every character exists, and the final `"e"` node has `is_end = True`.
-
-Result:
-
-```python
-True
-```
-
-**Case 2: `search("app")`**
-
-Every character exists, but the final `"p"` node has `is_end = False` if `"app"` was never inserted.
-
-Result:
-
-```python
-False
-```
-
-**Case 3: `search("bat")`**
-
-The first character `"b"` does not exist in the root's children.
-
-Result:
-
-```python
-False
-```
-
-### Why Return `node.is_end` Instead of `True`?
-
-Because finding the character path does not necessarily mean the complete word was inserted.
-
-```python
-return node.is_end
-```
-
-checks both the existence of the path and the existence of the complete word.
+- Time: `O(L)`.
+- Auxiliary space: `O(1)`.
 
 ---
 
-## 7. Understanding `startsWith(prefix)`
+## 5. Operation 3: Check Whether a Prefix Exists
 
 ### Code
 
@@ -388,205 +179,507 @@ def startsWith(self, prefix: str) -> bool:
     return True
 ```
 
-### Step-by-step explanation
+### Explanation
 
-The logic is similar to `search()`, but there is one important difference.
+This operation checks only whether the prefix path exists.
 
-- `search()` checks whether the final node represents a complete word.
-- `startsWith()` only checks whether the entire prefix path exists.
+Unlike `search()`, it does not check `node.is_end`.
 
-Notice the final line:
+### Example
 
-```python
-return True
-```
-
-We do not check `node.is_end`.
-
-### Dry Run
-
-Suppose `"apple"` has been inserted.
-
-Call:
+If `"apple"` has been inserted:
 
 ```python
-trie.startsWith("app")
+startsWith("app")   # True
+startsWith("apple") # True
+startsWith("bat")   # False
 ```
 
-Traversal:
+### Complexity
+
+- Time: `O(L)`, where `L` is the prefix length.
+- Auxiliary space: `O(1)`.
+
+---
+
+## 6. Operation 4: Autocomplete
+
+### Problem Statement
+
+Given a prefix, return all words stored in the Trie that start with that prefix.
+
+### Example
+
+Suppose the Trie contains:
+
+```python
+["apple", "app", "application", "apt", "bat"]
+```
+
+Input:
+
+```python
+prefix = "app"
+```
+
+Output:
+
+```python
+["app", "apple", "application"]
+```
+
+The order of suggestions depends on the order in which children are traversed.
+
+### Code
+
+The following method assumes the Trie has a separate root node accessible as `self.root`.
+
+```python
+def autocomplete(self, prefix: str):
+    node = self.root
+
+    for char in prefix:
+        if char not in node.children:
+            return []
+
+        node = node.children[char]
+
+    suggestions = []
+
+    def collect(node, current_word):
+        if node.is_end:
+            suggestions.append(current_word)
+
+        for char, child in node.children.items():
+            collect(child, current_word + char)
+
+    collect(node, prefix)
+
+    return suggestions
+```
+
+**Important:** In this code, `self.root` must exist. If `autocomplete()` is implemented directly inside a `TrieNode` object, use `node = self` instead of `node = self.root`.
+
+### Understanding the Logic
+
+The autocomplete operation has two main stages.
+
+#### Stage 1: Find the Prefix Node
+
+```python
+node = self.root
+
+for char in prefix:
+    if char not in node.children:
+        return []
+
+    node = node.children[char]
+```
+
+Suppose the prefix is `"app"`.
+
+The traversal follows:
 
 ```text
 root → a → p → p
 ```
 
-All characters exist, so the method returns:
+If any character is missing, no stored word can match the prefix, so return an empty list.
+
+Once traversal finishes, `node` points to the final character of the prefix.
+
+#### Stage 2: Collect All Words Below That Node
 
 ```python
-True
+suggestions = []
 ```
 
-Even if `"app"` was never inserted as a complete word, it is still a valid prefix of `"apple"`.
+This list stores all matching words.
 
-Now call:
+The nested function explores the subtree rooted at the prefix node.
 
 ```python
-trie.startsWith("bat")
+def collect(node, current_word):
+    if node.is_end:
+        suggestions.append(current_word)
+
+    for char, child in node.children.items():
+        collect(child, current_word + char)
 ```
 
-If `"b"` is missing, the method returns:
+There are two important operations.
+
+**1. Check whether a complete word ends here**
 
 ```python
-False
+if node.is_end:
+    suggestions.append(current_word)
 ```
+
+If `node.is_end` is `True`, the current string is a complete word, so add it to the suggestions.
+
+**2. Explore every child**
+
+```python
+for char, child in node.children.items():
+    collect(child, current_word + char)
+```
+
+For every child:
+- Add the child's character to the current word.
+- Recursively explore the child's subtree.
+
+Finally:
+
+```python
+collect(node, prefix)
+return suggestions
+```
+
+Start collecting words from the prefix node, using the prefix itself as the initial word.
+
+### Dry Run
+
+Suppose the Trie contains:
+
+```python
+["app", "apple", "application", "apt", "bat"]
+```
+
+Call:
+
+```python
+autocomplete("app")
+```
+
+First, locate the `"app"` node.
+
+```text
+root → a → p → p
+```
+
+Now explore its subtree:
+
+```text
+app                 ← is_end = True
+ |
+ l
+ |
+ e                   ← is_end = True
+ |
+ ...
+ |
+ application         ← is_end = True
+```
+
+The traversal also visits every other descendant of `"app"`.
+
+The result is:
+
+```python
+["app", "apple", "application"]
+```
+
+The `"apt"` word is not included because it branches away from the `"app"` node. `"bat"` is not included because its path starts with a different character.
+
+### Why Is `current_word` Passed Recursively?
+
+```python
+collect(child, current_word + char)
+```
+
+Each recursive call builds the word character by character.
+
+For example:
+
+```text
+"app" → "appl" → "apple"
+```
+
+This lets the algorithm reconstruct complete words without storing the entire word separately in every Trie node.
+
+### Complexity
+
+Let:
+- `P` = length of the prefix.
+- `V` = number of Trie nodes visited while collecting suggestions.
+- `K` = number of returned words.
+
+**Time complexity:**
+
+- Finding the prefix node: `O(P)`.
+- Collecting all matching words: proportional to the subtree explored, plus the cost of constructing strings.
+
+A simple upper bound is `O(P + V × M)`, where `M` is the maximum length of a returned word, because string concatenation can copy characters.
+
+**Auxiliary space:**
+
+- Recursive traversal stack: up to the height of the Trie, `O(M)` beyond the stored results.
+- Suggestions list: depends on the number and total length of returned words.
+
+### When Is Autocomplete Useful?
+
+- Search engine suggestions.
+- IDE code completion.
+- Contact search.
+- Product search.
+- Dictionary applications.
 
 ---
 
-## 8. Understanding the Difference Between `search()` and `startsWith()`
+## 7. Operation 5: Longest Common Prefix Using Trie
 
-Assume only `"apple"` has been inserted.
+### Problem Statement
 
-| Operation | Result | Reason |
-|---|---|---|
-| `search("apple")` | `True` | Complete word exists |
-| `search("app")` | `False` | Prefix exists, but not a complete word |
-| `startsWith("app")` | `True` | Prefix path exists |
-| `startsWith("apple")` | `True` | Entire path exists |
-| `search("bat")` | `False` | Character path is missing |
-| `startsWith("bat")` | `False` | Prefix path is missing |
+Given a list of strings, find the longest prefix shared by all strings.
 
-**Interview takeaway:** Both methods traverse the Trie. The difference is what they check after traversal.
-
----
-
-## 9. Time and Space Complexity
-
-Let `L` be the length of the word or prefix being processed.
-
-| Operation | Time Complexity | Explanation |
-|---|---|---|
-| `insert(word)` | `O(L)` average | Processes each character once |
-| `search(word)` | `O(L)` average | Traverses each character once |
-| `startsWith(prefix)` | `O(L)` average | Traverses each prefix character once |
-
-These bounds assume average-case dictionary operations take `O(1)` time.
-
-### Space Complexity
-
-Each newly created character node requires additional space.
-
-- Inserting one word of length `L` can create at most `L` new nodes.
-- Across all inserted words, total Trie storage is proportional to the number of distinct prefixes, bounded by the total number of characters inserted.
-
-For `N` inserted words with total length `S`, the worst-case space complexity is:
-
-\[
-O(S)
-\]
-
----
-
-## 10. Common Mistakes
-
-### Mistake 1: Forgetting `is_end = True`
-
-Incorrect:
+### Example
 
 ```python
-node = node.children[char]
+strs = ["flower", "flow", "flight"]
 ```
 
-If you never mark the final node, `search()` will return `False` for inserted words.
+Output:
 
-Correct:
+```python
+"fl"
+```
+
+### Code
+
+```python
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+    def insert(self, word: str) -> None:
+        node = self
+
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+
+            node = node.children[char]
+
+        node.is_end = True
+
+
+class Solution:
+    def longestCommonPrefix(self, strs: list[str]) -> str:
+        if not strs:
+            return ""
+
+        root = TrieNode()
+
+        for word in strs:
+            root.insert(word)
+
+        node = root
+        prefix = ""
+
+        while len(node.children) == 1 and not node.is_end:
+            for char in node.children:
+                prefix += char
+                node = node.children[char]
+
+        return prefix
+```
+
+### Explanation
+
+1. Insert all strings into the Trie.
+2. Start at the root.
+3. Continue while the current node has exactly one child.
+4. Stop if the current node marks the end of a word.
+5. Return the characters collected along the path.
+
+### Why Check `len(node.children) == 1`?
+
+If the current node has exactly one child, all strings that reach it continue through the same character.
+
+If it has multiple children, the strings branch into different paths, so the common prefix ends.
+
+### Why Check `not node.is_end`?
+
+Consider:
+
+```python
+strs = ["app", "apple", "application"]
+```
+
+The longest common prefix is `"app"`.
+
+The node for the final `"p"` is marked as the end of `"app"`. Even if it has one child, we must stop because one word has already ended.
+
+### Complexity
+
+Let `S` be the total number of characters across all strings.
+
+- Time: `O(S)` to build the Trie, followed by at most `O(M)` for traversal, where `M` is the maximum word length.
+- Space: `O(S)` in the worst case.
+
+---
+
+## 8. Complete Trie Class With Autocomplete
+
+Here is a reusable implementation that supports insertion, complete-word search, prefix search, and autocomplete.
+
+```python
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        node = self.root
+
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+
+            node = node.children[char]
+
+        node.is_end = True
+
+    def search(self, word: str) -> bool:
+        node = self.root
+
+        for char in word:
+            if char not in node.children:
+                return False
+
+            node = node.children[char]
+
+        return node.is_end
+
+    def startsWith(self, prefix: str) -> bool:
+        node = self.root
+
+        for char in prefix:
+            if char not in node.children:
+                return False
+
+            node = node.children[char]
+
+        return True
+
+    def autocomplete(self, prefix: str) -> list[str]:
+        node = self.root
+
+        for char in prefix:
+            if char not in node.children:
+                return []
+
+            node = node.children[char]
+
+        suggestions = []
+
+        def collect(current_node, current_word):
+            if current_node.is_end:
+                suggestions.append(current_word)
+
+            for char, child in current_node.children.items():
+                collect(child, current_word + char)
+
+        collect(node, prefix)
+
+        return suggestions
+```
+
+### Usage
+
+```python
+trie = Trie()
+
+trie.insert("apple")
+trie.insert("app")
+trie.insert("application")
+trie.insert("apt")
+trie.insert("bat")
+
+print(trie.search("apple"))
+# True
+
+print(trie.search("ap"))
+# False
+
+print(trie.startsWith("ap"))
+# True
+
+print(trie.autocomplete("app"))
+# ['app', 'apple', 'application']
+```
+
+The exact order of autocomplete results depends on the insertion order of the child characters.
+
+---
+
+## 9. Common Mistakes
+
+### Mistake 1: Confusing Prefix Search With Complete-Word Search
+
+- `search()` checks `node.is_end`.
+- `startsWith()` only checks whether the path exists.
+
+### Mistake 2: Forgetting to Mark the End of a Word
 
 ```python
 node.is_end = True
 ```
 
-### Mistake 2: Returning `True` From `search()` Without Checking `is_end`
+Without this, complete-word searches and autocomplete collection will miss inserted words.
 
-Incorrect:
+### Mistake 3: Starting Autocomplete From the Root Instead of the Prefix Node
 
-```python
-return True
-```
+After locating the prefix, collect words from that node rather than traversing the entire Trie.
 
-This incorrectly treats every valid prefix as a complete word.
+### Mistake 4: Forgetting the Prefix in `current_word`
 
 Correct:
 
 ```python
-return node.is_end
+collect(node, prefix)
 ```
 
-### Mistake 3: Checking `is_end` in `startsWith()`
+Passing an empty string would cause the collected words to omit the requested prefix.
 
-Incorrect:
+### Mistake 5: Forgetting That a Prefix Can Be a Complete Word
 
-```python
-return node.is_end
-```
+If `"app"` and `"apple"` are both inserted, autocomplete for `"app"` should include `"app"` as well as `"apple"`.
 
-This rejects valid prefixes that are not complete words.
+That is why `collect()` checks `node.is_end` before visiting the children.
 
-Correct:
+### Mistake 6: Assuming Autocomplete Returns a Fixed Number of Suggestions
 
-```python
-return True
-```
-
-Once all prefix characters have been found, the prefix exists.
-
-### Mistake 4: Forgetting to Move to the Child
-
-Incorrect:
-
-```python
-if char not in node.children:
-    return False
-```
-
-If you never update `node`, the traversal cannot progress.
-
-Correct:
-
-```python
-node = node.children[char]
-```
-
-### Mistake 5: Creating a New Node Even When the Character Exists
-
-Always reusing existing child nodes allows words with common prefixes to share the same path.
+This implementation returns **all** words matching the prefix. Returning only the top `k` suggestions would require additional logic.
 
 ---
 
-## 11. Important Interview Questions
+## 10. Quick Revision Cheat Sheet
 
-Practice these Trie problems:
+| Operation | Core idea | Time complexity |
+|---|---|---|
+| `insert(word)` | Create missing nodes and mark the final node | `O(L)` average |
+| `search(word)` | Traverse and check `is_end` | `O(L)` average |
+| `startsWith(prefix)` | Check whether the prefix path exists | `O(P)` average |
+| `autocomplete(prefix)` | Find the prefix node and collect descendant words | Depends on subtree size and output |
+| `longestCommonPrefix(strs)` | Follow the single-child path until a branch or word end | `O(S)` |
 
-1. Implement Trie (Prefix Tree).
-2. Design Add and Search Words Data Structure.
-3. Replace Words.
-4. Search Suggestions System.
-5. Longest Word in Dictionary.
-6. Word Search II.
-7. Maximum XOR of Two Numbers in an Array.
+Where:
+- `L` = word length.
+- `P` = prefix length.
+- `S` = total characters across inserted strings.
 
----
+## One-Line Patterns
 
-## 12. Quick Revision Cheat Sheet
-
-| Concept | Remember |
-|---|---|
-| `children` | Dictionary of child nodes |
-| `is_end` | Marks the end of a complete word |
-| `insert()` | Create missing nodes and mark the final node |
-| `search()` | Traverse and return `node.is_end` |
-| `startsWith()` | Traverse and return `True` if the path exists |
-| Shared prefix | Existing nodes are reused |
-| Time complexity | `O(L)` per operation, on average |
-| Total space | `O(S)` for `S` total inserted characters, as an upper bound |
-
-## One-Line Pattern
-
-**Trie pattern:** Traverse character by character using a dictionary of child nodes; use `is_end` to distinguish a complete word from a prefix.
+- **Insert:** Create missing character nodes and mark the last node.
+- **Search:** Traverse the word and check `is_end`.
+- **Prefix search:** Traverse the prefix without checking `is_end`.
+- **Autocomplete:** Find the prefix node, then use DFS to collect all complete words below it.
+- **Longest common prefix:** Follow single-child nodes until a branching node or the end of a word.
