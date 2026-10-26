@@ -7,32 +7,33 @@
 1. What is Authentication and Authorization?
 2. What is JWT?
 3. Why Do We Need JWT?
-4. How JWT Works Internally
-5. JWT Structure: Header, Payload, Signature
-6. Encoding vs Encryption vs Hashing
-7. Important JWT Terminology
-8. Access Token vs Refresh Token
-9. JWT vs Session-Based Authentication
-10. OAuth2 and JWT in FastAPI
-11. `Annotated`, `Depends`, and `OAuth2PasswordBearer`
-12. Password Hashing with Argon2
-13. Project Setup
-14. Complete JWT Authentication Implementation
-15. How to Protect APIs
-16. `get_current_user()` Explained
-17. Role-Based Access Control
-18. Refresh Token Implementation
-19. Logout and Token Revocation
-20. Database Integration with SQLAlchemy
-21. JWT Security Best Practices
-22. Common Errors and Debugging
-23. Testing Authentication APIs
-24. JWT Authentication Flow Diagram
-25. Production-Ready Architecture
-26. Common Interview Questions and Answers
-27. Practical Exercises
-28. Quick Revision Cheat Sheet
-29. Further Learning Resources
+4. Session-Based Authentication vs Token-Based Authentication — Why JWT?
+5. How JWT Works Internally
+6. JWT Structure: Header, Payload, Signature
+7. Encoding vs Encryption vs Hashing
+8. Important JWT Terminology
+9. Access Token vs Refresh Token
+10. JWT vs Session-Based Authentication
+11. OAuth2 and JWT in FastAPI
+12. `Annotated`, `Depends`, and `OAuth2PasswordBearer`
+13. Password Hashing with Argon2
+14. Project Setup
+15. Complete JWT Authentication Implementation
+16. How to Protect APIs
+17. `get_current_user()` Explained
+18. Role-Based Access Control
+19. Refresh Token Implementation
+20. Logout and Token Revocation
+21. Database Integration with SQLAlchemy
+22. JWT Security Best Practices
+23. Common Errors and Debugging
+24. Testing Authentication APIs
+25. JWT Authentication Flow Diagram
+26. Production-Ready Architecture
+27. Common Interview Questions and Answers
+28. Practical Exercises
+29. Quick Revision Cheat Sheet
+30. Further Learning Resources
 
 ---
 
@@ -126,21 +127,477 @@ You need a mechanism to identify users on every protected request.
 
 One option is traditional session-based authentication. Another is token-based authentication using JWT.
 
-A typical JWT flow looks like this:
+**But why would we choose JWT instead of session-based authentication? What problems are we trying to solve?**
 
-1. User submits login credentials.
-2. FastAPI verifies the credentials.
-3. FastAPI creates an access token.
-4. Frontend receives the token.
-5. Frontend sends the token with protected API requests.
-6. FastAPI validates the token and checks the user's permissions.
-7. The API returns the requested data.
-
-JWT is especially useful when multiple clients need to access the same backend, such as a web application, mobile application, and other services.
+To answer this, we first need to understand how both approaches work.
 
 ---
 
-# 4. How JWT Works Internally
+# 4. Session-Based Authentication vs Token-Based Authentication — Why JWT?
+
+This section explains the architectural reasoning behind choosing JWT for an API-based application.
+
+## 4.1 How session-based authentication works
+
+In session-based authentication, the server creates and maintains a session after the user successfully logs in.
+
+The session contains information that allows the server to identify the authenticated user.
+
+### Step-by-step flow
+
+Suppose an administrator logs into your School Management System.
+
+**Step 1: User logs in**
+
+The React frontend sends credentials to FastAPI.
+
+```http
+POST /auth/login
+Content-Type: application/json
+```
+
+```json
+{
+  "username": "admin",
+  "password": "mypassword"
+}
+```
+
+**Step 2: Backend verifies credentials**
+
+FastAPI checks the username and verifies the submitted password against the stored password hash.
+
+**Step 3: Backend creates a session**
+
+The server creates a session record.
+
+For example:
+
+```text
+session_id: sess_abc123
+user_id: user_101
+role: admin
+expires_at: ...
+```
+
+The session data may be stored in a database, Redis, or an in-memory session store.
+
+**Step 4: Backend sends a session cookie**
+
+The browser receives a cookie containing the session identifier.
+
+```http
+Set-Cookie: session_id=sess_abc123; HttpOnly; Secure; SameSite=Lax
+```
+
+The actual cookie settings depend on the application's deployment and security requirements.
+
+**Step 5: Browser sends the cookie automatically**
+
+When the browser makes another request to the same applicable origin or domain, it can automatically send the cookie.
+
+```http
+GET /students
+Cookie: session_id=sess_abc123
+```
+
+**Step 6: Backend looks up the session**
+
+FastAPI reads the session ID and retrieves the corresponding session record.
+
+If the session is valid, the backend identifies the user and processes the request.
+
+### Session-based authentication flow
+
+<box border radius="lg" padding={3} gap={2} align="center">
+  <box background="surface-secondary" radius="md" padding={3} width="100%" align="center">
+    **1. React frontend**
+    <text color="secondary" size="sm">Sends username and password</text>
+  </box>
+  <icon name="arrow-down" size="lg"/>
+  <box background="surface" border radius="md" padding={3} width="100%" align="center">
+    **2. FastAPI backend**
+    <text color="secondary" size="sm">Verifies credentials and creates a session</text>
+  </box>
+  <icon name="arrow-down" size="lg"/>
+  <box background="surface-secondary" radius="md" padding={3} width="100%" align="center">
+    **3. Session store**
+    <text color="secondary" size="sm">Stores session ID and associated user state</text>
+  </box>
+  <icon name="arrow-down" size="lg"/>
+  <box background="surface" border radius="md" padding={3} width="100%" align="center">
+    **4. Browser cookie**
+    <text color="secondary" size="sm">Sends session ID on subsequent requests</text>
+  </box>
+  <icon name="arrow-down" size="lg"/>
+  <box background="surface-secondary" radius="md" padding={3} width="100%" align="center">
+    **5. Backend session lookup**
+    <text color="secondary" size="sm">Finds the session and identifies the user</text>
+  </box>
+</box>
+
+The important point is that **the session ID is only a reference to the session data maintained by the server**.
+
+The server must be able to find and validate the session before trusting it.
+
+---
+
+## 4.2 What problems can arise with session-based authentication?
+
+Session-based authentication is a valid and widely used approach. The challenges depend on how the application is deployed and how the sessions are managed.
+
+Let's understand the main challenges.
+
+### Problem 1: Shared session storage in a distributed backend
+
+Suppose your School Management SaaS initially has one FastAPI server.
+
+```text
+React Frontend
+      |
+      v
+FastAPI Server
+      |
+      v
+Session Store
+```
+
+This is straightforward. The server creates the session and can retrieve it on subsequent requests.
+
+Now imagine your application grows and you deploy three backend instances to handle more traffic.
+
+```text
+                  Load Balancer
+                 /      |      \
+                v       v       v
+             Server A Server B Server C
+```
+
+A user logs in through Server A, and Server A stores the session in its local memory.
+
+Later, the load balancer sends the user's next request to Server B.
+
+Server B checks its local memory but cannot find the session created by Server A.
+
+The user may be treated as unauthenticated.
+
+This is a problem with **server-local session storage**, not with session-based authentication itself.
+
+#### How can we solve it?
+
+There are two common approaches:
+
+**Option A: Shared session store**
+
+Store sessions in Redis or a shared database.
+
+```text
+             Load Balancer
+            /      |      \
+           v       v       v
+       Server A Server B Server C
+           \       |       /
+            \      |      /
+               Redis
+          Shared session store
+```
+
+All backend instances can retrieve the same session.
+
+**Option B: Sticky sessions**
+
+Configure the load balancer to direct a user's requests to the same backend instance.
+
+However, sticky sessions introduce operational trade-offs and do not eliminate the need to handle instance failures and session persistence.
+
+**Important conclusion:** Session-based authentication can scale horizontally. A shared session store is a common solution.
+
+---
+
+### Problem 2: Every request may require a session lookup
+
+In a conventional session-based design, the backend looks up the session on protected requests.
+
+For example:
+
+```text
+Request
+   |
+   v
+FastAPI
+   |
+   v
+Read session cookie
+   |
+   v
+Query Redis or database
+   |
+   v
+Validate session
+   |
+   v
+Execute API
+```
+
+If your application has many requests, this can create additional storage traffic and latency.
+
+Suppose your application serves:
+
+- 10,000 users.
+- Many concurrent API requests.
+- Student dashboards.
+- Attendance updates.
+- Reports.
+- Notifications.
+
+The session store must support the resulting workload.
+
+#### How can we solve it?
+
+You can optimize the session store, use Redis, add connection pooling, and cache data appropriately.
+
+Alternatively, JWT access tokens can let the backend validate a signed token locally without looking up a session on every request.
+
+With JWT:
+
+```text
+Request
+   |
+   v
+FastAPI
+   |
+   v
+Read bearer token
+   |
+   v
+Verify JWT signature and claims
+   |
+   v
+Execute API
+```
+
+This can eliminate the per-request session lookup required by a conventional stateful session design.
+
+However, JWT validation still consumes CPU, and production applications may need database lookups for current user status, permissions, tenant membership, or revocation checks.
+
+**JWT reduces one category of work; it does not make every request free of database queries.**
+
+---
+
+### Problem 3: Sharing authentication across different services
+
+Imagine your SaaS grows into multiple backend services.
+
+```text
+React Frontend
+      |
+      v
+API Gateway
+      |
+      +------------------+
+      |                  |
+      v                  v
+Student Service     Teacher Service
+      |                  |
+      v                  v
+Student Database    Teacher Database
+```
+
+Both services need to identify the requesting user.
+
+With a session-based architecture, each service must be able to validate the session. This can be achieved using a shared session store or a centralized authentication service.
+
+If every service has an independent local session store, it may not recognize sessions created by another service.
+
+#### How does JWT help?
+
+An authentication service can issue a signed JWT.
+
+```text
+             Authentication Service
+                      |
+                      v
+                 Signed JWT
+                      |
+              +-------+-------+
+              |               |
+              v               v
+       Student Service  Teacher Service
+              |               |
+              v               v
+        Verify JWT       Verify JWT
+```
+
+Each service can verify the token using the trusted verification key and validate its issuer, audience, expiry, and other required claims.
+
+With asymmetric signing, the authentication service can keep the private signing key while other services receive only the public verification key.
+
+This makes it possible to share authentication identity across services without requiring every service to retrieve a shared session record.
+
+But the services still need to enforce their own authorization rules. They must also ensure that the token is intended for them.
+
+---
+
+### Problem 4: Multiple clients need to access the same backend
+
+Suppose your School Management System has:
+
+- React web application.
+- Android application.
+- iOS application.
+- An internal reporting service.
+- A third-party integration.
+
+A conventional cookie-based session can work, especially for browser applications. However, cookie behavior and session handling may need different configuration for mobile applications, cross-origin requests, and service-to-service calls.
+
+A token-based API design can provide a common mechanism for sending credentials across these clients.
+
+For example:
+
+```http
+GET /students
+Authorization: Bearer <access_token>
+```
+
+The same basic bearer-token convention can be used by many HTTP clients.
+
+JWT is not mandatory for this. Opaque access tokens and other authentication mechanisms can also support multiple clients.
+
+The advantage is that JWT can provide verifiable identity claims in a self-contained token.
+
+---
+
+### Problem 5: Authentication state is tightly coupled to a session store
+
+With conventional sessions, the server needs access to the relevant session state.
+
+If the session store becomes unavailable, the application may be unable to authenticate requests, even when the user's browser still has a session cookie.
+
+A well-designed system can mitigate this with a highly available Redis or database deployment, replication, monitoring, and recovery strategies.
+
+JWT access tokens can be verified without a session-store lookup when the application permits fully stateless validation.
+
+This can reduce the dependency on a centralized session store for ordinary access-token verification.
+
+However, a JWT application may still depend on a database for user information, a key-distribution system for public keys, or a store for refresh-token and revocation state.
+
+---
+
+## 4.3 How JWT solves these architectural challenges
+
+Let's summarize the relationship between the challenges and JWT.
+
+| Challenge | Conventional session-based design | JWT-based approach |
+|---|---|---|
+| Multiple backend instances | Requires accessible shared session state or another session strategy | Instances can verify signed access tokens independently |
+| Session lookup on every request | Usually required for server-managed sessions | Can be avoided for self-contained access-token validation |
+| Multiple backend services | Requires shared sessions or centralized session validation | Services can verify tokens issued by a trusted authentication service |
+| Multiple client types | Cookie/session integration may need client-specific configuration | Bearer tokens provide a common API authentication mechanism |
+| Session-store availability | Affects requests that depend on the store | Basic JWT verification can continue without a session-store lookup |
+| Immediate logout/revocation | Often straightforward by invalidating the server-side session | Requires additional revocation or session-check mechanisms for immediate invalidation |
+| Permission changes | Server-side permissions can be checked against current state | Embedded role claims can become stale until expiry unless current state is checked |
+
+Notice that JWT is not better in every row. The most important difference is that JWT can move some authentication work from server-side session lookups to local cryptographic verification.
+
+---
+
+## 4.4 Why choose JWT for our School Management SaaS?
+
+Let's apply this to our project.
+
+Suppose the application contains:
+
+```text
+React Frontend
+       |
+       v
+FastAPI Backend
+       |
+       v
+PostgreSQL Database
+```
+
+Later, you might add:
+
+```text
+             React / Mobile Clients
+                      |
+                      v
+                API Gateway
+                      |
+          +-----------+-----------+
+          |           |           |
+          v           v           v
+     Auth Service  Student API  Teacher API
+          |           |           |
+          +-----------+-----------+
+                      |
+                      v
+                  PostgreSQL
+```
+
+We might choose JWT access tokens because:
+
+1. We want a common bearer-token mechanism for web and mobile API clients.
+2. We want multiple backend services to verify access tokens independently.
+3. We want to reduce the need for a centralized session lookup on every request.
+4. We want the authentication service to issue tokens that other trusted services can validate.
+5. We want a clear separation between token validation and business API logic.
+
+For this architecture, a reasonable design is:
+
+- Short-lived JWT access tokens.
+- Securely managed refresh tokens.
+- PostgreSQL for users, roles, tenant membership, and application data.
+- A refresh-session store for rotation and revocation.
+- Reusable FastAPI authentication and authorization dependencies.
+- HTTPS for all production traffic.
+
+For a browser-only application served from the same site, traditional session-based authentication may be simpler and perfectly appropriate.
+
+**We are choosing JWT for the architectural benefits it provides, not because session-based authentication is inherently wrong.**
+
+---
+
+## 4.5 What are the disadvantages of JWT?
+
+JWT introduces its own trade-offs.
+
+### 1. Revocation is harder
+
+A self-contained access token may remain valid until its expiration even after the user logs out.
+
+Immediate revocation requires additional state or checks.
+
+### 2. Stolen tokens can be replayed
+
+An attacker who obtains a valid bearer token may be able to use it until it expires or is revoked.
+
+### 3. Claims can become stale
+
+If a user's role changes from admin to student, an already-issued token may still contain the old admin role.
+
+A system must account for this through short lifetimes, current permission checks, session versions, or other mechanisms.
+
+### 4. Token handling becomes a security responsibility
+
+The frontend must protect tokens from exposure. Cookie-based refresh mechanisms also require appropriate CSRF protection.
+
+### 5. JWTs are larger than session IDs
+
+A JWT carries claims and a signature, so it is usually larger than a simple session identifier.
+
+### 6. Cryptographic configuration must be correct
+
+The application must validate the signature, accepted algorithm, expiration, issuer, audience, and required claims.
+
+### Interview-ready conclusion
+
+JWT can improve authentication portability and reduce dependence on centralized session lookups, especially in distributed API architectures. Session-based authentication often offers simpler centralized revocation. The correct choice depends on client types, infrastructure, security requirements, and operational trade-offs.
+
+---
+
+# 5. How JWT Works Internally
 
 A JWT typically contains three parts separated by dots.
 
@@ -162,9 +619,9 @@ Each part serves a different purpose.
 
 Let's examine each part.
 
-# 5. JWT Structure
+# 6. JWT Structure
 
-## 5.1 Header
+## 6.1 Header
 
 The header contains metadata about the token.
 
@@ -186,7 +643,7 @@ Here:
 
 The header is Base64URL-encoded before being included in the token.
 
-## 5.2 Payload
+## 6.2 Payload
 
 The payload contains claims.
 
@@ -220,7 +677,7 @@ Registered claims such as `sub`, `exp`, `iat`, `iss`, and `aud` have standardize
 
 **Security warning:** The payload is not secret just because it is inside a JWT. Anyone possessing a normal signed JWT can generally decode its header and payload. Never place passwords, password hashes, API secrets, or confidential student information in the payload.
 
-## 5.3 Signature
+## 6.3 Signature
 
 The signature is used to verify the integrity and authenticity of the signed token.
 
@@ -267,11 +724,11 @@ However, a signed token can still be stolen and replayed. Signature verification
 
 ---
 
-# 6. Encoding vs Encryption vs Hashing
+# 7. Encoding vs Encryption vs Hashing
 
 These three terms are different.
 
-## 6.1 Encoding
+## 7.1 Encoding
 
 Encoding transforms data into another representation.
 
@@ -285,7 +742,7 @@ Encoding is reversible and does not provide security by itself.
 
 JWT uses Base64URL encoding for its header and payload.
 
-## 6.2 Encryption
+## 7.2 Encryption
 
 Encryption protects confidentiality by transforming readable data into ciphertext using cryptographic keys.
 
@@ -293,7 +750,7 @@ Only a party with the appropriate decryption key can recover the protected conte
 
 A standard signed JWT is not encrypted. Encrypted JWTs can use the JWE format.
 
-## 6.3 Hashing
+## 7.3 Hashing
 
 Hashing transforms data into a fixed-size digest. Password storage should use a password-hashing algorithm such as Argon2, bcrypt, or scrypt, with suitable parameters.
 
@@ -307,7 +764,7 @@ Not necessarily. A common JWT is signed and Base64URL-encoded, not encrypted. An
 
 ---
 
-# 7. Important JWT Terminology
+# 8. Important JWT Terminology
 
 ### Signing key / secret key
 
@@ -339,11 +796,11 @@ A design where the server does not need to look up a server-side session for eve
 
 ---
 
-# 8. Access Token vs Refresh Token
+# 9. Access Token vs Refresh Token
 
 These are two different tokens that often work together.
 
-## 8.1 Access token
+## 9.1 Access token
 
 The access token is sent with API requests to access protected resources.
 
@@ -359,7 +816,7 @@ Access tokens should generally have a short lifetime.
 
 Example lifetime: 15 minutes.
 
-## 8.2 Refresh token
+## 9.2 Refresh token
 
 A refresh token is used to obtain a new access token without asking the user to log in again.
 
@@ -389,7 +846,9 @@ For a production application, refresh tokens are commonly rotated on use and tra
 
 ---
 
-# 9. JWT vs Session-Based Authentication
+# 10. JWT vs Session-Based Authentication
+
+This section provides a concise comparison for revision. The detailed architectural reasoning is covered in Section 4.
 
 | Feature | Session-based | JWT-based |
 |---|---|---|
@@ -404,7 +863,7 @@ Neither approach is automatically more secure. Security depends on the implement
 
 ---
 
-# 10. OAuth2 and JWT in FastAPI
+# 11. OAuth2 and JWT in FastAPI
 
 OAuth2 is an authorization framework. JWT is a token format.
 
@@ -420,7 +879,7 @@ Important components include:
 - `Annotated`
 - `HTTPBearer`
 
-## 10.1 OAuth2PasswordBearer
+## 11.1 OAuth2PasswordBearer
 
 Example:
 
@@ -436,7 +895,7 @@ This tells FastAPI how to extract a bearer token from the request's `Authorizati
 
 It does not generate, decode, or validate JWTs by itself.
 
-## 10.2 OAuth2PasswordRequestForm
+## 11.2 OAuth2PasswordRequestForm
 
 Example:
 
@@ -458,7 +917,7 @@ It expects `application/x-www-form-urlencoded`, not a JSON request body.
 
 **Important modern OAuth2 note:** The password grant represented by `OAuth2PasswordRequestForm` is a legacy OAuth2 flow and is not recommended for new OAuth2 authorization systems. It remains useful for learning FastAPI's traditional first-party username/password JWT tutorial pattern. For delegated login through an external identity provider, prefer an appropriate modern OAuth2 flow, commonly Authorization Code with PKCE, or OpenID Connect.
 
-## 10.3 Depends
+## 11.3 Depends
 
 `Depends` tells FastAPI to resolve a dependency and provide its result to the endpoint.
 
@@ -478,7 +937,7 @@ async def home(
 
 FastAPI calls `get_message()` and supplies its return value as `message`.
 
-## 10.4 Annotated
+## 11.4 Annotated
 
 `Annotated` attaches metadata to a Python type.
 
@@ -501,11 +960,44 @@ The alias describes the type and the dependency that supplies it.
 
 ---
 
-# 11. Project Setup
+# 12. Password Hashing with Argon2
+
+Passwords should never be stored in plaintext.
+
+Instead, the backend hashes a password before saving it to the database.
+
+Example:
+
+```python
+from pwdlib import PasswordHash
+
+password_hash = PasswordHash.recommended()
+
+hashed_password = password_hash.hash("mypassword")
+```
+
+When a user logs in, verify the submitted password:
+
+```python
+is_valid = password_hash.verify(
+    "mypassword",
+    hashed_password
+)
+```
+
+If `is_valid` is `True`, the password matches the stored hash.
+
+Argon2 is designed for password hashing and makes guessing attacks more expensive than ordinary fast hashing.
+
+Never log plaintext passwords, and never return password hashes through API responses.
+
+---
+
+# 13. Project Setup
 
 We will implement a small JWT authentication application using FastAPI, PyJWT and Argon2 password hashing.
 
-## 11.1 Project structure
+## 13.1 Project structure
 
 ```text
 fastapi-jwt/
@@ -524,7 +1016,7 @@ fastapi-jwt/
 
 For learning, we will keep the initial example compact. In a production application, user and session data should be stored in a database, not only in an in-memory dictionary.
 
-## 11.2 Create a virtual environment
+## 13.2 Create a virtual environment
 
 Windows:
 
@@ -540,7 +1032,7 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-## 11.3 Install dependencies
+## 13.3 Install dependencies
 
 Create `requirements.txt`:
 
@@ -561,7 +1053,7 @@ pip install -r requirements.txt
 
 `python-multipart` is needed for the form-based login example.
 
-## 11.4 Configure environment variables
+## 13.4 Configure environment variables
 
 Generate a strong random signing secret, for example using:
 
@@ -592,7 +1084,7 @@ Load configuration from environment variables. For production, use your deployme
 
 ---
 
-# 12. Complete JWT Authentication Implementation
+# 14. Complete JWT Authentication Implementation
 
 This example demonstrates:
 
@@ -606,7 +1098,7 @@ This example demonstrates:
 
 For simplicity, the users are in memory. Replace the demo user store with a database before using this design in a real application.
 
-## 12.1 Create `app/security.py`
+## 14.1 Create `app/security.py`
 
 ```python
 import os
@@ -681,7 +1173,7 @@ PyJWT serializes the datetime claims into the appropriate JWT NumericDate repres
 
 The signing secret must remain private. All services verifying HS256 tokens must have access to the same secret, so asymmetric signing may be preferable in distributed systems.
 
-## 12.2 Create `app/schemas.py`
+## 14.2 Create `app/schemas.py`
 
 ```python
 from pydantic import BaseModel
@@ -700,7 +1192,7 @@ class TokenResponse(BaseModel):
 
 These models define the shape of the API responses.
 
-## 12.3 Create `app/dependencies.py`
+## 14.3 Create `app/dependencies.py`
 
 ```python
 from typing import Annotated
@@ -777,11 +1269,12 @@ Finally, the backend looks up the user. This is important because a token may re
 
 The example uses an in-memory dictionary to keep the first implementation simple. Avoid importing a global user store from `main.py` in a larger application; inject a database-backed user repository instead.
 
-## 12.4 Create `app/main.py`
+## 14.4 Create `app/main.py`
 
 ```python
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import Depends
 
 from app.dependencies import CurrentUser
 from app.schemas import TokenResponse, UserResponse
@@ -913,7 +1406,7 @@ async def get_admin_reports(user: CurrentUser):
 - There is no refresh-token system, logout revocation, rate limiting or account recovery.
 - The example role check illustrates authorization, but real permissions should be enforced consistently across all sensitive endpoints.
 
-## 12.5 Run the application
+## 14.5 Run the application
 
 ```bash
 uvicorn app.main:app --reload
@@ -929,7 +1422,7 @@ The Swagger UI provides a convenient way to test the login and protected endpoin
 
 ---
 
-# 13. How to Test JWT Authentication
+# 15. How to Test JWT Authentication
 
 ## Step 1: Log in
 
@@ -1010,7 +1503,7 @@ The teacher's token can be valid, but the teacher does not have permission to ac
 
 ---
 
-# 14. How Does `get_current_user()` Work?
+# 16. How Does `get_current_user()` Work?
 
 This is one of the most important concepts for FastAPI interviews.
 
@@ -1042,7 +1535,7 @@ FastAPI's dependency system handles this reusable authentication logic.
 
 ---
 
-# 15. Role-Based Access Control (RBAC)
+# 17. Role-Based Access Control (RBAC)
 
 RBAC means Role-Based Access Control.
 
@@ -1056,7 +1549,7 @@ teacher
 student
 ```
 
-## 15.1 Create a reusable role dependency
+## 17.1 Create a reusable role dependency
 
 In a separate `authorization.py` module:
 
@@ -1118,7 +1611,7 @@ An application may choose to return a generic 401 for invalid credentials and a 
 
 ---
 
-# 16. Refresh Token Implementation
+# 18. Refresh Token Implementation
 
 A refresh-token flow allows a user to obtain a new access token without repeatedly entering a password.
 
@@ -1132,7 +1625,7 @@ The general flow is:
 6. Server issues a new access token and rotates the refresh token.
 7. The old refresh token is invalidated.
 
-## 16.1 Why should refresh tokens be different?
+## 18.1 Why should refresh tokens be different?
 
 A refresh token has a different purpose from an access token.
 
@@ -1148,7 +1641,7 @@ Use separate token types and validation rules. For example:
 
 A refresh token must be accepted only by the refresh endpoint, not by protected resource APIs.
 
-## 16.2 Recommended production design
+## 18.2 Recommended production design
 
 For a robust implementation, maintain a server-side refresh-session record containing fields such as:
 
@@ -1180,7 +1673,7 @@ For many applications, an opaque random refresh token backed by a database is si
 
 ---
 
-# 17. Logout and Token Revocation
+# 19. Logout and Token Revocation
 
 JWT access tokens are often self-contained. If the server validates them locally without consulting a database, logging out does not automatically invalidate a token already issued.
 
@@ -1223,7 +1716,7 @@ This can support account disablement and session invalidation, but it changes th
 
 ---
 
-# 18. Database Integration with SQLAlchemy
+# 20. Database Integration with SQLAlchemy
 
 The in-memory user dictionary in our example is only for learning.
 
@@ -1257,7 +1750,7 @@ revoked_at
 created_at
 ```
 
-## 18.1 User model example
+## 20.1 User model example
 
 A simplified SQLAlchemy model:
 
@@ -1298,7 +1791,7 @@ class User(Base):
 
 This model is illustrative; actual applications should include migrations, constraints, error handling and appropriate role/tenant relationships.
 
-## 18.2 Database dependency
+## 20.2 Database dependency
 
 A typical SQLAlchemy session dependency looks like:
 
@@ -1340,7 +1833,7 @@ def get_students(db: DbSession):
 
 Use your actual SQLAlchemy query logic and return Pydantic response models in a real implementation.
 
-## 18.3 How database-backed JWT authentication should work
+## 20.3 How database-backed JWT authentication should work
 
 1. Query the user by username or email.
 2. Verify the submitted password against the stored password hash.
@@ -1357,11 +1850,11 @@ Never rely only on a client-supplied tenant ID or role.
 
 ---
 
-# 19. JWT Security Best Practices
+# 21. JWT Security Best Practices
 
 This section is particularly important for production systems and interviews.
 
-## 19.1 Use strong signing keys
+## 21.1 Use strong signing keys
 
 Use a cryptographically random key generated by a secure random-number generator.
 
@@ -1373,7 +1866,7 @@ SECRET_KEY = "123456"
 
 Do not hardcode secrets in source code or commit them to Git.
 
-## 19.2 Allow only trusted algorithms
+## 21.2 Allow only trusted algorithms
 
 Always configure the accepted algorithms explicitly:
 
@@ -1389,7 +1882,7 @@ Never choose the accepted verification algorithm based solely on the untrusted `
 
 If you use RSA or another asymmetric algorithm, verify using the expected public key and the exact configured algorithm.
 
-## 19.3 Validate claims
+## 21.3 Validate claims
 
 Depending on your architecture, validate:
 
@@ -1403,23 +1896,23 @@ Depending on your architecture, validate:
 
 Requiring important claims to be present helps prevent accepting tokens that are missing required security information.
 
-## 19.4 Use short-lived access tokens
+## 21.4 Use short-lived access tokens
 
 A shorter lifetime limits how long a stolen access token can be used.
 
 Choose the lifetime based on your application's risk, user experience and refresh mechanism.
 
-## 19.5 Never store passwords in JWTs
+## 21.5 Never store passwords in JWTs
 
 Do not include passwords, password hashes, API keys or sensitive personal information in JWT claims.
 
-## 19.6 Use HTTPS
+## 21.6 Use HTTPS
 
 HTTPS protects credentials and tokens while they travel between the client and server.
 
 Do not transmit authentication credentials over plain HTTP in production.
 
-## 19.7 Protect tokens in the frontend
+## 21.7 Protect tokens in the frontend
 
 Browser storage has trade-offs.
 
@@ -1429,7 +1922,7 @@ Browser storage has trade-offs.
 
 There is no universally best storage option for every application. Select a design based on the threat model.
 
-## 19.8 Configure cookies correctly
+## 21.8 Configure cookies correctly
 
 For a cookie-based refresh-token design, consider:
 
@@ -1443,21 +1936,21 @@ Expires / Max-Age
 
 The `Secure` attribute requires HTTPS. `HttpOnly` prevents ordinary JavaScript access to the cookie. `SameSite` helps mitigate some cross-site request scenarios but is not a complete substitute for CSRF protection.
 
-## 19.9 Rate-limit login attempts
+## 21.9 Rate-limit login attempts
 
 Rate limiting, monitoring and appropriate throttling help reduce brute-force attacks and credential stuffing.
 
 Avoid returning detailed error messages that reveal whether a particular username exists.
 
-## 19.10 Validate account status
+## 21.10 Validate account status
 
 A valid JWT should not automatically allow access to a deleted, disabled, suspended or otherwise unauthorized account.
 
-## 19.11 Keep claims minimal
+## 21.11 Keep claims minimal
 
 Store only what is needed for token validation and authorization. Keep sensitive or frequently changing information in the database.
 
-## 19.12 Use asymmetric signing where appropriate
+## 21.12 Use asymmetric signing where appropriate
 
 With HS256, every service verifying a token needs the shared secret. Any service that possesses that secret can also issue valid tokens.
 
@@ -1467,7 +1960,7 @@ Asymmetric signing is useful when many services need to verify tokens but should
 
 ---
 
-# 20. Common JWT Errors and Debugging
+# 22. Common Errors and Debugging
 
 ## Error 1: `401 Unauthorized`
 
@@ -1548,7 +2041,7 @@ If immediate invalidation is required, implement a denylist, session check, toke
 
 ---
 
-# 21. Testing Authentication APIs
+# 23. Testing Authentication APIs
 
 You should test both successful and unsuccessful authentication scenarios.
 
@@ -1626,7 +2119,7 @@ These tests use the demo application's hardcoded users. A production test suite 
 
 ---
 
-# 22. JWT Authentication Flow Diagram
+# 24. JWT Authentication Flow Diagram
 
 ```mermaid
 flowchart TD
@@ -1651,7 +2144,7 @@ The JWT is not a replacement for password verification during login, user lookup
 
 ---
 
-# 23. Production-Ready Architecture
+# 25. Production-Ready Architecture
 
 For a larger FastAPI application, separate authentication responsibilities into modules.
 
@@ -1703,7 +2196,7 @@ For a multi-tenant SaaS, authorization should check both the user's permissions 
 
 ---
 
-# 24. Common JWT Interview Questions and Answers
+# 26. Common JWT Interview Questions and Answers
 
 ## Q1. What is JWT?
 
@@ -1833,9 +2326,33 @@ Common serious mistakes include accepting untrusted algorithms, skipping claim v
 
 Use strong signing keys, validate tokens, enforce current account status and permissions, verify tenant/resource ownership on every relevant operation, protect refresh sessions, and use HTTPS and appropriate rate limits.
 
+## Q33. Why might we choose JWT instead of session-based authentication?
+
+JWT allows trusted services to verify signed access tokens without needing a centralized session lookup on every request. It can simplify authentication across multiple backend services and different client types. However, JWT makes immediate revocation harder and is not automatically more secure than sessions.
+
+## Q34. What are the problems with storing sessions in application memory?
+
+When multiple backend instances have separate in-memory session stores, a session created by one instance may not be available to another. Server restarts can also lose the sessions. A shared session store such as Redis or a database can address these problems.
+
+## Q35. Does session-based authentication fail when we scale horizontally?
+
+No. Session-based authentication can scale horizontally using shared session storage, a centralized session service, or other appropriate session-management strategies.
+
+## Q36. Does JWT eliminate database queries?
+
+No. JWT can eliminate a session lookup during token validation, but the application may still query the database for user status, permissions, tenant membership and requested resources.
+
+## Q37. Why is logout harder with JWT?
+
+A self-contained access token may remain valid until it expires. To revoke it immediately, the application needs additional state or validation mechanisms, such as a denylist or session-version check.
+
+## Q38. What would you choose for a React + FastAPI application?
+
+It depends on the architecture. For an API serving web, mobile and multiple backend services, JWT access tokens may be a good fit. For a same-site browser application, secure session cookies may be simpler. I would choose based on the client types, revocation requirements, scaling needs and security threat model.
+
 ---
 
-# 25. Practical Exercises
+# 27. Practical Exercises
 
 Complete these exercises to strengthen your understanding.
 
@@ -1868,9 +2385,18 @@ Complete these exercises to strengthen your understanding.
 - [ ] Add tenant-aware authorization.
 - [ ] Configure key rotation and asymmetric signing where appropriate.
 
+### Architecture exercises
+
+- [ ] Draw a session-based authentication flow.
+- [ ] Draw a JWT-based authentication flow.
+- [ ] Explain why shared Redis session storage supports horizontal scaling.
+- [ ] Explain how three FastAPI services can verify tokens issued by one authentication service.
+- [ ] Compare immediate session invalidation with JWT access-token expiration.
+- [ ] Decide which authentication approach you would choose for a web-only application versus a web-and-mobile SaaS.
+
 ---
 
-# 26. Quick Revision Cheat Sheet
+# 28. Quick Revision Cheat Sheet
 
 | Concept | Remember |
 |---|---|
@@ -1894,10 +2420,14 @@ Complete these exercises to strengthen your understanding.
 | 403 | Insufficient permission |
 | HTTPS | Protects credentials in transit |
 | Revocation | Requires additional state or a revocation strategy |
+| Session | Server-managed authentication state |
+| Redis session store | Shared session storage for multiple backend instances |
+| Stateless token validation | Verify a token without retrieving a session record |
+| JWT trade-off | Easier distributed verification, harder immediate revocation |
 
 ---
 
-# 27. Further Learning Resources
+# 29. Further Learning Resources
 
 Use the official documentation for current APIs and implementation details:
 
@@ -1910,7 +2440,7 @@ Use the official documentation for current APIs and implementation details:
 
 ---
 
-# Final Summary
+# 30. Final Summary
 
 The complete JWT authentication process can be remembered in this order:
 
