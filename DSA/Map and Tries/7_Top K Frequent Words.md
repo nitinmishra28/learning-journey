@@ -663,7 +663,7 @@ Your original code is correct, but:
 else:
     continue
 ``` 
-
+ 
 does unnecessary iterations.
 
 Prefer:
