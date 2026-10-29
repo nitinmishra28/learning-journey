@@ -662,7 +662,7 @@ Your original code is correct, but:
 ```python
 else:
     continue
-```
+``` 
 
 does unnecessary iterations.
 
