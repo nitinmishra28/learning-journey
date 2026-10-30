@@ -656,7 +656,7 @@ for word, frequency in sorted_words:
 ```
 
 ### Mistake 5: Continuing After Collecting `k` Words
-
+ 
 Your original code is correct, but:
 
 ```python
