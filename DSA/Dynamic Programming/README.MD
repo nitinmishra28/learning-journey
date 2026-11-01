@@ -285,19 +285,28 @@ Hum smallest subproblems ka answer pehle calculate karte hain, phir un answers k
 ### Fibonacci Using Tabulation
 
 ```python
-def fib(n):
-    if n <= 1:
-        return n
 
-    dp = [0] * (n + 1)
+    def fib(self, n: int) -> int:
+        if n <= 1:
+            return n
 
-    dp[0] = 0
-    dp[1] = 1
+        # Step 1: Create DP array
+        dp = [0] * (n + 1)
 
-    for i in range(2, n + 1):
-        dp[i] = dp[i - 1] + dp[i - 2]
+        # Step 2: Analyse the base cases and update DP array
+        dp[0] = 0
+        dp[1] = 1
 
-    return dp[n]
+        # Step 3: Reverse the recursion direction and run a loop
+        # Recursion -> n -> 0
+        # Reverse   -> 0 -> n
+
+        for i in range(2, n+1):
+            # Copy-paste the recurrence relation
+            dp[i] = dp[i-1] + dp[i-2]
+
+        # Answer return
+        return dp[n]
 
 
 print(fib(5))  # 5
