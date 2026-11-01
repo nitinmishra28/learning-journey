@@ -285,7 +285,7 @@ Hum smallest subproblems ka answer pehle calculate karte hain, phir un answers k
 ### Fibonacci Using Tabulation
 
 ```python
-
+class Solution:
     def fib(self, n: int) -> int:
         if n <= 1:
             return n
