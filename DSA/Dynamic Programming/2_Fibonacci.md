@@ -796,6 +796,6 @@ The exact recurrence and base cases depend on the problem.
 | Top-Down DP | Recursion + DP array |
 | Bottom-Up DP | Iteration + DP array |
 | Space Optimization | Maintain previous two values |    
-| Final Answer | `curr` |  
+| Final Answer | `curr` |    
 
 **One-line takeaway:** Fibonacci is the foundation of DP. First understand its recursive relation, then store repeated states using memoization, calculate values iteratively using tabulation, and finally optimize space by keeping only the previous two Fibonacci numbers.   
