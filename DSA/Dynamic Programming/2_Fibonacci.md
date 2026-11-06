@@ -794,7 +794,7 @@ The exact recurrence and base cases depend on the problem.
 | Normal Recursion | Two recursive calls |
 | Overlapping Subproblems | Same Fibonacci states repeat |
 | Top-Down DP | Recursion + DP array |  
-| Bottom-Up DP | Iteration + DP array |  
+| Bottom-Up DP | Iteration + DP array |    
 | Space Optimization | Maintain previous two values |     
 | Final Answer | `curr` |    
 
