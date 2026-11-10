@@ -1116,7 +1116,7 @@ for coin in coins:
 | Impossible Result | Return `-1` |
 
 ---
-
+ 
 # 14. One-Line Takeaway
 
 **Coin Change is a minimum-value Unbounded Knapsack DP problem. Try every valid coin, add one to the answer for the remaining amount, store the minimum, and reuse previously calculated states.**
