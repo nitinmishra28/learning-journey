@@ -1192,7 +1192,7 @@ Yes. SQL relational databases mein commonly used hai, lekin all DBMS SQL use nah
 | DBA | Database Administrator |
 | OLTP | Transaction processing |
 | OLAP | Analytical processing |
-| View | Virtual table |
+| View | Virtual table | 
 
 ---
  
