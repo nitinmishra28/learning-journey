@@ -1197,7 +1197,7 @@ Yes. SQL relational databases mein commonly used hai, lekin all DBMS SQL use nah
 ---
  
 ## 24. Important Concepts to Remember
-
+ 
 1. Database aur DBMS same cheez nahi hain.
 2. RDBMS, DBMS ka subset hai.
 3. Metadata means data about data.
