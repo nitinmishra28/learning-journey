@@ -1195,7 +1195,7 @@ Yes. SQL relational databases mein commonly used hai, lekin all DBMS SQL use nah
 | View | Virtual table | 
 
 ---
- 
+  
 ## 24. Important Concepts to Remember
  
 1. Database aur DBMS same cheez nahi hain.
