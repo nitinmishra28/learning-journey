@@ -1193,7 +1193,7 @@ Yes. SQL relational databases mein commonly used hai, lekin all DBMS SQL use nah
 | OLTP | Transaction processing |
 | OLAP | Analytical processing |
 | View | Virtual table | 
-
+ 
 ---
   
 ## 24. Important Concepts to Remember
